@@ -721,17 +721,20 @@
             cursor: pointer;
             box-shadow: var(--shadow-sm);
             aspect-ratio: 3/4;
-            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s, opacity 0.2s;
+            will-change: transform, box-shadow;
         }
 
         .image-card:hover {
             transform: translateY(-2px);
         }
 
+        /* Active touch / mouse drag state */
         .image-card.dragging {
             opacity: 0.5;
-            transform: scale(1.05);
+            transform: scale(1.05) translate3d(0, 0, 0);
             box-shadow: var(--shadow-lg);
+            border: 1px solid var(--primary);
         }
 
         .add-student-pill {
@@ -1444,7 +1447,7 @@ Rapporten ska innehålla:
 1. Bedömning utifrån eventuellt angivna instruktioner (eller generella betygskriterier för ämnet).
 2. Elevens poäng eller indikerad betygsnivå.
 3. Konstruktiv feedback med elevens specifika styrkor.
-4. Utvecklingsområden och konkreta tips på hur eleven kan förbättra sina svar framöver.`
+4. Utvecklingsområden och konkreta tips på hur heaven kan förbättra sina svar framöver.`
             },
             {
                 id: "brief",
@@ -1592,8 +1595,8 @@ Rapporten ska innehålla:
         let studentModalTargetId = null;
 
         // Kameravariabler för byte av kamera
+        let currentFacingMode = 'environment'; // Back camera by default
         let availableVideoDevices = [];
-        let currentVideoDeviceIndex = 0;
 
         // Touch-gest-variabler för swipe i lightbox
         let swipeStartX = 0;
@@ -1972,7 +1975,7 @@ Rapporten ska innehålla:
                         <i class="fa-solid fa-folder-open"></i>
                         <h3>Välkommen till Rättaren!</h3>
                         <p>Kom igång genom att lägga till din första elev i listan till vänster. Sedan kan du enkelt ladda upp och sortera elevens inlämnade provsidor.</p>
-                        <button class="btn btn-primary" onclick="addStudent()">
+                        <button class="btn btn-primary" onclick="openAddStudentModal()">
                             <i class="fa-solid fa-plus"></i> Lägg till första eleven
                         </button>
                     </div>
@@ -2155,7 +2158,7 @@ Rapporten ska innehålla:
                     draggedIndex = null;
                 };
 
-                /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor) */
+                /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor med pass-through-lösning!) */
                 card.addEventListener('touchstart', (e) => {
                     if (e.target.closest('.delete-btn')) return;
                     activeTouchIndex = index;
@@ -2179,7 +2182,12 @@ Rapporten ska innehålla:
                         touchDragOccurred = true;
                     }
 
+                    // TILLFÄLLIG PASS-THROUGH: Stäng tillfälligt av elementets pointer-events
+                    // så att elementFromPoint kan "se igenom" och träffa korten under!
+                    card.style.pointerEvents = 'none';
                     const elementUnderFinger = document.elementFromPoint(x, y);
+                    card.style.pointerEvents = ''; // Återställ direkt
+
                     if (!elementUnderFinger) return;
 
                     const targetCard = elementUnderFinger.closest('.image-card');
@@ -2219,7 +2227,7 @@ Rapporten ska innehålla:
                         touchOverSide = null;
                     }
 
-                    // Stop scrolling if we are dragging the image card around
+                    // Stoppa sidscroll om vi faktiskt sorterar
                     if (touchDragOccurred) {
                         e.preventDefault();
                     }
@@ -2250,10 +2258,10 @@ Rapporten ska innehålla:
                         }
                     }
 
-                    // Prevent synthesized click events on mobile touch release
+                    // Förhindra falska klick efter touch-släpp
                     e.preventDefault();
 
-                    // If it was a clean tap (no drag gesture), open the lightbox
+                    // Om det var ett rent klick utan rörelse, öppna helskärmsläget
                     if (!touchDragOccurred) {
                         openLightbox(activeTouchIndex);
                     }
@@ -2279,6 +2287,7 @@ Rapporten ska innehålla:
                 availableVideoDevices = devices.filter(device => device.kind === 'videoinput');
                 const switchBtn = document.getElementById('camera-switch-btn');
                 if (switchBtn) {
+                    // Visa switch-knappen om det faktiskt finns mer än en kamera
                     switchBtn.style.display = availableVideoDevices.length > 1 ? 'flex' : 'none';
                 }
             } catch (err) {
@@ -2298,24 +2307,20 @@ Rapporten ska innehålla:
             modal.classList.add('active');
 
             try {
-                if (availableVideoDevices.length === 0) {
-                    await getAvailableCameras();
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
                 }
 
+                // BACK-KAMERA SOM STANDARD (environment)
                 let constraints = {
                     audio: false,
                     video: {
+                        facingMode: currentFacingMode,
                         width: { ideal: 1920 },
                         height: { ideal: 1080 }
                     }
                 };
-
-                if (availableVideoDevices.length > 0) {
-                    const activeDevice = availableVideoDevices[currentVideoDeviceIndex];
-                    constraints.video.deviceId = { exact: activeDevice.deviceId };
-                } else {
-                    constraints.video.facingMode = { ideal: "environment" };
-                }
 
                 cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = cameraStream;
@@ -2326,7 +2331,7 @@ Rapporten ska innehålla:
 
                 try {
                     cameraStream = await navigator.mediaDevices.getUserMedia({
-                        video: { facingMode: { ideal: "environment" } },
+                        video: { facingMode: { ideal: currentFacingMode } },
                         audio: false
                     });
                     video.srcObject = cameraStream;
@@ -2339,33 +2344,16 @@ Rapporten ska innehålla:
         }
 
         async function switchCamera() {
-            if (availableVideoDevices.length <= 1) return;
-
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
                 cameraStream = null;
             }
 
-            currentVideoDeviceIndex = (currentVideoDeviceIndex + 1) % availableVideoDevices.length;
+            // ENKELT OCH SÄKERT: Växla direkt mellan environment och user utan zoom-linser!
+            currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
 
-            const video = document.getElementById('camera-video');
-            try {
-                const activeDevice = availableVideoDevices[currentVideoDeviceIndex];
-                cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        deviceId: { exact: activeDevice.deviceId },
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 }
-                    },
-                    audio: false
-                });
-                video.srcObject = cameraStream;
-                showToast("Bytte kamera.", "info");
-            } catch (err) {
-                console.error("Misslyckades att byta kamera:", err);
-                showToast("Kunde inte växla till den valda kameran.", "error");
-                startCamera();
-            }
+            // Starta om kameran med den nya facingen (utan toast-meddelande!)
+            await startCamera();
         }
 
         function stopCamera() {
@@ -2585,14 +2573,11 @@ Rapporten ska innehålla:
             const diffX = swipeEndX - swipeStartX;
             const diffY = swipeEndY - swipeStartY;
 
-            // Kolla så det var ett horisontellt svep och inte vertikalt scroll/svep
             if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > 50) { // Sveptröskel på 50px
+                if (Math.abs(diffX) > 50) {
                     if (diffX > 0) {
-                        // Svep höger -> Föregående bild
                         navigateLightbox(-1);
                     } else {
-                        // Svep vänster -> Nästa bild
                         navigateLightbox(1);
                     }
                 }
