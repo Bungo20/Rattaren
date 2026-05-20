@@ -1581,6 +1581,12 @@ Rapporten ska innehålla:
         let currentTouchOverIndex = null;
         let touchOverSide = null;
 
+        // Felfria drag n drop-variabler för att sära på klick och drag
+        let dragOccurred = false;
+        let touchDragOccurred = false;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
         // Modaltillstånd för elevinmatning
         let studentModalMode = 'add'; // 'add' eller 'rename'
         let studentModalTargetId = null;
@@ -1590,10 +1596,10 @@ Rapporten ska innehålla:
         let currentVideoDeviceIndex = 0;
 
         // Touch-gest-variabler för swipe i lightbox
-        let touchStartX = 0;
-        let touchEndX = 0;
-        let touchStartY = 0;
-        let touchEndY = 0;
+        let swipeStartX = 0;
+        let swipeEndX = 0;
+        let swipeStartY = 0;
+        let swipeEndY = 0;
 
         // Konfigurera Marked.js så att vanliga radbrytningar bryts till <br> i Markdown
         marked.setOptions({
@@ -2071,11 +2077,20 @@ Rapporten ska innehålla:
                 card.setAttribute('draggable', true);
                 card.setAttribute('data-index', index);
 
-                card.onclick = () => openLightbox(index);
+                // Mouse click handler - blocks lightbox if a desktop drag occurred
+                card.onclick = (e) => {
+                    if (dragOccurred) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    }
+                    openLightbox(index);
+                };
 
                 /* MOUSE DRAG & DROP EVENTS (Skrivbordsdatorer) */
                 card.ondragstart = (e) => {
                     draggedIndex = index;
+                    dragOccurred = true;
                     card.classList.add('dragging');
                     e.dataTransfer.effectAllowed = 'move';
                 };
@@ -2085,6 +2100,9 @@ Rapporten ska innehålla:
                     document.querySelectorAll('.image-card').forEach(el => {
                         el.classList.remove('drop-indicator-left', 'drop-indicator-right');
                     });
+                    setTimeout(() => {
+                        dragOccurred = false;
+                    }, 50);
                 };
 
                 card.ondragover = (e) => {
@@ -2139,18 +2157,27 @@ Rapporten ska innehålla:
 
                 /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor) */
                 card.addEventListener('touchstart', (e) => {
-                    if (e.target.classList.contains('delete-btn')) return;
+                    if (e.target.closest('.delete-btn')) return;
                     activeTouchIndex = index;
+                    touchDragOccurred = false;
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
                     card.classList.add('dragging');
                 }, { passive: true });
 
                 card.addEventListener('touchmove', (e) => {
                     if (activeTouchIndex === null) return;
-                    e.preventDefault();
 
                     const touch = e.touches[0];
                     const x = touch.clientX;
                     const y = touch.clientY;
+
+                    // Only classify as a drag gesture if the finger moved more than 8 pixels
+                    const dx = x - touchStartX;
+                    const dy = y - touchStartY;
+                    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+                        touchDragOccurred = true;
+                    }
 
                     const elementUnderFinger = document.elementFromPoint(x, y);
                     if (!elementUnderFinger) return;
@@ -2191,6 +2218,11 @@ Rapporten ska innehålla:
                         currentTouchOverIndex = null;
                         touchOverSide = null;
                     }
+
+                    // Stop scrolling if we are dragging the image card around
+                    if (touchDragOccurred) {
+                        e.preventDefault();
+                    }
                 }, { passive: false });
 
                 card.addEventListener('touchend', (e) => {
@@ -2218,9 +2250,18 @@ Rapporten ska innehålla:
                         }
                     }
 
+                    // Prevent synthesized click events on mobile touch release
+                    e.preventDefault();
+
+                    // If it was a clean tap (no drag gesture), open the lightbox
+                    if (!touchDragOccurred) {
+                        openLightbox(activeTouchIndex);
+                    }
+
                     activeTouchIndex = null;
                     currentTouchOverIndex = null;
                     touchOverSide = null;
+                    touchDragOccurred = false;
                 });
 
                 card.innerHTML = `
@@ -2529,20 +2570,20 @@ Rapporten ska innehålla:
             if (!lightbox) return;
 
             lightbox.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-                touchStartY = e.changedTouches[0].screenY;
+                swipeStartX = e.changedTouches[0].screenX;
+                swipeStartY = e.changedTouches[0].screenY;
             }, { passive: true });
 
             lightbox.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                touchEndY = e.changedTouches[0].screenY;
+                swipeEndX = e.changedTouches[0].screenX;
+                swipeEndY = e.changedTouches[0].screenY;
                 handleSwipeGesture();
             }, { passive: true });
         }
 
         function handleSwipeGesture() {
-            const diffX = touchEndX - touchStartX;
-            const diffY = touchEndY - touchStartY;
+            const diffX = swipeEndX - swipeStartX;
+            const diffY = swipeEndY - swipeStartY;
 
             // Kolla så det var ett horisontellt svep och inte vertikalt scroll/svep
             if (Math.abs(diffX) > Math.abs(diffY)) {
