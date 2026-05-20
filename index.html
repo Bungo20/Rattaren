@@ -695,15 +695,34 @@
             border-radius: 50%;
             background: #fff;
         }
+        /* Förbättrad & ergonomiskt flyttad Klar-knapp */
         .camera-close-btn {
-            background: rgba(239, 68, 68, 0.85) !important;
-            backdrop-filter: blur(4px);
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(22, 163, 74, 0.9) !important;
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 14px 28px !important;
-            font-size: 1rem !important;
+            padding: 10px 20px !important;
+            font-size: 0.95rem !important;
             border-radius: 30px !important;
             width: auto !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            z-index: 10003;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            font-weight: 600;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .camera-close-btn:hover {
+            background: #15803d !important;
+            transform: scale(1.05);
+        }
+        .camera-close-btn:active {
+            transform: scale(0.95);
         }
         .camera-counter {
             background: rgba(15, 23, 42, 0.85);
@@ -1026,13 +1045,14 @@
         <div class="camera-container">
             <video id="camera-video" autoplay playsinline></video>
             <div class="camera-flash" id="camera-flash"></div>
+            <!-- Klar-knappen nu placerad i övre högra hörnet -->
+            <button class="camera-close-btn" onclick="stopCamera()">
+                <i class="fa-solid fa-circle-check"></i> Klar
+            </button>
             <div class="camera-ui">
                 <div class="camera-counter" id="camera-counter">Tagna bilder: 0</div>
                 <button class="camera-shutter" onclick="captureSnapshot()">
                     <div class="shutter-inner"></div>
-                </button>
-                <button class="btn btn-danger camera-close-btn" onclick="stopCamera()">
-                    <i class="fa-solid fa-xmark"></i> Klar
                 </button>
             </div>
         </div>
@@ -1062,6 +1082,11 @@
         let isProcessing = false; // Flagga för att spåra batch-körningens status
         let cameraStream = null; // Förvarar videoströmmen för snabbkameran
         let confirmResolve = null; // Löser bekräftelsemodalen asynkront
+
+        // Variabler för touch-drag-and-drop på mobiler
+        let activeTouchIndex = null;
+        let currentTouchOverIndex = null;
+        let touchOverSide = null;
 
         // Konfigurera Marked.js så att vanliga radbrytningar bryts till <br> i Markdown
         marked.setOptions({
@@ -1424,6 +1449,7 @@
                 
                 card.onclick = () => openLightbox(index);
 
+                /* MOUSE DRAG & DROP EVENTS (Skrivbordsdatorer) */
                 card.ondragstart = (e) => {
                     draggedIndex = index;
                     card.classList.add('dragging');
@@ -1486,6 +1512,96 @@
                     }
                     draggedIndex = null;
                 };
+
+                /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor) */
+                card.addEventListener('touchstart', (e) => {
+                    // Starta inte sortering om läraren tryckte på ta bort-knappen
+                    if (e.target.classList.contains('delete-btn')) return;
+                    activeTouchIndex = index;
+                    card.classList.add('dragging');
+                }, { passive: true });
+
+                card.addEventListener('touchmove', (e) => {
+                    if (activeTouchIndex === null) return;
+                    
+                    // Lås scrollning på mobilen medan man drar bilden
+                    e.preventDefault();
+
+                    const touch = e.touches[0];
+                    const x = touch.clientX;
+                    const y = touch.clientY;
+
+                    // Identifiera vilket element fingret svävar över
+                    const elementUnderFinger = document.elementFromPoint(x, y);
+                    if (!elementUnderFinger) return;
+
+                    const targetCard = elementUnderFinger.closest('.image-card');
+                    if (targetCard && targetCard !== card) {
+                        const targetIdx = parseInt(targetCard.getAttribute('data-index'));
+                        currentTouchOverIndex = targetIdx;
+
+                        const rect = targetCard.getBoundingClientRect();
+                        const next = (x - rect.left) > (rect.width / 2);
+
+                        document.querySelectorAll('.image-card').forEach(el => {
+                            el.classList.remove('drop-indicator-left', 'drop-indicator-right');
+                        });
+
+                        if (next) {
+                            if (targetIdx + 1 !== activeTouchIndex) {
+                                targetCard.classList.add('drop-indicator-right');
+                                touchOverSide = 'right';
+                            } else {
+                                touchOverSide = null;
+                            }
+                        } else {
+                            if (targetIdx - 1 !== activeTouchIndex) {
+                                targetCard.classList.add('drop-indicator-left');
+                                touchOverSide = 'left';
+                            } else {
+                                touchOverSide = null;
+                            }
+                        }
+                    } else {
+                        document.querySelectorAll('.image-card').forEach(el => {
+                            if (el !== card) {
+                                el.classList.remove('drop-indicator-left', 'drop-indicator-right');
+                            }
+                        });
+                        currentTouchOverIndex = null;
+                        touchOverSide = null;
+                    }
+                }, { passive: false });
+
+                card.addEventListener('touchend', (e) => {
+                    if (activeTouchIndex === null) return;
+                    
+                    card.classList.remove('dragging');
+                    document.querySelectorAll('.image-card').forEach(el => {
+                        el.classList.remove('drop-indicator-left', 'drop-indicator-right');
+                    });
+
+                    if (currentTouchOverIndex !== null && touchOverSide !== null) {
+                        let targetIndex = currentTouchOverIndex;
+                        if (touchOverSide === 'right') {
+                            targetIndex++;
+                        }
+
+                        if (targetIndex !== activeTouchIndex) {
+                            const movedImage = student.images.splice(activeTouchIndex, 1)[0];
+                            let insertIndex = targetIndex;
+                            if (activeTouchIndex < targetIndex) {
+                                insertIndex--;
+                            }
+                            student.images.splice(insertIndex, 0, movedImage);
+                            renderFilmstrip(student);
+                        }
+                    }
+
+                    activeTouchIndex = null;
+                    currentTouchOverIndex = null;
+                    touchOverSide = null;
+                });
 
                 card.innerHTML = `
                     <button class="delete-btn" onclick="deleteImage(${index}, event)" title="Ta bort bild">✕</button>
