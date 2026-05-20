@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="sv">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Lägg till Marked.js för att rendera strömmande Markdown till HTML -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
+
     <style>
         :root {
             --primary: #2563eb;
@@ -29,36 +30,36 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: system-ui, -apple-system, sans-serif; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
         }
 
-        body { 
-            background-color: var(--bg); 
-            color: var(--text); 
-            padding: 24px; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh; 
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding-bottom: 20px; 
-            border-bottom: 1px solid var(--border); 
-            margin-bottom: 24px; 
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
             flex-wrap: wrap;
             gap: 16px;
         }
 
-        h1 { 
-            font-size: 1.6rem; 
-            color: var(--text); 
+        h1 {
+            font-size: 1.6rem;
+            color: var(--text);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -67,25 +68,25 @@
         h1 i {
             color: var(--primary);
         }
-        
-        .api-config { 
-            display: flex; 
-            gap: 10px; 
-            align-items: center; 
-            background: var(--card-bg); 
-            padding: 10px 16px; 
-            border-radius: var(--radius-md); 
-            border: 1px solid var(--border); 
+
+        .api-config {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
             flex-wrap: wrap;
             width: auto;
         }
 
-        .api-config input { 
-            padding: 8px 12px; 
-            border: 1px solid var(--border); 
-            border-radius: 6px; 
-            font-size: 0.9rem; 
+        .api-config input {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
             outline: none;
             transition: border-color 0.2s;
         }
@@ -94,11 +95,11 @@
             border-color: var(--primary);
         }
 
-        .api-config select { 
-            padding: 8px 12px; 
-            border: 1px solid var(--border); 
-            border-radius: 6px; 
-            font-size: 0.9rem; 
+        .api-config select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
             outline: none;
             background-color: var(--card-bg);
             color: var(--text);
@@ -117,78 +118,78 @@
             cursor: not-allowed;
         }
 
-        .main-layout { 
-            display: grid; 
-            grid-template-columns: 360px 1fr; 
-            gap: 24px; 
-            flex: 1; 
+        .main-layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            flex: 1;
         }
-        
-        .sidebar { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            border-radius: var(--radius-lg); 
-            padding: 24px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 24px; 
+
+        .sidebar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
             box-shadow: var(--shadow-sm);
             max-height: calc(100vh - 120px);
             position: sticky;
             top: 24px;
         }
 
-        .section-title { 
-            font-size: 1.05rem; 
-            font-weight: 600; 
-            margin-bottom: 12px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-        
-        .nav-item { 
-            padding: 14px 16px; 
-            border-radius: var(--radius-md); 
-            border: 1px solid var(--border); 
-            cursor: pointer; 
-            background: var(--bg); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            transition: all 0.2s ease; 
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .nav-item:hover { 
-            border-color: var(--border-hover); 
+        .nav-item {
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            background: var(--bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            border-color: var(--border-hover);
             transform: translateY(-1px);
         }
 
-        .nav-item.active { 
-            background: var(--primary-light); 
-            border-color: var(--primary); 
-            color: var(--primary); 
-            font-weight: 600; 
+        .nav-item.active {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
             box-shadow: var(--shadow-sm);
         }
 
-        .nav-item .badge { 
-            background: var(--text-muted); 
-            color: white; 
-            padding: 2px 10px; 
-            border-radius: 12px; 
-            font-size: 0.8rem; 
+        .nav-item .badge {
+            background: var(--text-muted);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
         }
 
-        .nav-item.active .badge { 
-            background: var(--primary); 
+        .nav-item.active .badge {
+            background: var(--primary);
         }
 
-        .student-list { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            overflow-y: auto; 
+        .student-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
             flex: 1;
             padding-right: 4px;
         }
@@ -196,19 +197,20 @@
         .student-list::-webkit-scrollbar {
             width: 6px;
         }
+
         .student-list::-webkit-scrollbar-thumb {
             background: var(--border);
             border-radius: 3px;
         }
 
-        .btn { 
-            padding: 10px 16px; 
-            border: none; 
-            border-radius: 6px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: all 0.2s ease; 
-            font-size: 0.9rem; 
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -216,24 +218,24 @@
             user-select: none;
         }
 
-        .btn-primary { 
-            background: var(--primary); 
-            color: white; 
+        .btn-primary {
+            background: var(--primary);
+            color: white;
         }
 
-        .btn-primary:hover { 
-            background: var(--primary-hover); 
+        .btn-primary:hover {
+            background: var(--primary-hover);
             transform: translateY(-1px);
         }
 
-        .btn-secondary { 
-            background: #f1f5f9; 
-            color: var(--text); 
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--text);
             border: 1px solid var(--border);
         }
 
-        .btn-secondary:hover { 
-            background: #e2e8f0; 
+        .btn-secondary:hover {
+            background: #e2e8f0;
         }
 
         .btn-danger-outline {
@@ -268,16 +270,16 @@
             border-color: #bfdbfe;
         }
 
-        .btn-success { 
-            background: var(--success); 
-            color: white; 
+        .btn-success {
+            background: var(--success);
+            color: white;
             width: 100%;
             padding: 14px;
             font-size: 1rem;
         }
 
-        .btn-success:hover { 
-            background: #15803d; 
+        .btn-success:hover {
+            background: #15803d;
             box-shadow: var(--shadow-md);
         }
 
@@ -309,14 +311,14 @@
             width: 100%;
         }
 
-        .workspace { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            border-radius: var(--radius-lg); 
-            padding: 30px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 24px; 
+        .workspace {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
             box-shadow: var(--shadow-sm);
         }
 
@@ -367,15 +369,15 @@
         .btn-camera-rapid i {
             font-size: 2rem;
         }
-        
-        .upload-zone { 
-            border: 2px dashed var(--border); 
-            border-radius: var(--radius-md); 
-            padding: 24px; 
-            text-align: center; 
-            cursor: pointer; 
-            transition: all 0.2s ease; 
-            background: var(--bg); 
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--bg);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -384,8 +386,8 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .upload-zone:hover { 
-            border-color: var(--primary); 
+        .upload-zone:hover {
+            border-color: var(--primary);
             background: #f0f7ff;
         }
 
@@ -394,31 +396,31 @@
             color: var(--primary);
         }
 
-        .upload-zone input { 
-            display: none; 
+        .upload-zone input {
+            display: none;
         }
 
-        .filmstrip { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
-            gap: 20px; 
-            background: var(--bg); 
-            padding: 20px; 
-            border-radius: var(--radius-md); 
-            min-height: 180px; 
-            border: 1px solid var(--border); 
+        .filmstrip {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+            background: var(--bg);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            min-height: 180px;
+            border: 1px solid var(--border);
             position: relative;
         }
 
-        .image-card { 
-            position: relative; 
-            background: white; 
-            border: 1px solid var(--border); 
-            border-radius: var(--radius-md); 
-            padding: 6px; 
-            cursor: grab; 
-            user-select: none; 
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease; 
+        .image-card {
+            position: relative;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 6px;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
             box-shadow: var(--shadow-sm);
         }
 
@@ -428,8 +430,8 @@
             transform: translateY(-2px);
         }
 
-        .image-card.dragging { 
-            opacity: 0.4; 
+        .image-card.dragging {
+            opacity: 0.4;
             cursor: grabbing;
             border: 2px dashed var(--primary);
             box-shadow: none;
@@ -462,11 +464,11 @@
             z-index: 100;
         }
 
-        .image-card img { 
-            width: 100%; 
-            height: 140px; 
-            object-fit: cover; 
-            border-radius: 4px; 
+        .image-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 4px;
             display: block;
             transition: opacity 0.2s;
         }
@@ -475,34 +477,34 @@
             opacity: 0.95;
         }
 
-        .image-card .page-number { 
-            position: absolute; 
-            bottom: 12px; 
-            left: 12px; 
-            background: rgba(15, 23, 42, 0.75); 
+        .image-card .page-number {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(4px);
-            color: white; 
-            padding: 3px 8px; 
-            border-radius: 4px; 
-            font-size: 0.75rem; 
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
             font-weight: 500;
         }
 
-        .image-card .delete-btn { 
-            position: absolute; 
-            top: 10px; 
-            right: 10px; 
-            background: var(--danger); 
-            color: white; 
-            border: none; 
-            border-radius: 50%; 
-            width: 24px; 
-            height: 24px; 
-            font-size: 11px; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+        .image-card .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             box-shadow: var(--shadow-sm);
             opacity: 0;
             transition: opacity 0.2s, transform 0.2s;
@@ -518,10 +520,10 @@
             background: #b91c1c;
         }
 
-        .report-section { 
-            margin-top: 24px; 
-            padding-top: 24px; 
-            border-top: 1px solid var(--border); 
+        .report-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
         }
 
         .report-header {
@@ -531,16 +533,16 @@
             margin-bottom: 12px;
         }
 
-        .report-box { 
-            background: #f1f5f9; 
-            padding: 24px; 
-            border-radius: var(--radius-md); 
-            border: 1px solid var(--border); 
-            font-size: 1rem; 
+        .report-box {
+            background: #f1f5f9;
+            padding: 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            font-size: 1rem;
             line-height: 1.6;
-            margin-top: 12px; 
-            max-height: 480px; 
-            overflow-y: auto; 
+            margin-top: 12px;
+            max-height: 480px;
+            overflow-y: auto;
             scroll-behavior: smooth;
         }
 
@@ -550,21 +552,61 @@
             line-height: 1.7;
             color: var(--text);
         }
-        .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3,
+        .markdown-body h4 {
             color: var(--text);
             font-weight: 700;
             margin-top: 1.4rem;
             margin-bottom: 0.75rem;
         }
-        .markdown-body h1 { font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-        .markdown-body h2 { font-size: 1.3rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-top: 1.6rem;}
-        .markdown-body h3 { font-size: 1.15rem; }
-        .markdown-body p { margin-bottom: 1.1rem; }
-        .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 1.1rem; }
-        .markdown-body ul { list-style-type: disc; }
-        .markdown-body ol { list-style-type: decimal; }
-        .markdown-body li { margin-bottom: 0.4rem; }
-        .markdown-body strong { font-weight: 700; color: #000; }
+
+        .markdown-body h1 {
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+        }
+
+        .markdown-body h2 {
+            font-size: 1.3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
+            margin-top: 1.6rem;
+        }
+
+        .markdown-body h3 {
+            font-size: 1.15rem;
+        }
+
+        .markdown-body p {
+            margin-bottom: 1.1rem;
+        }
+
+        .markdown-body ul,
+        .markdown-body ol {
+            margin-left: 20px;
+            margin-bottom: 1.1rem;
+        }
+
+        .markdown-body ul {
+            list-style-type: disc;
+        }
+
+        .markdown-body ol {
+            list-style-type: decimal;
+        }
+
+        .markdown-body li {
+            margin-bottom: 0.4rem;
+        }
+
+        .markdown-body strong {
+            font-weight: 700;
+            color: #000;
+        }
+
         .markdown-body blockquote {
             border-left: 4px solid var(--primary);
             padding-left: 12px;
@@ -572,6 +614,7 @@
             font-style: italic;
             margin: 1rem 0;
         }
+
         .markdown-body code {
             background-color: #e2e8f0;
             padding: 2px 6px;
@@ -579,6 +622,7 @@
             font-family: monospace;
             font-size: 0.9rem;
         }
+
         .markdown-body pre {
             background-color: #e2e8f0;
             padding: 12px;
@@ -586,50 +630,79 @@
             overflow-x: auto;
             margin-bottom: 1.1rem;
         }
+
         .markdown-body pre code {
             background-color: transparent;
             padding: 0;
             font-size: 0.85rem;
         }
+
         .markdown-body table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 1.1rem;
         }
-        .markdown-body th, .markdown-body td {
+
+        .markdown-body th,
+        .markdown-body td {
             border: 1px solid var(--border);
             padding: 8px 12px;
             text-align: left;
         }
+
         .markdown-body th {
             background-color: #f1f5f9;
             font-weight: 600;
         }
 
-        .export-group { 
-            display: flex; 
-            gap: 12px; 
-            margin-top: 16px; 
+        .export-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
         }
-        
-        .status-badge { 
-            font-size: 0.75rem; 
-            padding: 4px 10px; 
-            border-radius: 20px; 
-            font-weight: 600; 
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .status-pending { background: #e2e8f0; color: #475569; }
-        .status-processing { background: #fef3c7; color: #d97706; animation: pulse 1.5s infinite; }
-        .status-done { background: #dcfce7; color: #16a34a; }
-        .status-error { background: #fee2e2; color: #dc2626; }
+        .status-pending {
+            background: #e2e8f0;
+            color: #475569;
+        }
 
-        @keyframes pulse { 
-            0% { opacity: 0.6; } 
-            50% { opacity: 1; } 
-            100% { opacity: 0.6; } 
+        .status-processing {
+            background: #fef3c7;
+            color: #d97706;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-done {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
         }
 
         /* NYTT: Snabbkamera Overlay */
@@ -645,9 +718,11 @@
             justify-content: center;
             align-items: center;
         }
+
         .camera-modal.active {
             display: flex;
         }
+
         .camera-container {
             position: relative;
             width: 100%;
@@ -658,11 +733,13 @@
             align-items: center;
             overflow: hidden;
         }
+
         #camera-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
         .camera-ui {
             position: absolute;
             bottom: 40px;
@@ -674,6 +751,7 @@
             gap: 20px;
             z-index: 10002;
         }
+
         .camera-shutter {
             width: 84px;
             height: 84px;
@@ -686,15 +764,18 @@
             justify-content: center;
             transition: transform 0.1s;
         }
+
         .camera-shutter:active {
             transform: scale(0.9);
         }
+
         .shutter-inner {
             width: 64px;
             height: 64px;
             border-radius: 50%;
             background: #fff;
         }
+
         /* Förbättrad & ergonomiskt flyttad Klar-knapp */
         .camera-close-btn {
             position: absolute;
@@ -717,13 +798,16 @@
             font-weight: 600;
             transition: transform 0.2s, background-color 0.2s;
         }
+
         .camera-close-btn:hover {
             background: #15803d !important;
             transform: scale(1.05);
         }
+
         .camera-close-btn:active {
             transform: scale(0.95);
         }
+
         .camera-counter {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(4px);
@@ -734,6 +818,7 @@
             font-weight: 600;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .camera-flash {
             position: absolute;
             top: 0;
@@ -745,21 +830,28 @@
             pointer-events: none;
             z-index: 10001;
         }
+
         .camera-flash.flash-active {
             animation: flashAnimation 0.15s ease-out;
         }
+
         @keyframes flashAnimation {
-            0% { opacity: 0.85; }
-            100% { opacity: 0; }
+            0% {
+                opacity: 0.85;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
 
         /* Lightbox för förstorade bilder */
         .lightbox {
             display: none;
             position: fixed;
-            top: 0; 
+            top: 0;
             left: 0;
-            width: 100vw; 
+            width: 100vw;
             height: 100vh;
             background-color: rgba(15, 23, 42, 0.96);
             backdrop-filter: blur(8px);
@@ -778,7 +870,7 @@
 
         .lightbox-close {
             position: absolute;
-            top: 24px; 
+            top: 24px;
             right: 32px;
             color: white;
             font-size: 36px;
@@ -790,7 +882,7 @@
             outline: none;
         }
 
-        .lightbox-close:hover { 
+        .lightbox-close:hover {
             color: var(--danger);
             transform: scale(1.1);
         }
@@ -830,13 +922,18 @@
             justify-content: center;
         }
 
-        .lightbox-btn:hover { 
-            background: rgba(255, 255, 255, 0.25); 
+        .lightbox-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
             transform: translateY(-50%) scale(1.05);
         }
 
-        .lightbox-prev { left: 40px; }
-        .lightbox-next { right: 40px; }
+        .lightbox-prev {
+            left: 40px;
+        }
+
+        .lightbox-next {
+            right: 40px;
+        }
 
         .lightbox-caption {
             position: absolute;
@@ -870,21 +967,31 @@
             z-index: 10000;
             font-weight: 500;
         }
+
         .toast.active {
             transform: translateY(0);
             opacity: 1;
         }
-        .toast-success { border-left: 4px solid var(--success); }
-        .toast-error { border-left: 4px solid var(--danger); }
-        .toast-info { border-left: 4px solid var(--primary); }
+
+        .toast-success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--primary);
+        }
 
         /* Anpassad confirm-modal (Helt utan inbyggda browser dialogs) */
         .confirm-modal {
             display: none;
             position: fixed;
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
+            top: 0;
+            left: 0;
+            width: 100vw;
             height: 100vh;
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
@@ -892,9 +999,11 @@
             justify-content: center;
             align-items: center;
         }
+
         .confirm-modal.active {
             display: flex;
         }
+
         .confirm-content {
             background: var(--card-bg);
             padding: 24px;
@@ -908,6 +1017,7 @@
             flex-direction: column;
             gap: 16px;
         }
+
         .confirm-actions {
             display: flex;
             gap: 12px;
@@ -957,10 +1067,12 @@
             opacity: 0;
             transition: opacity 0.25s ease;
         }
+
         .settings-modal.active {
             display: flex;
             opacity: 1;
         }
+
         .settings-content {
             background: var(--card-bg);
             padding: 28px;
@@ -975,9 +1087,11 @@
             transform: scale(0.95);
             transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .settings-modal.active .settings-content {
             transform: scale(1);
         }
+
         .settings-header {
             display: flex;
             justify-content: space-between;
@@ -985,6 +1099,7 @@
             border-bottom: 1px solid var(--border);
             padding-bottom: 12px;
         }
+
         .settings-header h3 {
             font-size: 1.25rem;
             font-weight: 700;
@@ -993,9 +1108,11 @@
             align-items: center;
             gap: 8px;
         }
+
         .settings-header h3 i {
             color: var(--primary);
         }
+
         .settings-close {
             background: none;
             border: none;
@@ -1004,25 +1121,31 @@
             cursor: pointer;
             transition: color 0.2s;
         }
+
         .settings-close:hover {
             color: var(--danger);
         }
+
         .settings-body {
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
+
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
+
         .form-group label {
             font-size: 0.85rem;
             font-weight: 600;
             color: var(--text);
         }
-        .form-group input, .form-group select {
+
+        .form-group input,
+        .form-group select {
             padding: 10px 12px;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
@@ -1032,10 +1155,13 @@
             background-color: var(--card-bg);
             color: var(--text);
         }
-        .form-group input:focus, .form-group select:focus {
+
+        .form-group input:focus,
+        .form-group select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
+
         .form-group select:disabled {
             background-color: var(--bg);
             color: var(--text-muted);
@@ -1048,11 +1174,13 @@
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
+
             .sidebar {
                 max-height: none;
                 position: static;
                 padding: 16px;
             }
+
             .workspace {
                 padding: 20px;
             }
@@ -1062,6 +1190,7 @@
             body {
                 padding: 12px;
             }
+
             header {
                 flex-direction: column;
                 align-items: stretch;
@@ -1069,16 +1198,19 @@
                 padding-bottom: 12px;
                 margin-bottom: 16px;
             }
+
             .header-actions {
                 width: 100%;
                 justify-content: space-between;
                 gap: 10px;
             }
+
             .model-display-badge {
                 flex: 1;
                 justify-content: center;
                 max-width: none;
             }
+
             /* Horisontell scroll för elevlistan på mobila enheter */
             .student-list {
                 flex-direction: row !important;
@@ -1088,6 +1220,7 @@
                 max-height: none !important;
                 padding-bottom: 8px;
             }
+
             .nav-item {
                 display: inline-flex !important;
                 flex-shrink: 0;
@@ -1095,23 +1228,33 @@
                 margin: 0;
                 min-width: 150px;
             }
+
             .sidebar {
                 gap: 16px;
                 padding: 16px;
             }
+
             .sidebar-actions {
                 flex-direction: column;
             }
+
             .lightbox-btn {
                 width: 48px;
                 height: 48px;
                 font-size: 16px;
             }
-            .lightbox-prev { left: 10px; }
-            .lightbox-next { right: 10px; }
+
+            .lightbox-prev {
+                left: 10px;
+            }
+
+            .lightbox-next {
+                right: 10px;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <header>
@@ -1150,7 +1293,8 @@
                     <i class="fa-solid fa-circle-stop"></i> Avbryt
                 </button>
                 <!-- Samlingsknapp för alla klara rapporter -->
-                <button class="btn btn-secondary" id="export-all-btn" style="display: none; width: 100%;" onclick="exportAllReportsToWord()">
+                <button class="btn btn-secondary" id="export-all-btn" style="display: none; width: 100%;"
+                    onclick="exportAllReportsToWord()">
                     <i class="fa-regular fa-copy" style="color: #1e3a8a;"></i> Ladda ner alla rapporter (.doc)
                 </button>
             </div>
@@ -1165,9 +1309,11 @@
     <!-- HELSKÄRMS-LIGHTBOX -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
         <button class="lightbox-close" onclick="closeLightbox(event)"><i class="fa-solid fa-xmark"></i></button>
-        <button class="lightbox-btn lightbox-prev" onclick="navigateLightbox(-1, event)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="lightbox-btn lightbox-prev" onclick="navigateLightbox(-1, event)"><i
+                class="fa-solid fa-chevron-left"></i></button>
         <img id="lightbox-img" src="" alt="Helskärmsvisning" onclick="event.stopPropagation()">
-        <button class="lightbox-btn lightbox-next" onclick="navigateLightbox(1, event)"><i class="fa-solid fa-chevron-right"></i></button>
+        <button class="lightbox-btn lightbox-next" onclick="navigateLightbox(1, event)"><i
+                class="fa-solid fa-chevron-right"></i></button>
         <div id="lightbox-caption" class="lightbox-caption">Sida X av Y</div>
     </div>
 
@@ -1217,7 +1363,8 @@
                 </div>
                 <div class="form-group">
                     <label for="apiUrl">Berget API URL</label>
-                    <input type="text" id="apiUrl" placeholder="Berget API URL" value="https://api.berget.ai/v1/chat/completions">
+                    <input type="text" id="apiUrl" placeholder="Berget API URL"
+                        value="https://api.berget.ai/v1/chat/completions">
                 </div>
                 <div class="form-group">
                     <label for="modelSelect">Vision-modell</label>
@@ -1238,10 +1385,10 @@
         let session = {
             students: []
         };
-        
-        let currentView = null; 
-        let draggedIndex = null; 
-        let lightboxIndex = 0; 
+
+        let currentView = null;
+        let draggedIndex = null;
+        let lightboxIndex = 0;
         let currentAbortController = null; // Styr avbrytande av API-anrop
         let isProcessing = false; // Flagga för att spåra batch-körningens status
         let cameraStream = null; // Förvarar videoströmmen för snabbkameran
@@ -1261,7 +1408,7 @@
         // Läs sparad API-nyckel och URL från localStorage
         document.getElementById('apiKey').value = localStorage.getItem('berget_api_key') || '';
         document.getElementById('apiUrl').value = localStorage.getItem('berget_api_url') || 'https://api.berget.ai/v1/chat/completions';
-        
+
         let debounceTimer;
         document.getElementById('apiKey').addEventListener('input', (e) => {
             localStorage.setItem('berget_api_key', e.target.value);
@@ -1355,7 +1502,7 @@
                 const savedModel = localStorage.getItem('berget_selected_model');
                 const defaultPreferredModel = "moonshotai/Kimi-K2.6";
                 const optionsArray = Array.from(modelSelect.options);
-                
+
                 let modelToSelect = null;
                 if (savedModel && optionsArray.some(opt => opt.value === savedModel)) {
                     modelToSelect = savedModel;
@@ -1384,7 +1531,7 @@
 
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
-            
+
             let icon = '<i class="fa-solid fa-circle-info" style="color: var(--primary)"></i>';
             if (type === 'success') icon = '<i class="fa-solid fa-circle-check" style="color: var(--success)"></i>';
             if (type === 'error') icon = '<i class="fa-solid fa-circle-exclamation" style="color: var(--danger)"></i>';
@@ -1427,11 +1574,11 @@
                 name: name,
                 images: [],
                 report: '',
-                status: 'pending' 
+                status: 'pending'
             };
             session.students.push(newStudent);
             currentView = newStudent.id;
-            
+
             updateBatchButtonState();
             renderStudentList();
             renderWorkspace();
@@ -1453,13 +1600,13 @@
             event.stopPropagation();
             const ok = await customConfirm("Ta bort elev?", "Är du säker på att du vill ta bort denna elev och alla tillhörande bilder?");
             if (!ok) return;
-            
+
             session.students = session.students.filter(s => s.id !== studentId);
-            
+
             if (currentView === studentId) {
                 currentView = session.students.length > 0 ? session.students[0].id : null;
             }
-            
+
             updateBatchButtonState();
             renderStudentList();
             renderWorkspace();
@@ -1495,7 +1642,7 @@
         function renderStudentList() {
             const container = document.getElementById('student-list-container');
             container.innerHTML = '';
-            
+
             if (session.students.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 0.9rem;">
@@ -1509,7 +1656,7 @@
                 div.id = `nav-student-${student.id}`;
                 div.className = `nav-item ${currentView === student.id ? 'active' : ''}`;
                 div.onclick = () => switchView(student.id);
-                
+
                 let statusClass = `status-${student.status}`;
                 let statusText = 'Köad';
                 if (student.status === 'processing') statusText = 'Rättar...';
@@ -1562,7 +1709,7 @@
             container.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                     <h2 style="font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-                        Bearbetar: ${student.name}
+                        ${student.name}
                         <button class="btn-edit-outline" style="padding: 4px 8px; font-size: 0.85rem; border: 1px solid var(--border);" onclick="renameStudent(${student.id}, event)" title="Ändra namn">
                             <i class="fa-regular fa-pen-to-square"></i> Ändra namn
                         </button>
@@ -1623,12 +1770,12 @@
             const container = document.getElementById('filmstrip-container');
             if (!container) return;
             container.innerHTML = '';
-            
+
             if (student.images.length === 0) {
                 container.style.display = 'none';
                 return;
             }
-            
+
             container.style.display = 'grid';
 
             student.images.forEach((base64Data, index) => {
@@ -1636,7 +1783,7 @@
                 card.className = 'image-card';
                 card.setAttribute('draggable', true);
                 card.setAttribute('data-index', index);
-                
+
                 card.onclick = () => openLightbox(index);
 
                 /* MOUSE DRAG & DROP EVENTS (Skrivbordsdatorer) */
@@ -1655,20 +1802,20 @@
 
                 card.ondragover = (e) => {
                     e.preventDefault();
-                    if (draggedIndex === index) return; 
+                    if (draggedIndex === index) return;
 
                     const rect = card.getBoundingClientRect();
                     const next = (e.clientX - rect.left) > (rect.width / 2);
-                    
+
                     document.querySelectorAll('.image-card').forEach(el => {
                         el.classList.remove('drop-indicator-left', 'drop-indicator-right');
                     });
 
                     if (next) {
-                        if (index + 1 === draggedIndex) return; 
+                        if (index + 1 === draggedIndex) return;
                         card.classList.add('drop-indicator-right');
                     } else {
-                        if (index - 1 === draggedIndex) return; 
+                        if (index - 1 === draggedIndex) return;
                         card.classList.add('drop-indicator-left');
                     }
                 };
@@ -1682,15 +1829,15 @@
                     document.querySelectorAll('.image-card').forEach(el => {
                         el.classList.remove('drop-indicator-left', 'drop-indicator-right');
                     });
-                    
+
                     const rect = card.getBoundingClientRect();
                     const next = (e.clientX - rect.left) > (rect.width / 2);
                     let targetIndex = parseInt(card.getAttribute('data-index'));
-                    
+
                     if (next) {
                         targetIndex = targetIndex + 1;
                     }
-                    
+
                     if (draggedIndex !== null && targetIndex !== draggedIndex) {
                         const movedImage = student.images.splice(draggedIndex, 1)[0];
                         let insertIndex = targetIndex;
@@ -1713,7 +1860,7 @@
 
                 card.addEventListener('touchmove', (e) => {
                     if (activeTouchIndex === null) return;
-                    
+
                     // Lås scrollning på mobilen medan man drar bilden
                     e.preventDefault();
 
@@ -1765,7 +1912,7 @@
 
                 card.addEventListener('touchend', (e) => {
                     if (activeTouchIndex === null) return;
-                    
+
                     card.classList.remove('dragging');
                     document.querySelectorAll('.image-card').forEach(el => {
                         el.classList.remove('drop-indicator-left', 'drop-indicator-right');
@@ -1810,7 +1957,7 @@
             const modal = document.getElementById('camera-modal');
             const video = document.getElementById('camera-video');
             const counter = document.getElementById('camera-counter');
-            
+
             counter.innerText = `Tagna bilder: ${student.images.length}`;
             modal.classList.add('active');
 
@@ -1913,7 +2060,7 @@
                 const bufferSize = audioCtx.sampleRate * 0.1; // 100ms
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
-                
+
                 for (let i = 0; i < bufferSize; i++) {
                     data[i] = Math.random() * 2 - 1;
                 }
@@ -1950,15 +2097,15 @@
 
             for (let i = 0; i < files.length; i++) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     student.images.push(e.target.result);
                     loadedCount++;
-                    
+
                     if (loadedCount === files.length) {
                         updateBadges();
                         updateBatchButtonState();
                         renderFilmstrip(student);
-                        event.target.value = ''; 
+                        event.target.value = '';
                     }
                 };
                 reader.readAsDataURL(files[i]);
@@ -1966,7 +2113,7 @@
         }
 
         function deleteImage(index, event) {
-            event.stopPropagation(); 
+            event.stopPropagation();
             const student = session.students.find(s => s.id === currentView);
             if (!student) return;
 
@@ -1986,17 +2133,17 @@
         function openLightbox(index) {
             const student = session.students.find(s => s.id === currentView);
             if (!student || !student.images[index]) return;
-            
+
             lightboxIndex = index;
             const lightbox = document.getElementById('lightbox');
             const img = document.getElementById('lightbox-img');
             const caption = document.getElementById('lightbox-caption');
-            
+
             img.src = student.images[index];
             caption.innerText = `Sida ${index + 1} av ${student.images.length}`;
-            
+
             lightbox.classList.add('active');
-            
+
             document.addEventListener('keydown', handleLightboxKeyboard);
         }
 
@@ -2004,7 +2151,7 @@
             if (event) event.stopPropagation();
             const lightbox = document.getElementById('lightbox');
             lightbox.classList.remove('active');
-            
+
             document.removeEventListener('keydown', handleLightboxKeyboard);
         }
 
@@ -2019,7 +2166,7 @@
 
             const img = document.getElementById('lightbox-img');
             const caption = document.getElementById('lightbox-caption');
-            
+
             img.src = student.images[lightboxIndex];
             caption.innerText = `Sida ${lightboxIndex + 1} av ${student.images.length}`;
         }
@@ -2048,7 +2195,7 @@
             isProcessing = true;
             const startBtn = document.getElementById('start-btn');
             const stopBtn = document.getElementById('stop-btn');
-            
+
             startBtn.disabled = true;
             startBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Bearbetar kö...`;
             stopBtn.style.display = 'inline-flex';
@@ -2057,25 +2204,25 @@
             for (let student of session.students) {
                 if (!isProcessing) break;
                 if (student.images.length === 0) continue;
-                
+
                 student.status = 'processing';
-                student.report = ''; 
+                student.report = '';
                 renderStudentList();
                 if (currentView === student.id) renderWorkspace();
 
                 try {
                     // Skapa en ny AbortController för varje enskild elevs anrop
                     currentAbortController = new AbortController();
-                    
+
                     await callBergetAI(apiUrl, apiKey, student, currentAbortController.signal, (chunk) => {
                         student.report += chunk;
-                        
+
                         if (currentView === student.id) {
                             const reportSection = document.getElementById('report-section-container');
                             const reportTextBox = document.getElementById('report-text-box');
                             const workspaceInstructions = document.getElementById('workspace-instructions');
                             const uploadZoneWrapper = document.getElementById('upload-zone-wrapper');
-                            
+
                             if (workspaceInstructions) workspaceInstructions.style.display = 'none';
                             if (uploadZoneWrapper) uploadZoneWrapper.style.display = 'none';
 
@@ -2087,7 +2234,7 @@
                             }
                         }
                     });
-                    
+
                     if (isProcessing) {
                         student.status = 'done';
                     }
@@ -2112,13 +2259,13 @@
         function cancelBatch() {
             if (!isProcessing) return;
             isProcessing = false;
-            
+
             if (currentAbortController) {
                 currentAbortController.abort();
             }
-            
+
             showToast("Körningen avbröts av användaren.", "error");
-            
+
             // Markera ofullständiga elever som avbrutna
             session.students.forEach(s => {
                 if (s.status === 'processing') {
@@ -2126,7 +2273,7 @@
                     s.report += "\n\n[Rättningen avbröts av användaren]";
                 }
             });
-            
+
             resetBatchState();
             renderStudentList();
             renderWorkspace();
@@ -2135,10 +2282,10 @@
         function resetBatchState() {
             isProcessing = false;
             currentAbortController = null;
-            
+
             const startBtn = document.getElementById('start-btn');
             const stopBtn = document.getElementById('stop-btn');
-            
+
             if (startBtn) {
                 startBtn.disabled = false;
                 startBtn.innerHTML = `<i class="fa-solid fa-play"></i> Starta rättning`;
@@ -2186,7 +2333,7 @@
                     }
                 ],
                 temperature: 0.3,
-                stream: true 
+                stream: true
             };
 
             const response = await fetch(url, {
@@ -2214,7 +2361,7 @@
 
                 buffer += decoder.decode(value, { stream: true });
                 const lines = buffer.split("\n");
-                
+
                 buffer = lines.pop();
 
                 for (const line of lines) {
@@ -2319,7 +2466,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Alla_Rattningsrapporter_${new Date().toISOString().slice(0,10)}.doc`;
+            a.download = `Alla_Rattningsrapporter_${new Date().toISOString().slice(0, 10)}.doc`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -2333,11 +2480,11 @@
 
             const subject = encodeURIComponent(`Rättningsrapport: ${student.name}`);
             const body = encodeURIComponent(student.report);
-            
+
             window.location.href = `mailto:?subject=${subject}&body=${body}`;
         }
 
-        window.onload = function() {
+        window.onload = function () {
             if (session.students.length === 0) {
                 const firstStudent = {
                     id: Date.now(),
@@ -2352,7 +2499,7 @@
             updateBatchButtonState();
             renderStudentList();
             renderWorkspace();
-            
+
             // Hämta tillgängliga modeller vid uppstart om nyckel finns sparad
             if (document.getElementById('apiKey').value) {
                 updateModelsDropdown();
@@ -2362,4 +2509,5 @@
         };
     </script>
 </body>
+
 </html>
