@@ -52,6 +52,8 @@
             padding-bottom: 20px; 
             border-bottom: 1px solid var(--border); 
             margin-bottom: 24px; 
+            flex-wrap: wrap;
+            gap: 16px;
         }
 
         h1 { 
@@ -75,6 +77,8 @@
             border-radius: var(--radius-md); 
             border: 1px solid var(--border); 
             box-shadow: var(--shadow-sm);
+            flex-wrap: wrap;
+            width: auto;
         }
 
         .api-config input { 
@@ -209,6 +213,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            user-select: none;
         }
 
         .btn-primary { 
@@ -341,11 +346,32 @@
             line-height: 1.6;
             margin-bottom: 10px;
         }
+
+        /* Nytt: Rutmönster för kamera- och uppladdningsknappar */
+        .upload-grid-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .btn-camera-rapid {
+            padding: 24px !important;
+            font-size: 1.05rem !important;
+            flex-direction: column;
+            gap: 12px !important;
+            border-radius: var(--radius-md) !important;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-camera-rapid i {
+            font-size: 2rem;
+        }
         
         .upload-zone { 
             border: 2px dashed var(--border); 
             border-radius: var(--radius-md); 
-            padding: 40px; 
+            padding: 24px; 
             text-align: center; 
             cursor: pointer; 
             transition: all 0.2s ease; 
@@ -353,7 +379,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 12px;
+            box-shadow: var(--shadow-sm);
         }
 
         .upload-zone:hover { 
@@ -362,7 +390,7 @@
         }
 
         .upload-zone i {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--primary);
         }
 
@@ -604,6 +632,109 @@
             100% { opacity: 0.6; } 
         }
 
+        /* NYTT: Snabbkamera Overlay */
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        .camera-modal.active {
+            display: flex;
+        }
+        .camera-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        #camera-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .camera-ui {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            z-index: 10002;
+        }
+        .camera-shutter {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 4px solid #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+        .camera-shutter:active {
+            transform: scale(0.9);
+        }
+        .shutter-inner {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #fff;
+        }
+        .camera-close-btn {
+            background: rgba(239, 68, 68, 0.85) !important;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 14px 28px !important;
+            font-size: 1rem !important;
+            border-radius: 30px !important;
+            width: auto !important;
+        }
+        .camera-counter {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .camera-flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 10001;
+        }
+        .camera-flash.flash-active {
+            animation: flashAnimation 0.15s ease-out;
+        }
+        @keyframes flashAnimation {
+            0% { opacity: 0.85; }
+            100% { opacity: 0; }
+        }
+
+        /* Lightbox för förstorade bilder */
         .lightbox {
             display: none;
             position: fixed;
@@ -727,6 +858,110 @@
         .toast-success { border-left: 4px solid var(--success); }
         .toast-error { border-left: 4px solid var(--danger); }
         .toast-info { border-left: 4px solid var(--primary); }
+
+        /* Anpassad confirm-modal (Helt utan inbyggda browser dialogs) */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10100;
+            justify-content: center;
+            align-items: center;
+        }
+        .confirm-modal.active {
+            display: flex;
+        }
+        .confirm-content {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            max-width: 400px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .confirm-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        /* MEDIA QUERIES FOR ADAPTIVE LAYOUTS */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .sidebar {
+                max-height: none;
+                position: static;
+                padding: 16px;
+            }
+            .workspace {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding-bottom: 12px;
+                margin-bottom: 16px;
+            }
+            .api-config {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .api-config input, .api-config select {
+                width: 100% !important;
+                max-width: none !important;
+            }
+            /* Horisontell scroll för elevlistan på mobila enheter */
+            .student-list {
+                flex-direction: row !important;
+                overflow-x: auto !important;
+                white-space: nowrap;
+                gap: 8px !important;
+                max-height: none !important;
+                padding-bottom: 8px;
+            }
+            .nav-item {
+                display: inline-flex !important;
+                flex-shrink: 0;
+                padding: 10px 14px !important;
+                margin: 0;
+                min-width: 150px;
+            }
+            .sidebar {
+                gap: 16px;
+                padding: 16px;
+            }
+            .sidebar-actions {
+                flex-direction: column;
+            }
+            .lightbox-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 16px;
+            }
+            .lightbox-prev { left: 10px; }
+            .lightbox-next { right: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -786,6 +1021,35 @@
         <div id="lightbox-caption" class="lightbox-caption">Sida X av Y</div>
     </div>
 
+    <!-- SNABBKAMERA MODAL -->
+    <div id="camera-modal" class="camera-modal">
+        <div class="camera-container">
+            <video id="camera-video" autoplay playsinline></video>
+            <div class="camera-flash" id="camera-flash"></div>
+            <div class="camera-ui">
+                <div class="camera-counter" id="camera-counter">Tagna bilder: 0</div>
+                <button class="camera-shutter" onclick="captureSnapshot()">
+                    <div class="shutter-inner"></div>
+                </button>
+                <button class="btn btn-danger camera-close-btn" onclick="stopCamera()">
+                    <i class="fa-solid fa-xmark"></i> Klar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BEKRÄFTELSE MODAL (Helt utan browser alerts) -->
+    <div id="confirm-modal" class="confirm-modal">
+        <div class="confirm-content">
+            <h3 id="confirm-title">Är du säker?</h3>
+            <p id="confirm-message">Detta går inte att ångra.</p>
+            <div class="confirm-actions">
+                <button class="btn btn-secondary" onclick="handleConfirm(false)">Avbryt</button>
+                <button class="btn btn-danger" onclick="handleConfirm(true)">Ja, ta bort</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let session = {
             students: []
@@ -796,6 +1060,8 @@
         let lightboxIndex = 0; 
         let currentAbortController = null; // Styr avbrytande av API-anrop
         let isProcessing = false; // Flagga för att spåra batch-körningens status
+        let cameraStream = null; // Förvarar videoströmmen för snabbkameran
+        let confirmResolve = null; // Löser bekräftelsemodalen asynkront
 
         // Konfigurera Marked.js så att vanliga radbrytningar bryts till <br> i Markdown
         marked.setOptions({
@@ -855,7 +1121,6 @@
                 }
 
                 const data = await response.json();
-                // Svaret innehåller vanligtvis en lista under data-attributet (enligt OpenAI spec)
                 const models = Array.isArray(data) ? data : (data.data || []);
                 const visionModels = models.filter(m => m.capabilities && m.capabilities.vision === true);
 
@@ -920,6 +1185,26 @@
             }, 4000);
         }
 
+        // Anpassat bekräftelsesystem asynkront
+        function customConfirm(title, message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirm-modal');
+                document.getElementById('confirm-title').innerText = title;
+                document.getElementById('confirm-message').innerText = message;
+                modal.classList.add('active');
+                confirmResolve = resolve;
+            });
+        }
+
+        function handleConfirm(yes) {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('active');
+            if (confirmResolve) {
+                confirmResolve(yes);
+                confirmResolve = null;
+            }
+        }
+
         function addStudent() {
             const name = prompt("Ange elevens namn (eller lämna tomt för anonymisering):") || `Elev ${session.students.length + 1}`;
             const newStudent = {
@@ -949,9 +1234,10 @@
             }
         }
 
-        function deleteStudent(studentId, event) {
+        async function deleteStudent(studentId, event) {
             event.stopPropagation();
-            if (!confirm("Är du säker på att du vill ta bort denna elev och alla tillhörande bilder?")) return;
+            const ok = await customConfirm("Ta bort elev?", "Är du säker på att du vill ta bort denna elev och alla tillhörande bilder?");
+            if (!ok) return;
             
             session.students = session.students.filter(s => s.id !== studentId);
             
@@ -979,7 +1265,6 @@
             updateExportAllButtonState();
         }
 
-        // Kontrollera om export-all-knappen ska visas
         function updateExportAllButtonState() {
             const completedReports = session.students.filter(s => s.report && s.status === 'done');
             const exportAllBtn = document.getElementById('export-all-btn');
@@ -1062,7 +1347,7 @@
             container.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                     <h2 style="font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-                        ${student.name}
+                        Bearbetar: ${student.name}
                         <button class="btn-edit-outline" style="padding: 4px 8px; font-size: 0.85rem; border: 1px solid var(--border);" onclick="renameStudent(${student.id}, event)" title="Ändra namn">
                             <i class="fa-regular fa-pen-to-square"></i> Ändra namn
                         </button>
@@ -1077,14 +1362,21 @@
                     Klicka på en bild för att förstora den i <strong>helskärm</strong> eller <strong>dra och släpp</strong> bilderna för att sortera dem.
                 </p>
 
-                <!-- Bildinmatning -->
-                <div id="upload-zone-wrapper" class="upload-zone" style="display: ${hasReport ? 'none' : 'flex'};" onclick="document.getElementById('file-input').click()">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <div>
-                        <span style="font-weight: 600; display: block; margin-bottom: 4px;">Klicka för att ta bilder eller välj filer</span>
-                        <span style="color: var(--text-muted); font-size: 0.85rem;">Fungerar direkt med din mobil/iPad-kamera eller lokala bildfiler</span>
+                <!-- Bildinmatning (Anpassad för Snabbkamera + Fallback filväljare) -->
+                <div id="upload-zone-wrapper" style="display: ${hasReport ? 'none' : 'block'}; width: 100%;">
+                    <div class="upload-grid-buttons">
+                        <button class="btn btn-primary btn-camera-rapid" onclick="startCamera()">
+                            <i class="fa-solid fa-camera"></i> Starta Snabbkamera
+                        </button>
+                        <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <div>
+                                <span style="font-weight: 600; display: block; margin-bottom: 4px;">Välj filer / Kamerarulle</span>
+                                <span style="color: var(--text-muted); font-size: 0.85rem;">För att välja sparade bilder</span>
+                            </div>
+                            <input type="file" id="file-input" accept="image/*" multiple onchange="handleImageUpload(event)">
+                        </div>
                     </div>
-                    <input type="file" id="file-input" accept="image/*" multiple onchange="handleImageUpload(event)">
                 </div>
 
                 <!-- Filmremsa / Bildgalleri -->
@@ -1105,7 +1397,6 @@
                             <i class="fa-regular fa-envelope"></i> Skicka som e-post
                         </button>
                     </div>
-                    <!-- Markdown-renderad text visas i denna box -->
                     <div class="report-box markdown-body" id="report-text-box" style="margin-top: 0;">${parsedReport}</div>
                 </div>
             `;
@@ -1203,6 +1494,118 @@
                 `;
                 container.appendChild(card);
             });
+        }
+
+        // STARTA INBYGGD SNABBKAMERA
+        async function startCamera() {
+            const student = session.students.find(s => s.id === currentView);
+            if (!student) return;
+
+            const modal = document.getElementById('camera-modal');
+            const video = document.getElementById('camera-video');
+            const counter = document.getElementById('camera-counter');
+            
+            counter.innerText = `Tagna bilder: ${student.images.length}`;
+            modal.classList.add('active');
+
+            try {
+                // Begär baksideskamera (environment) och hög upplösning
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: { ideal: "environment" },
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    },
+                    audio: false
+                });
+                video.srcObject = cameraStream;
+            } catch (err) {
+                console.error("Kameramisslyckande:", err);
+                modal.classList.remove('active');
+                showToast("Kunde inte starta kameran. Se till att du tillåtit behörighet och kör via en säker anslutning (HTTPS/localhost). Använd standard filväljaren istället!", "error");
+            }
+        }
+
+        // STÄNG SNABBKAMERAN
+        function stopCamera() {
+            const modal = document.getElementById('camera-modal');
+            modal.classList.remove('active');
+
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+
+            const student = session.students.find(s => s.id === currentView);
+            if (student) {
+                updateBadges();
+                updateBatchButtonState();
+                renderFilmstrip(student);
+            }
+        }
+
+        // FÅNGA EN BILD (SNAPSHOT)
+        function captureSnapshot() {
+            const video = document.getElementById('camera-video');
+            const flash = document.getElementById('camera-flash');
+            const counter = document.getElementById('camera-counter');
+            const student = session.students.find(s => s.id === currentView);
+
+            if (!video || !student) return;
+
+            // Trigger visuell flash-effekt
+            flash.classList.remove('flash-active');
+            void flash.offsetWidth; // Trigger reflow för CSS-animering
+            flash.classList.add('flash-active');
+
+            // Spela upp syntetiserat slutarljud i realtid (Helt lokalt via Web Audio API)
+            playShutterSound();
+
+            // Rita av bildrutan på en osynlig canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 1280;
+            canvas.height = video.videoHeight || 720;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Spara som Base64 i elevens bildpaket
+            const base64Data = canvas.toDataURL('image/jpeg', 0.85);
+            student.images.push(base64Data);
+
+            counter.innerText = `Tagna bilder: ${student.images.length}`;
+        }
+
+        // Syntetiserar ett "kamera klick-ljud" utan externa ljudresurser
+        function playShutterSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const bufferSize = audioCtx.sampleRate * 0.1; // 100ms
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 1200;
+
+                const gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                noise.start();
+            } catch (e) {
+                console.warn("Kunde inte spela klick-ljud:", e);
+            }
         }
 
         function handleImageUpload(event) {
@@ -1508,7 +1911,6 @@
             const student = session.students.find(s => s.id === currentView);
             if (!student || !student.report) return;
 
-            // HTML som Microsoft Word automatiskt tolkar som text och formatering
             const htmlContent = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head><title>Rättningsrapport: ${student.name}</title>
@@ -1522,7 +1924,6 @@
                 </head>
                 <body>
                     <h2>Rättningsrapport: ${student.name}</h2>
-                    <!-- Word tolkar vanlig HTML, så vi konverterar Markdown till Word-kompatibel HTML -->
                     <div style="margin-top: 20px;">
                         ${marked.parse(student.report)}
                     </div>
@@ -1542,7 +1943,6 @@
             showToast("Rapport nedladdad som Word-fil!", "success");
         }
 
-        // Kombinerar och laddar ner ALLA rapporter i ett enda dokument med sidbrytningar
         function exportAllReportsToWord() {
             const completedStudents = session.students.filter(s => s.report && s.status === 'done');
             if (completedStudents.length === 0) {
