@@ -753,22 +753,26 @@
         .image-card.drop-indicator-left::before {
             content: '';
             position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
+            left: -12px;
+            top: -2px;
+            bottom: -2px;
             width: 4px;
             background: var(--primary);
+            border-radius: 4px;
+            box-shadow: 0 0 8px var(--primary);
             z-index: 100;
         }
 
         .image-card.drop-indicator-right::after {
             content: '';
             position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
+            right: -12px;
+            top: -2px;
+            bottom: -2px;
             width: 4px;
             background: var(--primary);
+            border-radius: 4px;
+            box-shadow: 0 0 8px var(--primary);
             z-index: 100;
         }
 
@@ -818,6 +822,9 @@
         .btn-camera-rapid {
             background: #1e293b;
             color: white;
+            padding: 16px 20px;
+            /* Gjort knappen högre */
+            font-size: 1rem;
         }
 
         .btn-camera-rapid:hover {
