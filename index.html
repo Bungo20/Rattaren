@@ -742,6 +742,7 @@
             display: inline-flex !important;
             align-items: center;
         }
+
         .add-student-pill:hover {
             background: var(--primary-light) !important;
         }
@@ -965,10 +966,12 @@
             gap: 8px;
             transition: all 0.2s;
         }
+
         .camera-switch-btn:hover {
             background: rgba(15, 23, 42, 0.8);
             transform: scale(1.05);
         }
+
         .camera-guide-overlay {
             position: absolute;
             top: 0;
@@ -982,6 +985,7 @@
             align-items: center;
             z-index: 15;
         }
+
         .guide-box {
             width: 80%;
             height: 70%;
@@ -992,6 +996,7 @@
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
             transition: border-color 0.3s;
         }
+
         .guide-text {
             color: white;
             font-size: 0.9rem;
@@ -1001,10 +1006,17 @@
             border-radius: 20px;
             font-weight: 500;
         }
+
         @keyframes flashGreen {
-            0% { border-color: var(--success); }
-            100% { border-color: rgba(255, 255, 255, 0.5); }
+            0% {
+                border-color: var(--success);
+            }
+
+            100% {
+                border-color: rgba(255, 255, 255, 0.5);
+            }
         }
+
         .guide-box.flash-success {
             animation: flashGreen 0.5s ease-out;
         }
@@ -1196,7 +1208,8 @@
             <button class="btn btn-secondary" onclick="openSettingsModal()" title="Inställningar">
                 <i class="fa-solid fa-gear"></i> Inställningar
             </button>
-            <button class="btn btn-secondary" id="theme-toggle-btn" onclick="toggleTheme()" title="Växla färgtema" style="padding: 10px 14px;">
+            <button class="btn btn-secondary" id="theme-toggle-btn" onclick="toggleTheme()" title="Växla färgtema"
+                style="padding: 10px 14px;">
                 <i class="fa-solid fa-moon"></i>
             </button>
         </div>
@@ -1259,7 +1272,8 @@
                 <i class="fa-solid fa-circle-check"></i> Klar
             </button>
             <!-- Byt kamera-knapp för mobila enheter -->
-            <button id="camera-switch-btn" class="camera-switch-btn" onclick="switchCamera()" title="Byt kamera" style="display: none;">
+            <button id="camera-switch-btn" class="camera-switch-btn" onclick="switchCamera()" title="Byt kamera"
+                style="display: none;">
                 <i class="fa-solid fa-camera-rotate"></i> Byt kamera
             </button>
             <!-- SCANNER GUIDE OVERLAY -->
@@ -1359,34 +1373,35 @@
                 </div>
             </div>
         </div>
-    <!-- ELEV-MODAL (LÄGG TILL / BYT NAMN) -->
-    <div id="student-modal" class="settings-modal" onclick="closeStudentModal(event)">
-        <div class="settings-content" onclick="event.stopPropagation()" style="max-width: 400px;">
-            <div class="settings-header">
-                <h3 id="student-modal-title">Lägg till elev</h3>
-                <button class="settings-close" onclick="closeStudentModal(event)">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="settings-body">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label for="student-name-input" id="student-modal-label">Elevens namn</label>
-                    <input type="text" id="student-name-input" placeholder="T.ex. Johan Andersson">
+        <!-- ELEV-MODAL (LÄGG TILL / BYT NAMN) -->
+        <div id="student-modal" class="settings-modal" onclick="closeStudentModal(event)">
+            <div class="settings-content" onclick="event.stopPropagation()" style="max-width: 400px;">
+                <div class="settings-header">
+                    <h3 id="student-modal-title">Lägg till elev</h3>
+                    <button class="settings-close" onclick="closeStudentModal(event)">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="settings-body">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="student-name-input" id="student-modal-label">Elevens namn</label>
+                        <input type="text" id="student-name-input" placeholder="T.ex. Johan Andersson">
+                    </div>
+                </div>
+                <div class="confirm-actions" style="margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="closeStudentModal(event)">Avbryt</button>
+                    <button class="btn btn-primary" id="student-modal-save-btn"
+                        onclick="saveStudentModal()">Spara</button>
                 </div>
             </div>
-            <div class="confirm-actions" style="margin-top: 20px;">
-                <button class="btn btn-secondary" onclick="closeStudentModal(event)">Avbryt</button>
-                <button class="btn btn-primary" id="student-modal-save-btn" onclick="saveStudentModal()">Spara</button>
-            </div>
         </div>
-    </div>
 
-    <script>
-        const PROMPT_TEMPLATES = [
-            {
-                id: "standard",
-                name: "Standardrättning (Utförlig)",
-                defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat skriftligt prov. 
+        <script>
+            const PROMPT_TEMPLATES = [
+                {
+                    id: "standard",
+                    name: "Standardrättning (Utförlig)",
+                    defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat skriftligt prov. 
 Här är bilderna på elevens lösning (namn: {studentName}) i kronologisk ordning.
 Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
 Observera att elevens svar kan sträcka sig över flera sidor och fortsätta naturligt på nästa bild. Analysera hela sammanhanget.
@@ -1397,11 +1412,11 @@ Rapporten ska innehålla:
 2. Elevens poäng eller indikerad betygsnivå.
 3. Konstruktiv feedback med elevens specifika styrkor.
 4. Utvecklingsområden och konkreta tips på hur eleven kan förbättra sina svar framöver.`
-            },
-            {
-                id: "brief",
-                name: "Kortfattad återkoppling",
-                defaultText: `Du är en svensk legitimerad lärare som gör en snabb, överskådlig bedömning av ett inlämnat skriftligt prov.
+                },
+                {
+                    id: "brief",
+                    name: "Kortfattad återkoppling",
+                    defaultText: `Du är en svensk legitimerad lärare som gör en snabb, överskådlig bedömning av ett inlämnat skriftligt prov.
 Här är bilderna på elevens lösning (namn: {studentName}) i kronologisk ordning.
 Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
 
@@ -1410,11 +1425,11 @@ Inkludera:
 1. Föreslagen betygsnivå eller omdöme.
 2. Två tydliga styrkor i lösningen.
 3. Ett konkret utvecklingsområde för att förbättra resultatet.`
-            },
-            {
-                id: "national_test",
-                name: "Nationella prov (NP) bedömning",
-                defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat prov utifrån Skolverkets betygskriterier och kunskapskrav (motsvarande Nationella prov).
+                },
+                {
+                    id: "national_test",
+                    name: "Nationella prov (NP) bedömning",
+                    defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat prov utifrån Skolverkets betygskriterier och kunskapskrav (motsvarande Nationella prov).
 Här är bilderna på elevens lösning (namn: {studentName}) i kronologisk ordning.
 Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
 
@@ -1423,496 +1438,496 @@ Rapporten ska innehålla:
 1. Bedömning uppdelad efter kunskapskrav (E-nivå, C-nivå, A-nivå).
 2. Tydlig motivering för uppfyllda samt ej uppfyllda kriterier.
 3. Rekommendationer för vidare studier och utveckling.`
-            },
-            {
-                id: "custom",
-                name: "Egen",
-                defaultText: `Skriv din egen prompt här.`
-            }
-        ];
-
-        function initPromptSettings() {
-            const select = document.getElementById('promptTemplateSelect');
-            if (!select) return;
-            select.innerHTML = '';
-            PROMPT_TEMPLATES.forEach(tpl => {
-                const opt = document.createElement('option');
-                opt.value = tpl.id;
-                opt.textContent = tpl.name;
-                select.appendChild(opt);
-            });
-
-            const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
-            select.value = savedId;
-            updatePromptTextarea(savedId);
-        }
-
-        function updatePromptTextarea(templateId) {
-            const template = PROMPT_TEMPLATES.find(t => t.id === templateId);
-            if (!template) return;
-            const customText = localStorage.getItem(`rattaren_custom_prompt_${templateId}`);
-            document.getElementById('promptText').value = customText !== null ? customText : template.defaultText;
-        }
-
-        function onPromptTemplateChange() {
-            const select = document.getElementById('promptTemplateSelect');
-            updatePromptTextarea(select.value);
-        }
-
-        function resetActivePromptToDefault() {
-            const select = document.getElementById('promptTemplateSelect');
-            const templateId = select.value;
-            const template = PROMPT_TEMPLATES.find(t => t.id === templateId);
-            if (!template) return;
-
-            document.getElementById('promptText').value = template.defaultText;
-            showToast("Prompten har återställts till originalet.", "info");
-        }
-
-        function openPromptModal() {
-            const modal = document.getElementById('prompt-modal');
-            if (!modal) return;
-
-            const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
-            const select = document.getElementById('promptTemplateSelect');
-            if (select) select.value = savedId;
-            updatePromptTextarea(savedId);
-
-            modal.style.display = 'flex';
-            void modal.offsetHeight;
-            modal.classList.add('active');
-            document.addEventListener('keydown', handlePromptModalKeyboard);
-        }
-
-        function closePromptModal(event) {
-            if (event) event.stopPropagation();
-            const modal = document.getElementById('prompt-modal');
-            if (!modal) return;
-            modal.classList.remove('active');
-            setTimeout(() => {
-                if (!modal.classList.contains('active')) {
-                    modal.style.display = 'none';
+                },
+                {
+                    id: "custom",
+                    name: "Egen",
+                    defaultText: `Skriv din egen prompt här.`
                 }
-            }, 250);
-            document.removeEventListener('keydown', handlePromptModalKeyboard);
-        }
+            ];
 
-        function saveAndClosePromptModal() {
-            const select = document.getElementById('promptTemplateSelect');
-            const templateId = select.value;
-            const textValue = document.getElementById('promptText').value;
-
-            localStorage.setItem('rattaren_selected_prompt_id', templateId);
-            localStorage.setItem(`rattaren_custom_prompt_${templateId}`, textValue);
-
-            closePromptModal();
-            showToast("Prompt-inställningarna har sparats.", "success");
-        }
-
-        function handlePromptModalKeyboard(e) {
-            if (e.key === 'Escape') {
-                closePromptModal();
-            }
-        }
-
-        let session = {
-            students: []
-        };
-
-        let currentView = null;
-        let activeTab = 'pages'; // Sparar fliktillståndet ('pages' eller 'report')
-        let draggedIndex = null;
-        let lightboxIndex = 0;
-        let currentAbortController = null; // Styr avbrytande av API-anrop
-        let isProcessing = false; // Flagga för att spåra batch-körningens status
-        let cameraStream = null; // Förvarar videoströmmen för snabbkameran
-        let confirmResolve = null; // Löser bekräftelsemodalen asynkront
-
-        // Variabler för touch-drag-and-drop på mobiler
-        let activeTouchIndex = null;
-        let currentTouchOverIndex = null;
-        let touchOverSide = null;
-
-        // Modaltillstånd för elevinmatning
-        let studentModalMode = 'add'; // 'add' eller 'rename'
-        let studentModalTargetId = null;
-
-        // Kameravariabler för byte av kamera
-        let availableVideoDevices = [];
-        let currentVideoDeviceIndex = 0;
-
-        // Touch-gest-variabler för swipe i lightbox
-        let touchStartX = 0;
-        let touchEndX = 0;
-        let touchStartY = 0;
-        let touchEndY = 0;
-
-        // Konfigurera Marked.js så att vanliga radbrytningar bryts till <br> i Markdown
-        marked.setOptions({
-            breaks: true,
-            gfm: true
-        });
-
-        // Läs sparad API-nyckel och URL från localStorage
-        document.getElementById('apiKey').value = localStorage.getItem('berget_api_key') || '';
-        document.getElementById('apiUrl').value = localStorage.getItem('berget_api_url') || 'https://api.berget.ai/v1/chat/completions';
-
-        let debounceTimer;
-        document.getElementById('apiKey').addEventListener('input', (e) => {
-            localStorage.setItem('berget_api_key', e.target.value);
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(updateModelsDropdown, 600);
-        });
-
-        document.getElementById('apiUrl').addEventListener('input', (e) => {
-            localStorage.setItem('berget_api_url', e.target.value);
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(updateModelsDropdown, 600);
-        });
-
-        document.getElementById('modelSelect').addEventListener('change', (e) => {
-            localStorage.setItem('berget_selected_model', e.target.value);
-            updateSelectedModelDisplay();
-        });
-
-        function updateSelectedModelDisplay() {
-            const modelSelect = document.getElementById('modelSelect');
-            const displayEl = document.getElementById('current-model-name');
-            if (displayEl) {
-                if (modelSelect && modelSelect.value) {
-                    const selectedOption = modelSelect.options[modelSelect.selectedIndex];
-                    displayEl.textContent = selectedOption ? selectedOption.textContent : modelSelect.value;
-                } else {
-                    displayEl.textContent = "Ingen modell vald";
-                }
-            }
-        }
-
-        async function updateModelsDropdown() {
-            const apiKey = document.getElementById('apiKey').value;
-            const modelSelect = document.getElementById('modelSelect');
-            if (!apiKey) {
-                modelSelect.innerHTML = '<option value="">Ange API-nyckel först...</option>';
-                modelSelect.disabled = true;
-                updateSelectedModelDisplay();
-                return;
-            }
-
-            modelSelect.innerHTML = '<option value="">Hämtar modeller...</option>';
-            modelSelect.disabled = true;
-            updateSelectedModelDisplay();
-
-            try {
-                const apiUrlVal = document.getElementById('apiUrl').value;
-                let modelsUrl = 'https://api.berget.ai/v1/models';
-                if (apiUrlVal) {
-                    try {
-                        const urlObj = new URL(apiUrlVal);
-                        urlObj.pathname = urlObj.pathname.replace(/\/chat\/completions\/?$/, '/models');
-                        modelsUrl = urlObj.toString();
-                    } catch (e) {
-                        console.warn("Kunde inte parsa API URL för att bygga modellsökväg, använder fallback", e);
-                    }
-                }
-
-                const response = await fetch(modelsUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Accept': 'application/json'
-                    }
+            function initPromptSettings() {
+                const select = document.getElementById('promptTemplateSelect');
+                if (!select) return;
+                select.innerHTML = '';
+                PROMPT_TEMPLATES.forEach(tpl => {
+                    const opt = document.createElement('option');
+                    opt.value = tpl.id;
+                    opt.textContent = tpl.name;
+                    select.appendChild(opt);
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
+                select.value = savedId;
+                updatePromptTextarea(savedId);
+            }
+
+            function updatePromptTextarea(templateId) {
+                const template = PROMPT_TEMPLATES.find(t => t.id === templateId);
+                if (!template) return;
+                const customText = localStorage.getItem(`rattaren_custom_prompt_${templateId}`);
+                document.getElementById('promptText').value = customText !== null ? customText : template.defaultText;
+            }
+
+            function onPromptTemplateChange() {
+                const select = document.getElementById('promptTemplateSelect');
+                updatePromptTextarea(select.value);
+            }
+
+            function resetActivePromptToDefault() {
+                const select = document.getElementById('promptTemplateSelect');
+                const templateId = select.value;
+                const template = PROMPT_TEMPLATES.find(t => t.id === templateId);
+                if (!template) return;
+
+                document.getElementById('promptText').value = template.defaultText;
+                showToast("Prompten har återställts till originalet.", "info");
+            }
+
+            function openPromptModal() {
+                const modal = document.getElementById('prompt-modal');
+                if (!modal) return;
+
+                const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
+                const select = document.getElementById('promptTemplateSelect');
+                if (select) select.value = savedId;
+                updatePromptTextarea(savedId);
+
+                modal.style.display = 'flex';
+                void modal.offsetHeight;
+                modal.classList.add('active');
+                document.addEventListener('keydown', handlePromptModalKeyboard);
+            }
+
+            function closePromptModal(event) {
+                if (event) event.stopPropagation();
+                const modal = document.getElementById('prompt-modal');
+                if (!modal) return;
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    if (!modal.classList.contains('active')) {
+                        modal.style.display = 'none';
+                    }
+                }, 250);
+                document.removeEventListener('keydown', handlePromptModalKeyboard);
+            }
+
+            function saveAndClosePromptModal() {
+                const select = document.getElementById('promptTemplateSelect');
+                const templateId = select.value;
+                const textValue = document.getElementById('promptText').value;
+
+                localStorage.setItem('rattaren_selected_prompt_id', templateId);
+                localStorage.setItem(`rattaren_custom_prompt_${templateId}`, textValue);
+
+                closePromptModal();
+                showToast("Prompt-inställningarna har sparats.", "success");
+            }
+
+            function handlePromptModalKeyboard(e) {
+                if (e.key === 'Escape') {
+                    closePromptModal();
                 }
+            }
 
-                const data = await response.ok ? await response.json() : [];
-                const models = Array.isArray(data) ? data : (data.data || []);
-                const visionModels = models.filter(m => m.capabilities && m.capabilities.vision === true);
+            let session = {
+                students: []
+            };
 
-                if (visionModels.length === 0) {
-                    modelSelect.innerHTML = '<option value="">Inga vision-modeller</option>';
+            let currentView = null;
+            let activeTab = 'pages'; // Sparar fliktillståndet ('pages' eller 'report')
+            let draggedIndex = null;
+            let lightboxIndex = 0;
+            let currentAbortController = null; // Styr avbrytande av API-anrop
+            let isProcessing = false; // Flagga för att spåra batch-körningens status
+            let cameraStream = null; // Förvarar videoströmmen för snabbkameran
+            let confirmResolve = null; // Löser bekräftelsemodalen asynkront
+
+            // Variabler för touch-drag-and-drop på mobiler
+            let activeTouchIndex = null;
+            let currentTouchOverIndex = null;
+            let touchOverSide = null;
+
+            // Modaltillstånd för elevinmatning
+            let studentModalMode = 'add'; // 'add' eller 'rename'
+            let studentModalTargetId = null;
+
+            // Kameravariabler för byte av kamera
+            let availableVideoDevices = [];
+            let currentVideoDeviceIndex = 0;
+
+            // Touch-gest-variabler för swipe i lightbox
+            let touchStartX = 0;
+            let touchEndX = 0;
+            let touchStartY = 0;
+            let touchEndY = 0;
+
+            // Konfigurera Marked.js så att vanliga radbrytningar bryts till <br> i Markdown
+            marked.setOptions({
+                breaks: true,
+                gfm: true
+            });
+
+            // Läs sparad API-nyckel och URL från localStorage
+            document.getElementById('apiKey').value = localStorage.getItem('berget_api_key') || '';
+            document.getElementById('apiUrl').value = localStorage.getItem('berget_api_url') || 'https://api.berget.ai/v1/chat/completions';
+
+            let debounceTimer;
+            document.getElementById('apiKey').addEventListener('input', (e) => {
+                localStorage.setItem('berget_api_key', e.target.value);
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updateModelsDropdown, 600);
+            });
+
+            document.getElementById('apiUrl').addEventListener('input', (e) => {
+                localStorage.setItem('berget_api_url', e.target.value);
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updateModelsDropdown, 600);
+            });
+
+            document.getElementById('modelSelect').addEventListener('change', (e) => {
+                localStorage.setItem('berget_selected_model', e.target.value);
+                updateSelectedModelDisplay();
+            });
+
+            function updateSelectedModelDisplay() {
+                const modelSelect = document.getElementById('modelSelect');
+                const displayEl = document.getElementById('current-model-name');
+                if (displayEl) {
+                    if (modelSelect && modelSelect.value) {
+                        const selectedOption = modelSelect.options[modelSelect.selectedIndex];
+                        displayEl.textContent = selectedOption ? selectedOption.textContent : modelSelect.value;
+                    } else {
+                        displayEl.textContent = "Ingen modell vald";
+                    }
+                }
+            }
+
+            async function updateModelsDropdown() {
+                const apiKey = document.getElementById('apiKey').value;
+                const modelSelect = document.getElementById('modelSelect');
+                if (!apiKey) {
+                    modelSelect.innerHTML = '<option value="">Ange API-nyckel först...</option>';
+                    modelSelect.disabled = true;
                     updateSelectedModelDisplay();
                     return;
                 }
 
-                modelSelect.innerHTML = '';
-                visionModels.forEach(model => {
-                    const opt = document.createElement('option');
-                    opt.value = model.id;
-                    opt.textContent = model.name || model.id;
-                    modelSelect.appendChild(opt);
-                });
-
-                modelSelect.disabled = false;
-
-                const savedModel = localStorage.getItem('berget_selected_model');
-                const defaultPreferredModel = "moonshotai/Kimi-K2.6";
-                const optionsArray = Array.from(modelSelect.options);
-
-                let modelToSelect = null;
-                if (savedModel && optionsArray.some(opt => opt.value === savedModel)) {
-                    modelToSelect = savedModel;
-                } else if (optionsArray.some(opt => opt.value === defaultPreferredModel)) {
-                    modelToSelect = defaultPreferredModel;
-                } else {
-                    modelToSelect = modelSelect.value;
-                }
-
-                if (modelToSelect) {
-                    modelSelect.value = modelToSelect;
-                    localStorage.setItem('berget_selected_model', modelToSelect);
-                }
-                updateSelectedModelDisplay();
-            } catch (error) {
-                console.error("Misslyckades att hämta modeller:", error);
-                modelSelect.innerHTML = '<option value="">Fel vid hämtning (API-nyckel?)</option>';
+                modelSelect.innerHTML = '<option value="">Hämtar modeller...</option>';
                 modelSelect.disabled = true;
                 updateSelectedModelDisplay();
-            }
-        }
 
-        function showToast(message, type = 'info') {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
+                try {
+                    const apiUrlVal = document.getElementById('apiUrl').value;
+                    let modelsUrl = 'https://api.berget.ai/v1/models';
+                    if (apiUrlVal) {
+                        try {
+                            const urlObj = new URL(apiUrlVal);
+                            urlObj.pathname = urlObj.pathname.replace(/\/chat\/completions\/?$/, '/models');
+                            modelsUrl = urlObj.toString();
+                        } catch (e) {
+                            console.warn("Kunde inte parsa API URL för att bygga modellsökväg, använder fallback", e);
+                        }
+                    }
 
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
+                    const response = await fetch(modelsUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Accept': 'application/json'
+                        }
+                    });
 
-            let icon = '<i class="fa-solid fa-circle-info" style="color: var(--primary)"></i>';
-            if (type === 'success') icon = '<i class="fa-solid fa-circle-check" style="color: var(--success)"></i>';
-            if (type === 'error') icon = '<i class="fa-solid fa-circle-exclamation" style="color: var(--danger)"></i>';
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
 
-            toast.innerHTML = `${icon} <span>${message}</span>`;
-            document.body.appendChild(toast);
+                    const data = await response.ok ? await response.json() : [];
+                    const models = Array.isArray(data) ? data : (data.data || []);
+                    const visionModels = models.filter(m => m.capabilities && m.capabilities.vision === true);
 
-            setTimeout(() => toast.classList.add('active'), 10);
+                    if (visionModels.length === 0) {
+                        modelSelect.innerHTML = '<option value="">Inga vision-modeller</option>';
+                        updateSelectedModelDisplay();
+                        return;
+                    }
 
-            setTimeout(() => {
-                toast.classList.remove('active');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
+                    modelSelect.innerHTML = '';
+                    visionModels.forEach(model => {
+                        const opt = document.createElement('option');
+                        opt.value = model.id;
+                        opt.textContent = model.name || model.id;
+                        modelSelect.appendChild(opt);
+                    });
 
-        // Anpassat bekräftelsesystem asynkront
-        function customConfirm(title, message) {
-            return new Promise((resolve) => {
-                const modal = document.getElementById('confirm-modal');
-                if (!modal) {
-                    resolve(false);
-                    return;
+                    modelSelect.disabled = false;
+
+                    const savedModel = localStorage.getItem('berget_selected_model');
+                    const defaultPreferredModel = "moonshotai/Kimi-K2.6";
+                    const optionsArray = Array.from(modelSelect.options);
+
+                    let modelToSelect = null;
+                    if (savedModel && optionsArray.some(opt => opt.value === savedModel)) {
+                        modelToSelect = savedModel;
+                    } else if (optionsArray.some(opt => opt.value === defaultPreferredModel)) {
+                        modelToSelect = defaultPreferredModel;
+                    } else {
+                        modelToSelect = modelSelect.value;
+                    }
+
+                    if (modelToSelect) {
+                        modelSelect.value = modelToSelect;
+                        localStorage.setItem('berget_selected_model', modelToSelect);
+                    }
+                    updateSelectedModelDisplay();
+                } catch (error) {
+                    console.error("Misslyckades att hämta modeller:", error);
+                    modelSelect.innerHTML = '<option value="">Fel vid hämtning (API-nyckel?)</option>';
+                    modelSelect.disabled = true;
+                    updateSelectedModelDisplay();
                 }
-                document.getElementById('confirm-title').innerText = title;
-                document.getElementById('confirm-message').innerText = message;
-                
+            }
+
+            function showToast(message, type = 'info') {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+
+                let icon = '<i class="fa-solid fa-circle-info" style="color: var(--primary)"></i>';
+                if (type === 'success') icon = '<i class="fa-solid fa-circle-check" style="color: var(--success)"></i>';
+                if (type === 'error') icon = '<i class="fa-solid fa-circle-exclamation" style="color: var(--danger)"></i>';
+
+                toast.innerHTML = `${icon} <span>${message}</span>`;
+                document.body.appendChild(toast);
+
+                setTimeout(() => toast.classList.add('active'), 10);
+
+                setTimeout(() => {
+                    toast.classList.remove('active');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+
+            // Anpassat bekräftelsesystem asynkront
+            function customConfirm(title, message) {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById('confirm-modal');
+                    if (!modal) {
+                        resolve(false);
+                        return;
+                    }
+                    document.getElementById('confirm-title').innerText = title;
+                    document.getElementById('confirm-message').innerText = message;
+
+                    modal.style.display = 'flex';
+                    void modal.offsetHeight;
+                    modal.classList.add('active');
+                    confirmResolve = resolve;
+                });
+            }
+
+            function handleConfirm(yes) {
+                const modal = document.getElementById('confirm-modal');
+                if (!modal) return;
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    if (!modal.classList.contains('active')) {
+                        modal.style.display = 'none';
+                    }
+                }, 250);
+                if (confirmResolve) {
+                    confirmResolve(yes);
+                    confirmResolve = null;
+                }
+            }
+
+            // Hantering av elevinmatning via anpassad modal
+            function openAddStudentModal() {
+                studentModalMode = 'add';
+                studentModalTargetId = null;
+
+                document.getElementById('student-modal-title').innerText = "Lägg till elev";
+                document.getElementById('student-modal-label').innerText = "Elevens namn (eller lämna tomt för anonymisering)";
+                document.getElementById('student-name-input').value = "";
+
+                const modal = document.getElementById('student-modal');
                 modal.style.display = 'flex';
                 void modal.offsetHeight;
                 modal.classList.add('active');
-                confirmResolve = resolve;
-            });
-        }
 
-        function handleConfirm(yes) {
-            const modal = document.getElementById('confirm-modal');
-            if (!modal) return;
-            modal.classList.remove('active');
-            setTimeout(() => {
-                if (!modal.classList.contains('active')) {
-                    modal.style.display = 'none';
-                }
-            }, 250);
-            if (confirmResolve) {
-                confirmResolve(yes);
-                confirmResolve = null;
+                const input = document.getElementById('student-name-input');
+                input.focus();
+                input.select();
+
+                document.addEventListener('keydown', handleStudentModalKeyboard);
             }
-        }
 
-        // Hantering av elevinmatning via anpassad modal
-        function openAddStudentModal() {
-            studentModalMode = 'add';
-            studentModalTargetId = null;
-            
-            document.getElementById('student-modal-title').innerText = "Lägg till elev";
-            document.getElementById('student-modal-label').innerText = "Elevens namn (eller lämna tomt för anonymisering)";
-            document.getElementById('student-name-input').value = "";
-            
-            const modal = document.getElementById('student-modal');
-            modal.style.display = 'flex';
-            void modal.offsetHeight;
-            modal.classList.add('active');
-            
-            const input = document.getElementById('student-name-input');
-            input.focus();
-            input.select();
-            
-            document.addEventListener('keydown', handleStudentModalKeyboard);
-        }
+            function openRenameStudentModal(studentId, event) {
+                if (event) event.stopPropagation();
+                const student = session.students.find(s => s.id === studentId);
+                if (!student) return;
 
-        function openRenameStudentModal(studentId, event) {
-            if (event) event.stopPropagation();
-            const student = session.students.find(s => s.id === studentId);
-            if (!student) return;
-            
-            studentModalMode = 'rename';
-            studentModalTargetId = studentId;
-            
-            document.getElementById('student-modal-title').innerText = "Byt namn på elev";
-            document.getElementById('student-modal-label').innerText = "Ange nytt namn för eleven";
-            document.getElementById('student-name-input').value = student.name;
-            
-            const modal = document.getElementById('student-modal');
-            modal.style.display = 'flex';
-            void modal.offsetHeight;
-            modal.classList.add('active');
-            
-            const input = document.getElementById('student-name-input');
-            input.focus();
-            input.select();
-            
-            document.addEventListener('keydown', handleStudentModalKeyboard);
-        }
+                studentModalMode = 'rename';
+                studentModalTargetId = studentId;
 
-        function closeStudentModal(event) {
-            if (event) event.stopPropagation();
-            const modal = document.getElementById('student-modal');
-            if (!modal) return;
-            modal.classList.remove('active');
-            setTimeout(() => {
-                if (!modal.classList.contains('active')) {
-                    modal.style.display = 'none';
+                document.getElementById('student-modal-title').innerText = "Byt namn på elev";
+                document.getElementById('student-modal-label').innerText = "Ange nytt namn för eleven";
+                document.getElementById('student-name-input').value = student.name;
+
+                const modal = document.getElementById('student-modal');
+                modal.style.display = 'flex';
+                void modal.offsetHeight;
+                modal.classList.add('active');
+
+                const input = document.getElementById('student-name-input');
+                input.focus();
+                input.select();
+
+                document.addEventListener('keydown', handleStudentModalKeyboard);
+            }
+
+            function closeStudentModal(event) {
+                if (event) event.stopPropagation();
+                const modal = document.getElementById('student-modal');
+                if (!modal) return;
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    if (!modal.classList.contains('active')) {
+                        modal.style.display = 'none';
+                    }
+                }, 250);
+                document.removeEventListener('keydown', handleStudentModalKeyboard);
+            }
+
+            function handleStudentModalKeyboard(e) {
+                if (e.key === 'Escape') {
+                    closeStudentModal();
+                } else if (e.key === 'Enter') {
+                    saveStudentModal();
                 }
-            }, 250);
-            document.removeEventListener('keydown', handleStudentModalKeyboard);
-        }
+            }
 
-        function handleStudentModalKeyboard(e) {
-            if (e.key === 'Escape') {
+            function saveStudentModal() {
+                const input = document.getElementById('student-name-input');
+                const nameVal = input.value.trim();
+
+                if (studentModalMode === 'add') {
+                    const finalName = nameVal || `Elev ${session.students.length + 1}`;
+                    const newStudent = {
+                        id: Date.now(),
+                        name: finalName,
+                        images: [],
+                        report: '',
+                        status: 'pending'
+                    };
+                    session.students.push(newStudent);
+                    currentView = newStudent.id;
+                    activeTab = 'pages'; // Nollställ fliken
+                    updateBadges();
+                    updateBatchButtonState();
+                    renderStudentList();
+                    renderWorkspace();
+                    showToast(`Elev "${finalName}" har lagts till.`, "success");
+                } else if (studentModalMode === 'rename') {
+                    if (nameVal === "") {
+                        showToast("Elevens namn kan inte vara tomt.", "error");
+                        return;
+                    }
+                    const student = session.students.find(s => s.id === studentModalTargetId);
+                    if (student) {
+                        const oldName = student.name;
+                        student.name = nameVal;
+                        renderStudentList();
+                        renderWorkspace();
+                        showToast(`Elevens namn har ändrats från "${oldName}" till "${nameVal}".`, "success");
+                    }
+                }
                 closeStudentModal();
-            } else if (e.key === 'Enter') {
-                saveStudentModal();
             }
-        }
 
-        function saveStudentModal() {
-            const input = document.getElementById('student-name-input');
-            const nameVal = input.value.trim();
-            
-            if (studentModalMode === 'add') {
-                const finalName = nameVal || `Elev ${session.students.length + 1}`;
-                const newStudent = {
-                    id: Date.now(),
-                    name: finalName,
-                    images: [],
-                    report: '',
-                    status: 'pending'
-                };
-                session.students.push(newStudent);
-                currentView = newStudent.id;
-                activeTab = 'pages'; // Nollställ fliken
-                updateBadges();
+            function switchView(studentId) {
+                currentView = studentId;
+                const student = session.students.find(s => s.id === studentId);
+                if (student) {
+                    activeTab = student.report ? 'report' : 'pages';
+                }
+                renderStudentList();
+                renderWorkspace();
+            }
+
+            async function deleteStudent(studentId, event) {
+                event.stopPropagation();
+                const ok = await customConfirm("Ta bort elev?", "Är du säker på att du vill ta bort denna elev och alla tillhörande bilder?");
+                if (!ok) return;
+
+                session.students = session.students.filter(s => s.id !== studentId);
+
+                if (currentView === studentId) {
+                    currentView = session.students.length > 0 ? session.students[0].id : null;
+                }
+
                 updateBatchButtonState();
                 renderStudentList();
                 renderWorkspace();
-                showToast(`Elev "${finalName}" har lagts till.`, "success");
-            } else if (studentModalMode === 'rename') {
-                if (nameVal === "") {
-                    showToast("Elevens namn kan inte vara tomt.", "error");
-                    return;
+            }
+
+            function updateBatchButtonState() {
+                const hasImagesToProcess = session.students.some(s => s.images.length > 0);
+                const startBtn = document.getElementById('start-btn');
+                if (startBtn) {
+                    startBtn.disabled = !hasImagesToProcess || isProcessing;
                 }
-                const student = session.students.find(s => s.id === studentModalTargetId);
-                if (student) {
-                    const oldName = student.name;
-                    student.name = nameVal;
-                    renderStudentList();
-                    renderWorkspace();
-                    showToast(`Elevens namn har ändrats från "${oldName}" till "${nameVal}".`, "success");
-                }
-            }
-            closeStudentModal();
-        }
-
-        function switchView(studentId) {
-            currentView = studentId;
-            const student = session.students.find(s => s.id === studentId);
-            if (student) {
-                activeTab = student.report ? 'report' : 'pages';
-            }
-            renderStudentList();
-            renderWorkspace();
-        }
-
-        async function deleteStudent(studentId, event) {
-            event.stopPropagation();
-            const ok = await customConfirm("Ta bort elev?", "Är du säker på att du vill ta bort denna elev och alla tillhörande bilder?");
-            if (!ok) return;
-
-            session.students = session.students.filter(s => s.id !== studentId);
-
-            if (currentView === studentId) {
-                currentView = session.students.length > 0 ? session.students[0].id : null;
+                updateExportAllButtonState();
             }
 
-            updateBatchButtonState();
-            renderStudentList();
-            renderWorkspace();
-        }
-
-        function updateBatchButtonState() {
-            const hasImagesToProcess = session.students.some(s => s.images.length > 0);
-            const startBtn = document.getElementById('start-btn');
-            if (startBtn) {
-                startBtn.disabled = !hasImagesToProcess || isProcessing;
-            }
-            updateExportAllButtonState();
-        }
-
-        function updateExportAllButtonState() {
-            const completedReports = session.students.filter(s => s.report && s.status === 'done');
-            const exportAllBtn = document.getElementById('export-all-btn');
-            if (exportAllBtn) {
-                if (completedReports.length > 0 && !isProcessing) {
-                    exportAllBtn.style.display = 'inline-flex';
-                } else {
-                    exportAllBtn.style.display = 'none';
+            function updateExportAllButtonState() {
+                const completedReports = session.students.filter(s => s.report && s.status === 'done');
+                const exportAllBtn = document.getElementById('export-all-btn');
+                if (exportAllBtn) {
+                    if (completedReports.length > 0 && !isProcessing) {
+                        exportAllBtn.style.display = 'inline-flex';
+                    } else {
+                        exportAllBtn.style.display = 'none';
+                    }
                 }
             }
-        }
 
-        function setWorkspaceTab(tabName) {
-            activeTab = tabName;
+            function setWorkspaceTab(tabName) {
+                activeTab = tabName;
 
-            const pagesContent = document.getElementById('tab-content-pages');
-            const reportContent = document.getElementById('tab-content-report');
-            const btnPages = document.getElementById('tab-btn-pages');
-            const btnReport = document.getElementById('tab-btn-report');
+                const pagesContent = document.getElementById('tab-content-pages');
+                const reportContent = document.getElementById('tab-content-report');
+                const btnPages = document.getElementById('tab-btn-pages');
+                const btnReport = document.getElementById('tab-btn-report');
 
-            if (!pagesContent || !reportContent) return;
+                if (!pagesContent || !reportContent) return;
 
-            if (tabName === 'pages') {
-                pagesContent.style.display = 'block';
-                reportContent.style.display = 'none';
-                if (btnPages) btnPages.classList.add('active');
-                if (btnReport) btnReport.classList.remove('active');
-            } else if (tabName === 'report') {
-                pagesContent.style.display = 'none';
-                reportContent.style.display = 'block';
-                if (btnPages) btnPages.classList.remove('active');
-                if (btnReport) btnReport.classList.add('active');
+                if (tabName === 'pages') {
+                    pagesContent.style.display = 'block';
+                    reportContent.style.display = 'none';
+                    if (btnPages) btnPages.classList.add('active');
+                    if (btnReport) btnReport.classList.remove('active');
+                } else if (tabName === 'report') {
+                    pagesContent.style.display = 'none';
+                    reportContent.style.display = 'block';
+                    if (btnPages) btnPages.classList.remove('active');
+                    if (btnReport) btnReport.classList.add('active');
 
-                const reportBox = document.getElementById('report-text-box');
-                if (reportBox) {
-                    reportBox.scrollTop = reportBox.scrollHeight;
+                    const reportBox = document.getElementById('report-text-box');
+                    if (reportBox) {
+                        reportBox.scrollTop = reportBox.scrollHeight;
+                    }
                 }
             }
-        }
 
-        function renderWorkspace() {
-            const container = document.getElementById('workspace-container');
-            container.innerHTML = '';
+            function renderWorkspace() {
+                const container = document.getElementById('workspace-container');
+                container.innerHTML = '';
 
-            if (!currentView || session.students.length === 0) {
-                container.innerHTML = `
+                if (!currentView || session.students.length === 0) {
+                    container.innerHTML = `
                     <div class="empty-state">
                         <i class="fa-solid fa-folder-open"></i>
                         <h3>Välkommen till Rättaren!</h3>
@@ -1922,33 +1937,37 @@ Rapporten ska innehålla:
                         </button>
                     </div>
                 `;
-                return;
-            }
+                    return;
+                }
 
-            const student = session.students.find(s => s.id === currentView);
-            if (!student) return;
+                const student = session.students.find(s => s.id === currentView);
+                if (!student) return;
 
-            const hasReport = !!student.report;
-            const parsedReport = hasReport ? marked.parse(student.report) : '';
+                const hasReport = !!student.report;
+                const parsedReport = hasReport ? marked.parse(student.report) : '';
 
-            if (!hasReport && activeTab === 'report') {
-                activeTab = 'pages';
-            }
+                if (!hasReport && activeTab === 'report') {
+                    activeTab = 'pages';
+                }
 
-            container.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 4px;">
-                    <h2 style="font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-                        Bearbetar: ${student.name}
-                        <button class="btn-edit-outline" style="padding: 4px 8px; font-size: 0.85rem; border: 1px solid var(--border);" onclick="openRenameStudentModal(${student.id}, event)" title="Ändra namn">
+                container.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%;">
+                        <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--text); word-break: break-all; overflow-wrap: break-word; margin: 0; flex: 1;">
+                            Bearbetar: <span style="color: var(--primary);">${student.name}</span>
+                        </h2>
+                        <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content;">
+                            ${student.status === 'pending' ? 'Väntar på körning' : student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
+                        </span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; width: 100%;">
+                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;" onclick="openRenameStudentModal(${student.id}, event)">
                             <i class="fa-regular fa-pen-to-square"></i> Ändra namn
                         </button>
-                        <button class="btn-danger-outline" style="padding: 4px 8px; font-size: 0.85rem; border: 1px solid var(--border); color: var(--danger);" onclick="deleteStudent(${student.id}, event)" title="Ta bort elev">
+                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem; height: 32px; border-radius: 6px; color: var(--danger); border-color: rgba(239, 68, 68, 0.2); display: inline-flex; align-items: center; gap: 6px;" onclick="deleteStudent(${student.id}, event)">
                             <i class="fa-regular fa-trash-can"></i> Ta bort
                         </button>
-                    </h2>
-                    <span class="status-badge status-${student.status}">
-                        ${student.status === 'pending' ? 'Väntar på körning' : student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
-                    </span>
+                    </div>
                 </div>
 
                 <div class="workspace-tabs">
@@ -2001,765 +2020,779 @@ Rapporten ska innehålla:
                 </div>
             `;
 
-            renderFilmstrip(student);
-        }
-
-        function renderFilmstrip(student) {
-            const container = document.getElementById('filmstrip-container');
-            if (!container) return;
-            container.innerHTML = '';
-
-            if (student.images.length === 0) {
-                container.style.display = 'none';
-                return;
+                renderFilmstrip(student);
             }
 
-            container.style.display = 'grid';
+            function renderFilmstrip(student) {
+                const container = document.getElementById('filmstrip-container');
+                if (!container) return;
+                container.innerHTML = '';
 
-            student.images.forEach((base64Data, index) => {
-                const card = document.createElement('div');
-                card.className = 'image-card';
-                card.setAttribute('draggable', true);
-                card.setAttribute('data-index', index);
+                if (student.images.length === 0) {
+                    container.style.display = 'none';
+                    return;
+                }
 
-                card.onclick = () => openLightbox(index);
+                container.style.display = 'grid';
 
-                /* MOUSE DRAG & DROP EVENTS (Skrivbordsdatorer) */
-                card.ondragstart = (e) => {
-                    draggedIndex = index;
-                    card.classList.add('dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                };
+                student.images.forEach((base64Data, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'image-card';
+                    card.setAttribute('draggable', true);
+                    card.setAttribute('data-index', index);
 
-                card.ondragend = () => {
-                    card.classList.remove('dragging');
-                    document.querySelectorAll('.image-card').forEach(el => {
-                        el.classList.remove('drop-indicator-left', 'drop-indicator-right');
-                    });
-                };
+                    card.onclick = () => openLightbox(index);
 
-                card.ondragover = (e) => {
-                    e.preventDefault();
-                    if (draggedIndex === index) return;
+                    /* MOUSE DRAG & DROP EVENTS (Skrivbordsdatorer) */
+                    card.ondragstart = (e) => {
+                        draggedIndex = index;
+                        card.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                    };
 
-                    const rect = card.getBoundingClientRect();
-                    const next = (e.clientX - rect.left) > (rect.width / 2);
+                    card.ondragend = () => {
+                        card.classList.remove('dragging');
+                        document.querySelectorAll('.image-card').forEach(el => {
+                            el.classList.remove('drop-indicator-left', 'drop-indicator-right');
+                        });
+                    };
 
-                    document.querySelectorAll('.image-card').forEach(el => {
-                        el.classList.remove('drop-indicator-left', 'drop-indicator-right');
-                    });
+                    card.ondragover = (e) => {
+                        e.preventDefault();
+                        if (draggedIndex === index) return;
 
-                    if (next) {
-                        if (index + 1 === draggedIndex) return;
-                        card.classList.add('drop-indicator-right');
-                    } else {
-                        if (index - 1 === draggedIndex) return;
-                        card.classList.add('drop-indicator-left');
-                    }
-                };
-
-                card.ondragleave = () => {
-                    card.classList.remove('drop-indicator-left', 'drop-indicator-right');
-                };
-
-                card.ondrop = (e) => {
-                    e.preventDefault();
-                    document.querySelectorAll('.image-card').forEach(el => {
-                        el.classList.remove('drop-indicator-left', 'drop-indicator-right');
-                    });
-
-                    const rect = card.getBoundingClientRect();
-                    const next = (e.clientX - rect.left) > (rect.width / 2);
-                    let targetIndex = parseInt(card.getAttribute('data-index'));
-
-                    if (next) {
-                        targetIndex = targetIndex + 1;
-                    }
-
-                    if (draggedIndex !== null && targetIndex !== draggedIndex) {
-                        const movedImage = student.images.splice(draggedIndex, 1)[0];
-                        let insertIndex = targetIndex;
-                        if (draggedIndex < targetIndex) {
-                            insertIndex--;
-                        }
-                        student.images.splice(insertIndex, 0, movedImage);
-                        renderFilmstrip(student);
-                    }
-                    draggedIndex = null;
-                };
-
-                /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor) */
-                card.addEventListener('touchstart', (e) => {
-                    if (e.target.classList.contains('delete-btn')) return;
-                    activeTouchIndex = index;
-                    card.classList.add('dragging');
-                }, { passive: true });
-
-                card.addEventListener('touchmove', (e) => {
-                    if (activeTouchIndex === null) return;
-                    e.preventDefault();
-
-                    const touch = e.touches[0];
-                    const x = touch.clientX;
-                    const y = touch.clientY;
-
-                    const elementUnderFinger = document.elementFromPoint(x, y);
-                    if (!elementUnderFinger) return;
-
-                    const targetCard = elementUnderFinger.closest('.image-card');
-                    if (targetCard && targetCard !== card) {
-                        const targetIdx = parseInt(targetCard.getAttribute('data-index'));
-                        currentTouchOverIndex = targetIdx;
-
-                        const rect = targetCard.getBoundingClientRect();
-                        const next = (x - rect.left) > (rect.width / 2);
+                        const rect = card.getBoundingClientRect();
+                        const next = (e.clientX - rect.left) > (rect.width / 2);
 
                         document.querySelectorAll('.image-card').forEach(el => {
                             el.classList.remove('drop-indicator-left', 'drop-indicator-right');
                         });
 
                         if (next) {
-                            if (targetIdx + 1 !== activeTouchIndex) {
-                                targetCard.classList.add('drop-indicator-right');
-                                touchOverSide = 'right';
-                            } else {
-                                touchOverSide = null;
-                            }
+                            if (index + 1 === draggedIndex) return;
+                            card.classList.add('drop-indicator-right');
                         } else {
-                            if (targetIdx - 1 !== activeTouchIndex) {
-                                targetCard.classList.add('drop-indicator-left');
-                                touchOverSide = 'left';
-                            } else {
-                                touchOverSide = null;
-                            }
+                            if (index - 1 === draggedIndex) return;
+                            card.classList.add('drop-indicator-left');
                         }
-                    } else {
+                    };
+
+                    card.ondragleave = () => {
+                        card.classList.remove('drop-indicator-left', 'drop-indicator-right');
+                    };
+
+                    card.ondrop = (e) => {
+                        e.preventDefault();
                         document.querySelectorAll('.image-card').forEach(el => {
-                            if (el !== card) {
-                                el.classList.remove('drop-indicator-left', 'drop-indicator-right');
-                            }
+                            el.classList.remove('drop-indicator-left', 'drop-indicator-right');
                         });
-                        currentTouchOverIndex = null;
-                        touchOverSide = null;
-                    }
-                }, { passive: false });
 
-                card.addEventListener('touchend', (e) => {
-                    if (activeTouchIndex === null) return;
+                        const rect = card.getBoundingClientRect();
+                        const next = (e.clientX - rect.left) > (rect.width / 2);
+                        let targetIndex = parseInt(card.getAttribute('data-index'));
 
-                    card.classList.remove('dragging');
-                    document.querySelectorAll('.image-card').forEach(el => {
-                        el.classList.remove('drop-indicator-left', 'drop-indicator-right');
-                    });
-
-                    if (currentTouchOverIndex !== null && touchOverSide !== null) {
-                        let targetIndex = currentTouchOverIndex;
-                        if (touchOverSide === 'right') {
-                            targetIndex++;
+                        if (next) {
+                            targetIndex = targetIndex + 1;
                         }
 
-                        if (targetIndex !== activeTouchIndex) {
-                            const movedImage = student.images.splice(activeTouchIndex, 1)[0];
+                        if (draggedIndex !== null && targetIndex !== draggedIndex) {
+                            const movedImage = student.images.splice(draggedIndex, 1)[0];
                             let insertIndex = targetIndex;
-                            if (activeTouchIndex < targetIndex) {
+                            if (draggedIndex < targetIndex) {
                                 insertIndex--;
                             }
                             student.images.splice(insertIndex, 0, movedImage);
                             renderFilmstrip(student);
                         }
-                    }
+                        draggedIndex = null;
+                    };
 
-                    activeTouchIndex = null;
-                    currentTouchOverIndex = null;
-                    touchOverSide = null;
-                });
+                    /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor) */
+                    card.addEventListener('touchstart', (e) => {
+                        if (e.target.classList.contains('delete-btn')) return;
+                        activeTouchIndex = index;
+                        card.classList.add('dragging');
+                    }, { passive: true });
 
-                card.innerHTML = `
+                    card.addEventListener('touchmove', (e) => {
+                        if (activeTouchIndex === null) return;
+                        e.preventDefault();
+
+                        const touch = e.touches[0];
+                        const x = touch.clientX;
+                        const y = touch.clientY;
+
+                        const elementUnderFinger = document.elementFromPoint(x, y);
+                        if (!elementUnderFinger) return;
+
+                        const targetCard = elementUnderFinger.closest('.image-card');
+                        if (targetCard && targetCard !== card) {
+                            const targetIdx = parseInt(targetCard.getAttribute('data-index'));
+                            currentTouchOverIndex = targetIdx;
+
+                            const rect = targetCard.getBoundingClientRect();
+                            const next = (x - rect.left) > (rect.width / 2);
+
+                            document.querySelectorAll('.image-card').forEach(el => {
+                                el.classList.remove('drop-indicator-left', 'drop-indicator-right');
+                            });
+
+                            if (next) {
+                                if (targetIdx + 1 !== activeTouchIndex) {
+                                    targetCard.classList.add('drop-indicator-right');
+                                    touchOverSide = 'right';
+                                } else {
+                                    touchOverSide = null;
+                                }
+                            } else {
+                                if (targetIdx - 1 !== activeTouchIndex) {
+                                    targetCard.classList.add('drop-indicator-left');
+                                    touchOverSide = 'left';
+                                } else {
+                                    touchOverSide = null;
+                                }
+                            }
+                        } else {
+                            document.querySelectorAll('.image-card').forEach(el => {
+                                if (el !== card) {
+                                    el.classList.remove('drop-indicator-left', 'drop-indicator-right');
+                                }
+                            });
+                            currentTouchOverIndex = null;
+                            touchOverSide = null;
+                        }
+                    }, { passive: false });
+
+                    card.addEventListener('touchend', (e) => {
+                        if (activeTouchIndex === null) return;
+
+                        card.classList.remove('dragging');
+                        document.querySelectorAll('.image-card').forEach(el => {
+                            el.classList.remove('drop-indicator-left', 'drop-indicator-right');
+                        });
+
+                        if (currentTouchOverIndex !== null && touchOverSide !== null) {
+                            let targetIndex = currentTouchOverIndex;
+                            if (touchOverSide === 'right') {
+                                targetIndex++;
+                            }
+
+                            if (targetIndex !== activeTouchIndex) {
+                                const movedImage = student.images.splice(activeTouchIndex, 1)[0];
+                                let insertIndex = targetIndex;
+                                if (activeTouchIndex < targetIndex) {
+                                    insertIndex--;
+                                }
+                                student.images.splice(insertIndex, 0, movedImage);
+                                renderFilmstrip(student);
+                            }
+                        }
+
+                        activeTouchIndex = null;
+                        currentTouchOverIndex = null;
+                        touchOverSide = null;
+                    });
+
+                    card.innerHTML = `
                     <button class="delete-btn" onclick="deleteImage(${index}, event)" title="Ta bort bild">✕</button>
                     <img src="${base64Data}" alt="Sida ${index + 1}">
                     <div class="page-number">Sida ${index + 1}</div>
                 `;
-                container.appendChild(card);
-            });
-        }
-
-        async function getAvailableCameras() {
-            try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                availableVideoDevices = devices.filter(device => device.kind === 'videoinput');
-                const switchBtn = document.getElementById('camera-switch-btn');
-                if (switchBtn) {
-                    switchBtn.style.display = availableVideoDevices.length > 1 ? 'flex' : 'none';
-                }
-            } catch (err) {
-                console.error("Kunde inte lista kameror:", err);
+                    container.appendChild(card);
+                });
             }
-        }
 
-        async function startCamera() {
-            const student = session.students.find(s => s.id === currentView);
-            if (!student) return;
-
-            const modal = document.getElementById('camera-modal');
-            const video = document.getElementById('camera-video');
-            const counter = document.getElementById('camera-counter');
-
-            counter.innerText = `Tagna bilder: ${student.images.length}`;
-            modal.classList.add('active');
-
-            try {
-                if (availableVideoDevices.length === 0) {
-                    await getAvailableCameras();
-                }
-
-                let constraints = {
-                    audio: false,
-                    video: {
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 }
-                    }
-                };
-
-                if (availableVideoDevices.length > 0) {
-                    const activeDevice = availableVideoDevices[currentVideoDeviceIndex];
-                    constraints.video.deviceId = { exact: activeDevice.deviceId };
-                } else {
-                    constraints.video.facingMode = { ideal: "environment" };
-                }
-
-                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = cameraStream;
-                
-                await getAvailableCameras();
-            } catch (err) {
-                console.error("Kameramisslyckande, försöker med fallback:", err);
-                
+            async function getAvailableCameras() {
                 try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    availableVideoDevices = devices.filter(device => device.kind === 'videoinput');
+                    const switchBtn = document.getElementById('camera-switch-btn');
+                    if (switchBtn) {
+                        switchBtn.style.display = availableVideoDevices.length > 1 ? 'flex' : 'none';
+                    }
+                } catch (err) {
+                    console.error("Kunde inte lista kameror:", err);
+                }
+            }
+
+            async function startCamera() {
+                const student = session.students.find(s => s.id === currentView);
+                if (!student) return;
+
+                const modal = document.getElementById('camera-modal');
+                const video = document.getElementById('camera-video');
+                const counter = document.getElementById('camera-counter');
+
+                counter.innerText = `Tagna bilder: ${student.images.length}`;
+                modal.classList.add('active');
+
+                try {
+                    if (availableVideoDevices.length === 0) {
+                        await getAvailableCameras();
+                    }
+
+                    let constraints = {
+                        audio: false,
+                        video: {
+                            width: { ideal: 1920 },
+                            height: { ideal: 1080 }
+                        }
+                    };
+
+                    if (availableVideoDevices.length > 0) {
+                        const activeDevice = availableVideoDevices[currentVideoDeviceIndex];
+                        constraints.video.deviceId = { exact: activeDevice.deviceId };
+                    } else {
+                        constraints.video.facingMode = { ideal: "environment" };
+                    }
+
+                    cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                    video.srcObject = cameraStream;
+
+                    await getAvailableCameras();
+                } catch (err) {
+                    console.error("Kameramisslyckande, försöker med fallback:", err);
+
+                    try {
+                        cameraStream = await navigator.mediaDevices.getUserMedia({
+                            video: { facingMode: { ideal: "environment" } },
+                            audio: false
+                        });
+                        video.srcObject = cameraStream;
+                    } catch (fallbackErr) {
+                        console.error("Även fallback misslyckades:", fallbackErr);
+                        modal.classList.remove('active');
+                        showToast("Kunde inte starta kameran. Se till att du tillåtit behörighet och kör via en säker anslutning (HTTPS/localhost).", "error");
+                    }
+                }
+            }
+
+            async function switchCamera() {
+                if (availableVideoDevices.length <= 1) return;
+
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
+                }
+
+                currentVideoDeviceIndex = (currentVideoDeviceIndex + 1) % availableVideoDevices.length;
+
+                const video = document.getElementById('camera-video');
+                try {
+                    const activeDevice = availableVideoDevices[currentVideoDeviceIndex];
                     cameraStream = await navigator.mediaDevices.getUserMedia({
-                        video: { facingMode: { ideal: "environment" } },
+                        video: {
+                            deviceId: { exact: activeDevice.deviceId },
+                            width: { ideal: 1920 },
+                            height: { ideal: 1080 }
+                        },
                         audio: false
                     });
                     video.srcObject = cameraStream;
-                } catch (fallbackErr) {
-                    console.error("Även fallback misslyckades:", fallbackErr);
-                    modal.classList.remove('active');
-                    showToast("Kunde inte starta kameran. Se till att du tillåtit behörighet och kör via en säker anslutning (HTTPS/localhost).", "error");
+                    showToast("Bytte kamera.", "info");
+                } catch (err) {
+                    console.error("Misslyckades att byta kamera:", err);
+                    showToast("Kunde inte växla till den valda kameran.", "error");
+                    startCamera();
                 }
             }
-        }
 
-        async function switchCamera() {
-            if (availableVideoDevices.length <= 1) return;
+            function stopCamera() {
+                const modal = document.getElementById('camera-modal');
+                modal.classList.remove('active');
 
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
+                }
+
+                const student = session.students.find(s => s.id === currentView);
+                if (student) {
+                    updateBadges();
+                    updateBatchButtonState();
+                    renderFilmstrip(student);
+                }
             }
 
-            currentVideoDeviceIndex = (currentVideoDeviceIndex + 1) % availableVideoDevices.length;
-            
-            const video = document.getElementById('camera-video');
-            try {
-                const activeDevice = availableVideoDevices[currentVideoDeviceIndex];
-                cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        deviceId: { exact: activeDevice.deviceId },
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 }
-                    },
-                    audio: false
-                });
-                video.srcObject = cameraStream;
-                showToast("Bytte kamera.", "info");
-            } catch (err) {
-                console.error("Misslyckades att byta kamera:", err);
-                showToast("Kunde inte växla till den valda kameran.", "error");
-                startCamera();
-            }
-        }
-
-        function stopCamera() {
-            const modal = document.getElementById('camera-modal');
-            modal.classList.remove('active');
-
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
+            function openSettingsModal() {
+                const modal = document.getElementById('settings-modal');
+                modal.style.display = 'flex';
+                void modal.offsetHeight;
+                modal.classList.add('active');
+                document.addEventListener('keydown', handleSettingsKeyboard);
             }
 
-            const student = session.students.find(s => s.id === currentView);
-            if (student) {
+            function closeSettingsModal(event) {
+                if (event) event.stopPropagation();
+                const modal = document.getElementById('settings-modal');
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    if (!modal.classList.contains('active')) {
+                        modal.style.display = 'none';
+                    }
+                }, 250);
+                document.removeEventListener('keydown', handleSettingsKeyboard);
+            }
+
+            function handleSettingsKeyboard(e) {
+                if (e.key === 'Escape') closeSettingsModal();
+            }
+
+            function captureSnapshot() {
+                const video = document.getElementById('camera-video');
+                const flash = document.getElementById('camera-flash');
+                const counter = document.getElementById('camera-counter');
+                const student = session.students.find(s => s.id === currentView);
+
+                if (!video || !student) return;
+
+                flash.classList.remove('flash-active');
+                void flash.offsetWidth;
+                flash.classList.add('flash-active');
+
+                const guideBox = document.querySelector('.guide-box');
+                if (guideBox) {
+                    guideBox.classList.remove('flash-success');
+                    void guideBox.offsetWidth;
+                    guideBox.classList.add('flash-success');
+                }
+
+                playShutterSound();
+
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth || 1280;
+                canvas.height = video.videoHeight || 720;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const base64Data = canvas.toDataURL('image/jpeg', 0.85);
+                student.images.push(base64Data);
+
+                counter.innerText = `Tagna bilder: ${student.images.length}`;
+            }
+
+            function playShutterSound() {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const bufferSize = audioCtx.sampleRate * 0.1;
+                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const data = buffer.getChannelData(0);
+
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+
+                    const noise = audioCtx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'highpass';
+                    filter.frequency.value = 1200;
+
+                    const gain = audioCtx.createGain();
+                    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    noise.start();
+                } catch (e) {
+                    console.warn("Kunde inte spela klick-ljud:", e);
+                }
+            }
+
+            function handleImageUpload(event) {
+                const files = event.target.files;
+                if (!files.length) return;
+
+                const student = session.students.find(s => s.id === currentView);
+                if (!student) return;
+
+                let loadedCount = 0;
+
+                for (let i = 0; i < files.length; i++) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        student.images.push(e.target.result);
+                        loadedCount++;
+
+                        if (loadedCount === files.length) {
+                            updateBadges();
+                            updateBatchButtonState();
+                            renderFilmstrip(student);
+                            event.target.value = '';
+                        }
+                    };
+                    reader.readAsDataURL(files[i]);
+                }
+            }
+
+            function deleteImage(index, event) {
+                event.stopPropagation();
+                const student = session.students.find(s => s.id === currentView);
+                if (!student) return;
+
+                student.images.splice(index, 1);
                 updateBadges();
                 updateBatchButtonState();
                 renderFilmstrip(student);
             }
-        }
 
-        function openSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.style.display = 'flex';
-            void modal.offsetHeight;
-            modal.classList.add('active');
-            document.addEventListener('keydown', handleSettingsKeyboard);
-        }
-
-        function closeSettingsModal(event) {
-            if (event) event.stopPropagation();
-            const modal = document.getElementById('settings-modal');
-            modal.classList.remove('active');
-            setTimeout(() => {
-                if (!modal.classList.contains('active')) {
-                    modal.style.display = 'none';
-                }
-            }, 250);
-            document.removeEventListener('keydown', handleSettingsKeyboard);
-        }
-
-        function handleSettingsKeyboard(e) {
-            if (e.key === 'Escape') closeSettingsModal();
-        }
-
-        function captureSnapshot() {
-            const video = document.getElementById('camera-video');
-            const flash = document.getElementById('camera-flash');
-            const counter = document.getElementById('camera-counter');
-            const student = session.students.find(s => s.id === currentView);
-
-            if (!video || !student) return;
-
-            flash.classList.remove('flash-active');
-            void flash.offsetWidth;
-            flash.classList.add('flash-active');
-
-            const guideBox = document.querySelector('.guide-box');
-            if (guideBox) {
-                guideBox.classList.remove('flash-success');
-                void guideBox.offsetWidth;
-                guideBox.classList.add('flash-success');
+            function updateBadges() {
+                session.students.forEach(s => {
+                    const badge = document.getElementById(`badge-student-${s.id}`);
+                    if (badge) badge.innerText = s.images.length;
+                });
             }
 
-            playShutterSound();
+            function openLightbox(index) {
+                const student = session.students.find(s => s.id === currentView);
+                if (!student || !student.images[index]) return;
 
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 1280;
-            canvas.height = video.videoHeight || 720;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                lightboxIndex = index;
+                const lightbox = document.getElementById('lightbox');
+                const img = document.getElementById('lightbox-img');
+                const caption = document.getElementById('lightbox-caption');
 
-            const base64Data = canvas.toDataURL('image/jpeg', 0.85);
-            student.images.push(base64Data);
+                img.src = student.images[index];
+                caption.innerText = `Sida ${index + 1} av ${student.images.length}`;
 
-            counter.innerText = `Tagna bilder: ${student.images.length}`;
-        }
+                lightbox.classList.add('active');
 
-        function playShutterSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const bufferSize = audioCtx.sampleRate * 0.1;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = buffer;
-
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'highpass';
-                filter.frequency.value = 1200;
-
-                const gain = audioCtx.createGain();
-                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-
-                noise.connect(filter);
-                filter.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                noise.start();
-            } catch (e) {
-                console.warn("Kunde inte spela klick-ljud:", e);
+                document.addEventListener('keydown', handleLightboxKeyboard);
             }
-        }
 
-        function handleImageUpload(event) {
-            const files = event.target.files;
-            if (!files.length) return;
+            function closeLightbox(event) {
+                if (event) event.stopPropagation();
+                const lightbox = document.getElementById('lightbox');
+                lightbox.classList.remove('active');
 
-            const student = session.students.find(s => s.id === currentView);
-            if (!student) return;
-
-            let loadedCount = 0;
-
-            for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    student.images.push(e.target.result);
-                    loadedCount++;
-
-                    if (loadedCount === files.length) {
-                        updateBadges();
-                        updateBatchButtonState();
-                        renderFilmstrip(student);
-                        event.target.value = '';
-                    }
-                };
-                reader.readAsDataURL(files[i]);
+                document.removeEventListener('keydown', handleLightboxKeyboard);
             }
-        }
 
-        function deleteImage(index, event) {
-            event.stopPropagation();
-            const student = session.students.find(s => s.id === currentView);
-            if (!student) return;
+            function navigateLightbox(direction, event) {
+                if (event) event.stopPropagation();
+                const student = session.students.find(s => s.id === currentView);
+                if (!student) return;
 
-            student.images.splice(index, 1);
-            updateBadges();
-            updateBatchButtonState();
-            renderFilmstrip(student);
-        }
+                lightboxIndex += direction;
+                if (lightboxIndex >= student.images.length) lightboxIndex = 0;
+                if (lightboxIndex < 0) lightboxIndex = student.images.length - 1;
 
-        function updateBadges() {
-            session.students.forEach(s => {
-                const badge = document.getElementById(`badge-student-${s.id}`);
-                if (badge) badge.innerText = s.images.length;
-            });
-        }
+                const img = document.getElementById('lightbox-img');
+                const caption = document.getElementById('lightbox-caption');
 
-        function openLightbox(index) {
-            const student = session.students.find(s => s.id === currentView);
-            if (!student || !student.images[index]) return;
+                img.src = student.images[lightboxIndex];
+                caption.innerText = `Sida ${lightboxIndex + 1} av ${student.images.length}`;
+            }
 
-            lightboxIndex = index;
-            const lightbox = document.getElementById('lightbox');
-            const img = document.getElementById('lightbox-img');
-            const caption = document.getElementById('lightbox-caption');
+            function handleLightboxKeyboard(e) {
+                if (e.key === 'ArrowRight') navigateLightbox(1);
+                else if (e.key === 'ArrowLeft') navigateLightbox(-1);
+                else if (e.key === 'Escape') closeLightbox();
+            }
 
-            img.src = student.images[index];
-            caption.innerText = `Sida ${index + 1} av ${student.images.length}`;
+            function initLightboxSwipe() {
+                const lightbox = document.getElementById('lightbox');
+                if (!lightbox) return;
 
-            lightbox.classList.add('active');
+                lightbox.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    touchStartY = e.changedTouches[0].screenY;
+                }, { passive: true });
 
-            document.addEventListener('keydown', handleLightboxKeyboard);
-        }
+                lightbox.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    touchEndY = e.changedTouches[0].screenY;
+                    handleSwipeGesture();
+                }, { passive: true });
+            }
 
-        function closeLightbox(event) {
-            if (event) event.stopPropagation();
-            const lightbox = document.getElementById('lightbox');
-            lightbox.classList.remove('active');
+            function handleSwipeGesture() {
+                const diffX = touchEndX - touchStartX;
+                const diffY = touchEndY - touchStartY;
 
-            document.removeEventListener('keydown', handleLightboxKeyboard);
-        }
-
-        function navigateLightbox(direction, event) {
-            if (event) event.stopPropagation();
-            const student = session.students.find(s => s.id === currentView);
-            if (!student) return;
-
-            lightboxIndex += direction;
-            if (lightboxIndex >= student.images.length) lightboxIndex = 0;
-            if (lightboxIndex < 0) lightboxIndex = student.images.length - 1;
-
-            const img = document.getElementById('lightbox-img');
-            const caption = document.getElementById('lightbox-caption');
-
-            img.src = student.images[lightboxIndex];
-            caption.innerText = `Sida ${lightboxIndex + 1} av ${student.images.length}`;
-        }
-
-        function handleLightboxKeyboard(e) {
-            if (e.key === 'ArrowRight') navigateLightbox(1);
-            else if (e.key === 'ArrowLeft') navigateLightbox(-1);
-            else if (e.key === 'Escape') closeLightbox();
-        }
-
-        function initLightboxSwipe() {
-            const lightbox = document.getElementById('lightbox');
-            if (!lightbox) return;
-
-            lightbox.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-                touchStartY = e.changedTouches[0].screenY;
-            }, { passive: true });
-
-            lightbox.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                touchEndY = e.changedTouches[0].screenY;
-                handleSwipeGesture();
-            }, { passive: true });
-        }
-
-        function handleSwipeGesture() {
-            const diffX = touchEndX - touchStartX;
-            const diffY = touchEndY - touchStartY;
-            
-            // Kolla så det var ett horisontellt svep och inte vertikalt scroll/svep
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > 50) { // Sveptröskel på 50px
-                    if (diffX > 0) {
-                        // Svep höger -> Föregående bild
-                        navigateLightbox(-1);
-                    } else {
-                        // Svep vänster -> Nästa bild
-                        navigateLightbox(1);
+                // Kolla så det var ett horisontellt svep och inte vertikalt scroll/svep
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (Math.abs(diffX) > 50) { // Sveptröskel på 50px
+                        if (diffX > 0) {
+                            // Svep höger -> Föregående bild
+                            navigateLightbox(-1);
+                        } else {
+                            // Svep vänster -> Nästa bild
+                            navigateLightbox(1);
+                        }
                     }
                 }
             }
-        }
 
-        function renderStudentList() {
-            const container = document.getElementById('student-list-container');
-            container.innerHTML = '';
+            function renderStudentList() {
+                const container = document.getElementById('student-list-container');
+                container.innerHTML = '';
 
-            if (session.students.length === 0) {
-                container.innerHTML = `
+                if (session.students.length === 0) {
+                    container.innerHTML = `
                     <div style="text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 0.9rem;">
                         Inga elever tillagda i kön ännu.
                     </div>`;
-                return;
-            }
+                } else {
+                    session.students.forEach(student => {
+                        const div = document.createElement('div');
+                        div.id = `nav-student-${student.id}`;
+                        div.className = `nav-item ${currentView === student.id ? 'active' : ''}`;
+                        div.onclick = () => switchView(student.id);
 
-            session.students.forEach(student => {
-                const div = document.createElement('div');
-                div.id = `nav-student-${student.id}`;
-                div.className = `nav-item ${currentView === student.id ? 'active' : ''}`;
-                div.onclick = () => switchView(student.id);
+                        let statusClass = `status-${student.status}`;
+                        let statusText = 'Köad';
+                        if (student.status === 'processing') statusText = 'Rättar...';
+                        else if (student.status === 'done') statusText = 'Klar';
+                        else if (student.status === 'error') statusText = 'Fel';
 
-                let statusClass = `status-${student.status}`;
-                let statusText = 'Köad';
-                if (student.status === 'processing') statusText = 'Rättar...';
-                else if (student.status === 'done') statusText = 'Klar';
-                else if (student.status === 'error') statusText = 'Fel';
-
-                div.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
-                        <span class="status-badge ${statusClass}" style="flex-shrink: 0;">${statusText}</span>
-                        <strong style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${student.name}</strong>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 8px;">
-                        <span class="badge" id="badge-student-${student.id}">${student.images.length}</span>
-                        <button class="btn-edit-outline" onclick="openRenameStudentModal(${student.id}, event)" title="Byt namn">
-                            <i class="fa-regular fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn-danger-outline" onclick="deleteStudent(${student.id}, event)" title="Ta bort elev">
-                            <i class="fa-regular fa-trash-can"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        async function processBatch() {
-            const apiKey = document.getElementById('apiKey').value;
-            const apiUrl = document.getElementById('apiUrl').value;
-
-            if (!apiKey) {
-                showToast("Du måste ange din Berget AI API-nyckel i sidhuvudet först.", "error");
-                return;
-            }
-
-            const activeStudents = session.students.filter(s => s.images.length > 0);
-            if (activeStudents.length === 0) {
-                showToast("Det finns inga elever med uppladdade bilder i kön.", "error");
-                return;
-            }
-
-            isProcessing = true;
-            const startBtn = document.getElementById('start-btn');
-            const stopBtn = document.getElementById('stop-btn');
-
-            startBtn.disabled = true;
-            startBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Bearbetar kö...`;
-            stopBtn.style.display = 'inline-flex';
-            updateExportAllButtonState();
-
-            for (let student of session.students) {
-                if (!isProcessing) break;
-                if (student.images.length === 0) continue;
-
-                student.status = 'processing';
-                student.report = '';
-                renderStudentList();
-
-                if (currentView === student.id) {
-                    renderWorkspace();
-                    setWorkspaceTab('report');
-                }
-
-                try {
-                    currentAbortController = new AbortController();
-
-                    await callBergetAI(apiUrl, apiKey, student, currentAbortController.signal, (chunk) => {
-                        student.report += chunk;
-
-                        if (currentView === student.id) {
-                            const reportTextBox = document.getElementById('report-text-box');
-                            const tabBtnReport = document.getElementById('tab-btn-report');
-
-                            if (tabBtnReport) {
-                                tabBtnReport.removeAttribute('disabled');
-                            }
-
-                            if (reportTextBox) {
-                                reportTextBox.innerHTML = marked.parse(student.report);
-                                reportTextBox.scrollTop = reportTextBox.scrollHeight;
-                            }
-                        }
+                        div.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
+                            <span class="status-badge ${statusClass}" style="flex-shrink: 0;">${statusText}</span>
+                            <strong style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${student.name}</strong>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 8px;">
+                            <span class="badge" id="badge-student-${student.id}">${student.images.length}</span>
+                            <button class="btn-edit-outline" onclick="openRenameStudentModal(${student.id}, event)" title="Byt namn">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn-danger-outline" onclick="deleteStudent(${student.id}, event)" title="Ta bort elev">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                    `;
+                        container.appendChild(div);
                     });
-
-                    if (isProcessing) {
-                        student.status = 'done';
-                    }
-                } catch (error) {
-                    if (error.name === 'AbortError') {
-                        console.log("Anropet avbröts av användaren.");
-                    } else {
-                        console.error("API Fel:", error);
-                        student.report = `Ett fel uppstod vid kommunikation med Berget AI: ${error.message}`;
-                        student.status = 'error';
-                    }
                 }
 
-                renderStudentList();
-                if (currentView === student.id) renderWorkspace();
+                // Lägg till "Lägg till"-pillen i slutet av listan för full mobilkompatibilitet
+                const addPill = document.createElement('div');
+                addPill.className = 'nav-item add-student-pill';
+                addPill.onclick = (e) => {
+                    e.stopPropagation();
+                    openAddStudentModal();
+                };
+                addPill.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 6px; justify-content: center; width: 100%; color: var(--primary); font-weight: 600;">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Lägg till</span>
+                </div>
+            `;
+                container.appendChild(addPill);
             }
 
-            resetBatchState();
-        }
+            async function processBatch() {
+                const apiKey = document.getElementById('apiKey').value;
+                const apiUrl = document.getElementById('apiUrl').value;
 
-        function cancelBatch() {
-            if (!isProcessing) return;
-            isProcessing = false;
-
-            if (currentAbortController) {
-                currentAbortController.abort();
-            }
-
-            showToast("Körningen avbröts av användaren.", "error");
-
-            session.students.forEach(s => {
-                if (s.status === 'processing') {
-                    s.status = 'error';
-                    s.report += "\n\n[Rättningen avbröts av användaren]";
+                if (!apiKey) {
+                    showToast("Du måste ange din Berget AI API-nyckel i sidhuvudet först.", "error");
+                    return;
                 }
-            });
 
-            resetBatchState();
-            renderStudentList();
-            renderWorkspace();
-        }
+                const activeStudents = session.students.filter(s => s.images.length > 0);
+                if (activeStudents.length === 0) {
+                    showToast("Det finns inga elever med uppladdade bilder i kön.", "error");
+                    return;
+                }
 
-        function resetBatchState() {
-            isProcessing = false;
-            currentAbortController = null;
+                isProcessing = true;
+                const startBtn = document.getElementById('start-btn');
+                const stopBtn = document.getElementById('stop-btn');
 
-            const startBtn = document.getElementById('start-btn');
-            const stopBtn = document.getElementById('stop-btn');
+                startBtn.disabled = true;
+                startBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Bearbetar kö...`;
+                stopBtn.style.display = 'inline-flex';
+                updateExportAllButtonState();
 
-            if (startBtn) {
-                startBtn.disabled = false;
-                startBtn.innerHTML = `<i class="fa-solid fa-play"></i> Starta rättning`;
-            }
-            if (stopBtn) {
-                stopBtn.style.display = 'none';
-            }
-            updateBatchButtonState();
-            updateExportAllButtonState();
-        }
+                for (let student of session.students) {
+                    if (!isProcessing) break;
+                    if (student.images.length === 0) continue;
 
-        async function callBergetAI(url, key, student, signal, onChunk) {
-            const contentArray = [];
+                    student.status = 'processing';
+                    student.report = '';
+                    renderStudentList();
 
-            const selectedPromptId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
-            const template = PROMPT_TEMPLATES.find(t => t.id === selectedPromptId) || PROMPT_TEMPLATES[0];
-            const customText = localStorage.getItem(`rattaren_custom_prompt_${selectedPromptId}`);
-            let rawPromptText = customText !== null ? customText : template.defaultText;
-
-            const promptText = rawPromptText.replace(/{studentName}/g, student.name);
-
-            contentArray.push({
-                type: "text",
-                text: promptText
-            });
-
-            student.images.forEach((base64, index) => {
-                contentArray.push({ type: "text", text: `[Provsida ${index + 1}]` });
-                contentArray.push({
-                    type: "image_url",
-                    image_url: { url: base64 }
-                });
-            });
-
-            const modelSelectVal = document.getElementById('modelSelect').value;
-            const payload = {
-                model: modelSelectVal || "moonshotai/Kimi-K2.6",
-                messages: [
-                    {
-                        role: "user",
-                        content: contentArray
+                    if (currentView === student.id) {
+                        renderWorkspace();
+                        setWorkspaceTab('report');
                     }
-                ],
-                temperature: 0.3,
-                stream: true
-            };
 
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${key}`
-                },
-                body: JSON.stringify(payload),
-                signal: signal
-            });
+                    try {
+                        currentAbortController = new AbortController();
 
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`HTTP ${response.status}: ${errText}`);
-            }
+                        await callBergetAI(apiUrl, apiKey, student, currentAbortController.signal, (chunk) => {
+                            student.report += chunk;
 
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder("utf-8");
-            let buffer = "";
+                            if (currentView === student.id) {
+                                const reportTextBox = document.getElementById('report-text-box');
+                                const tabBtnReport = document.getElementById('tab-btn-report');
 
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done) break;
+                                if (tabBtnReport) {
+                                    tabBtnReport.removeAttribute('disabled');
+                                }
 
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split("\n");
-
-                buffer = lines.pop();
-
-                for (const line of lines) {
-                    const cleanedLine = line.trim();
-                    if (!cleanedLine) continue;
-                    if (cleanedLine === "data: [DONE]") continue;
-
-                    if (cleanedLine.startsWith("data: ")) {
-                        try {
-                            const jsonStr = cleanedLine.slice(6);
-                            const parsed = JSON.parse(jsonStr);
-                            const deltaContent = parsed.choices?.[0]?.delta?.content || "";
-                            if (deltaContent) {
-                                onChunk(deltaContent);
+                                if (reportTextBox) {
+                                    reportTextBox.innerHTML = marked.parse(student.report);
+                                    reportTextBox.scrollTop = reportTextBox.scrollHeight;
+                                }
                             }
-                        } catch (e) {
-                            console.warn("Kunde inte tolka strömmande rad:", cleanedLine, e);
+                        });
+
+                        if (isProcessing) {
+                            student.status = 'done';
+                        }
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            console.log("Anropet avbröts av användaren.");
+                        } else {
+                            console.error("API Fel:", error);
+                            student.report = `Ett fel uppstod vid kommunikation med Berget AI: ${error.message}`;
+                            student.status = 'error';
+                        }
+                    }
+
+                    renderStudentList();
+                    if (currentView === student.id) renderWorkspace();
+                }
+
+                resetBatchState();
+            }
+
+            function cancelBatch() {
+                if (!isProcessing) return;
+                isProcessing = false;
+
+                if (currentAbortController) {
+                    currentAbortController.abort();
+                }
+
+                showToast("Körningen avbröts av användaren.", "error");
+
+                session.students.forEach(s => {
+                    if (s.status === 'processing') {
+                        s.status = 'error';
+                        s.report += "\n\n[Rättningen avbröts av användaren]";
+                    }
+                });
+
+                resetBatchState();
+                renderStudentList();
+                renderWorkspace();
+            }
+
+            function resetBatchState() {
+                isProcessing = false;
+                currentAbortController = null;
+
+                const startBtn = document.getElementById('start-btn');
+                const stopBtn = document.getElementById('stop-btn');
+
+                if (startBtn) {
+                    startBtn.disabled = false;
+                    startBtn.innerHTML = `<i class="fa-solid fa-play"></i> Starta rättning`;
+                }
+                if (stopBtn) {
+                    stopBtn.style.display = 'none';
+                }
+                updateBatchButtonState();
+                updateExportAllButtonState();
+            }
+
+            async function callBergetAI(url, key, student, signal, onChunk) {
+                const contentArray = [];
+
+                const selectedPromptId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
+                const template = PROMPT_TEMPLATES.find(t => t.id === selectedPromptId) || PROMPT_TEMPLATES[0];
+                const customText = localStorage.getItem(`rattaren_custom_prompt_${selectedPromptId}`);
+                let rawPromptText = customText !== null ? customText : template.defaultText;
+
+                const promptText = rawPromptText.replace(/{studentName}/g, student.name);
+
+                contentArray.push({
+                    type: "text",
+                    text: promptText
+                });
+
+                student.images.forEach((base64, index) => {
+                    contentArray.push({ type: "text", text: `[Provsida ${index + 1}]` });
+                    contentArray.push({
+                        type: "image_url",
+                        image_url: { url: base64 }
+                    });
+                });
+
+                const modelSelectVal = document.getElementById('modelSelect').value;
+                const payload = {
+                    model: modelSelectVal || "moonshotai/Kimi-K2.6",
+                    messages: [
+                        {
+                            role: "user",
+                            content: contentArray
+                        }
+                    ],
+                    temperature: 0.3,
+                    stream: true
+                };
+
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${key}`
+                    },
+                    body: JSON.stringify(payload),
+                    signal: signal
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errText}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let buffer = "";
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split("\n");
+
+                    buffer = lines.pop();
+
+                    for (const line of lines) {
+                        const cleanedLine = line.trim();
+                        if (!cleanedLine) continue;
+                        if (cleanedLine === "data: [DONE]") continue;
+
+                        if (cleanedLine.startsWith("data: ")) {
+                            try {
+                                const jsonStr = cleanedLine.slice(6);
+                                const parsed = JSON.parse(jsonStr);
+                                const deltaContent = parsed.choices?.[0]?.delta?.content || "";
+                                if (deltaContent) {
+                                    onChunk(deltaContent);
+                                }
+                            } catch (e) {
+                                console.warn("Kunde inte tolka strömmande rad:", cleanedLine, e);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        function exportToWord() {
-            const student = session.students.find(s => s.id === currentView);
-            if (!student || !student.report) return;
+            function exportToWord() {
+                const student = session.students.find(s => s.id === currentView);
+                if (!student || !student.report) return;
 
-            const htmlContent = `
+                const htmlContent = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head><title>Rättningsrapport: ${student.name}</title>
                 <style>
@@ -2779,26 +2812,26 @@ Rapporten ska innehålla:
                 </html>
             `;
 
-            const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Rattning_${student.name.replace(/\s+/g, '_')}.doc`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast("Rapport nedladdad som Word-fil!", "success");
-        }
-
-        function exportAllReportsToWord() {
-            const completedStudents = session.students.filter(s => s.report && s.status === 'done');
-            if (completedStudents.length === 0) {
-                showToast("Det finns inga klara rapporter att ladda ner.", "error");
-                return;
+                const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Rattning_${student.name.replace(/\s+/g, '_')}.doc`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast("Rapport nedladdad som Word-fil!", "success");
             }
 
-            let combinedHtml = `
+            function exportAllReportsToWord() {
+                const completedStudents = session.students.filter(s => s.report && s.status === 'done');
+                if (completedStudents.length === 0) {
+                    showToast("Det finns inga klara rapporter att ladda ner.", "error");
+                    return;
+                }
+
+                let combinedHtml = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head>
                     <title>Samlade Rättningsrapporter</title>
@@ -2815,9 +2848,9 @@ Rapporten ska innehålla:
                 <body>
             `;
 
-            completedStudents.forEach((student, index) => {
-                const pageBreakClass = index > 0 ? 'class="page-break"' : '';
-                combinedHtml += `
+                completedStudents.forEach((student, index) => {
+                    const pageBreakClass = index > 0 ? 'class="page-break"' : '';
+                    combinedHtml += `
                     <div ${pageBreakClass}>
                         <h1>Rättningsrapport: ${student.name}</h1>
                         <div style="margin-top: 20px;">
@@ -2825,88 +2858,89 @@ Rapporten ska innehålla:
                         </div>
                     </div>
                 `;
-            });
+                });
 
-            combinedHtml += `
+                combinedHtml += `
                 </body>
                 </html>
             `;
 
-            const blob = new Blob(['\ufeff' + combinedHtml], { type: 'application/msword' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Alla_Rattningsrapporter_${new Date().toISOString().slice(0, 10)}.doc`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast("Alla rapporter har laddats ner i ett samlat dokument!", "success");
-        }
-
-        function exportToEmail() {
-            const student = session.students.find(s => s.id === currentView);
-            if (!student || !student.report) return;
-
-            const subject = encodeURIComponent(`Rättningsrapport: ${student.name}`);
-            const body = encodeURIComponent(student.report);
-
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
-        }
-
-        // Tema Hantering (Mörkt/Ljust läge)
-        function initTheme() {
-            const savedTheme = localStorage.getItem('rattaren_theme');
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            const isDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
-            if (isDark) {
-                document.body.classList.add('dark-theme');
-            } else {
-                document.body.classList.remove('dark-theme');
+                const blob = new Blob(['\ufeff' + combinedHtml], { type: 'application/msword' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Alla_Rattningsrapporter_${new Date().toISOString().slice(0, 10)}.doc`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast("Alla rapporter har laddats ner i ett samlat dokument!", "success");
             }
-            updateThemeToggleIcon(isDark);
-        }
 
-        function toggleTheme() {
-            const isDark = document.body.classList.toggle('dark-theme');
-            localStorage.setItem('rattaren_theme', isDark ? 'dark' : 'light');
-            updateThemeToggleIcon(isDark);
-        }
+            function exportToEmail() {
+                const student = session.students.find(s => s.id === currentView);
+                if (!student || !student.report) return;
 
-        function updateThemeToggleIcon(isDark) {
-            const themeBtn = document.getElementById('theme-toggle-btn');
-            if (themeBtn) {
-                themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+                const subject = encodeURIComponent(`Rättningsrapport: ${student.name}`);
+                const body = encodeURIComponent(student.report);
+
+                window.location.href = `mailto:?subject=${subject}&body=${body}`;
             }
-        }
 
-        window.onload = function () {
-            initTheme();
-            initPromptSettings();
-            initLightboxSwipe();
-            if (session.students.length === 0) {
-                const firstStudent = {
-                    id: Date.now(),
-                    name: "Elev 1",
-                    images: [],
-                    report: '',
-                    status: 'pending'
-                };
-                session.students.push(firstStudent);
-                currentView = firstStudent.id;
-            }
-            updateBatchButtonState();
-            renderStudentList();
-            renderWorkspace();
+            // Tema Hantering (Mörkt/Ljust läge)
+            function initTheme() {
+                const savedTheme = localStorage.getItem('rattaren_theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-            if (document.getElementById('apiKey').value) {
-                updateModelsDropdown();
-            } else {
-                updateSelectedModelDisplay();
+                const isDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+                if (isDark) {
+                    document.body.classList.add('dark-theme');
+                } else {
+                    document.body.classList.remove('dark-theme');
+                }
+                updateThemeToggleIcon(isDark);
             }
-        };
-    </script>
+
+            function toggleTheme() {
+                const isDark = document.body.classList.toggle('dark-theme');
+                localStorage.setItem('rattaren_theme', isDark ? 'dark' : 'light');
+                updateThemeToggleIcon(isDark);
+            }
+
+            function updateThemeToggleIcon(isDark) {
+                const themeBtn = document.getElementById('theme-toggle-btn');
+                if (themeBtn) {
+                    // Visa en vacker måne i ljust läge (klicka för mörkt läge) och en sol i mörkt läge (klicka för ljust läge)
+                    themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>' : '<i class="fa-solid fa-moon"></i>';
+                }
+            }
+
+            window.onload = function () {
+                initTheme();
+                initPromptSettings();
+                initLightboxSwipe();
+                if (session.students.length === 0) {
+                    const firstStudent = {
+                        id: Date.now(),
+                        name: "Elev 1",
+                        images: [],
+                        report: '',
+                        status: 'pending'
+                    };
+                    session.students.push(firstStudent);
+                    currentView = firstStudent.id;
+                }
+                updateBatchButtonState();
+                renderStudentList();
+                renderWorkspace();
+
+                if (document.getElementById('apiKey').value) {
+                    updateModelsDropdown();
+                } else {
+                    updateSelectedModelDisplay();
+                }
+            };
+        </script>
 </body>
 
 </html>
