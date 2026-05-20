@@ -28,6 +28,22 @@
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --tab-bg: #f1f5f9;
+        }
+
+        /* Mörkt läge färgvariabler */
+        body.dark-theme {
+            --bg: #0b0f19;
+            --card-bg: #151f32;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+            --border-hover: #334155;
+            --primary-light: rgba(37, 99, 235, 0.15);
+            --tab-bg: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -50,7 +66,7 @@
         .workspace-tabs {
             display: flex;
             gap: 4px;
-            background: #f1f5f9;
+            background: var(--tab-bg);
             padding: 4px;
             border-radius: var(--radius-md);
             margin-bottom: 12px;
@@ -273,13 +289,13 @@
         }
 
         .btn-secondary {
-            background: #f1f5f9;
+            background: var(--tab-bg);
             color: var(--text);
             border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: #e2e8f0;
+            background: var(--border-hover);
         }
 
         .btn-danger-outline {
@@ -584,33 +600,52 @@
         }
 
         /* Bekräftelse Modal */
-        .confirm-modal {
+        .confirm-modal,
+        .settings-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0);
+            backdrop-filter: blur(0px);
             z-index: 10000;
             justify-content: center;
             align-items: center;
+            transition: background 0.25s ease, backdrop-filter 0.25s ease;
         }
 
-        .confirm-modal.active {
+        .confirm-modal.active,
+        .settings-modal.active {
             display: flex;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
         }
 
-        .confirm-content {
+        .confirm-content,
+        .settings-content {
             background: var(--card-bg);
             border: 1px solid var(--border);
             padding: 24px;
             border-radius: var(--radius-lg);
             width: 90%;
-            max-width: 400px;
+            max-width: 500px;
             box-shadow: var(--shadow-lg);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+        }
+
+        .confirm-content {
+            max-width: 400px;
             text-align: center;
+        }
+
+        .confirm-modal.active .confirm-content,
+        .settings-modal.active .settings-content {
+            transform: scale(1);
+            opacity: 1;
         }
 
         .confirm-actions {
@@ -621,35 +656,6 @@
 
         .confirm-actions .btn {
             flex: 1;
-        }
-
-        /* Inställningar Modal */
-        .settings-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .settings-modal.active {
-            display: flex;
-        }
-
-        .settings-content {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 24px;
-            border-radius: var(--radius-lg);
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow-lg);
         }
 
         .settings-header {
@@ -700,7 +706,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 16px;
-            background: #f1f5f9;
+            background: var(--tab-bg);
             padding: 16px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
@@ -715,7 +721,7 @@
             cursor: pointer;
             box-shadow: var(--shadow-sm);
             aspect-ratio: 3/4;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
         }
 
         .image-card:hover {
@@ -724,6 +730,20 @@
 
         .image-card.dragging {
             opacity: 0.5;
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .add-student-pill {
+            border: 1.5px dashed var(--primary) !important;
+            background: transparent !important;
+            justify-content: center !important;
+            min-width: 130px !important;
+            display: inline-flex !important;
+            align-items: center;
+        }
+        .add-student-pill:hover {
+            background: var(--primary-light) !important;
         }
 
         .image-card.drop-indicator-left::before {
@@ -899,7 +919,7 @@
         }
 
         .report-box {
-            background: #f8fafc;
+            background: var(--bg);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             padding: 20px;
@@ -924,6 +944,69 @@
         .report-box ol {
             margin-left: 20px;
             margin-bottom: 12px;
+        }
+
+        /* Camera overlay & Switch styles */
+        .camera-switch-btn {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .camera-switch-btn:hover {
+            background: rgba(15, 23, 42, 0.8);
+            transform: scale(1.05);
+        }
+        .camera-guide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 15;
+        }
+        .guide-box {
+            width: 80%;
+            height: 70%;
+            max-width: 600px;
+            max-height: 800px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-md);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
+            transition: border-color 0.3s;
+        }
+        .guide-text {
+            color: white;
+            font-size: 0.9rem;
+            margin-top: 16px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        @keyframes flashGreen {
+            0% { border-color: var(--success); }
+            100% { border-color: rgba(255, 255, 255, 0.5); }
+        }
+        .guide-box.flash-success {
+            animation: flashGreen 0.5s ease-out;
         }
 
         /* MEDIA QUERIES FOR ADAPTIVE LAYOUTS */
@@ -952,23 +1035,41 @@
             }
 
             header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 8px;
                 padding-bottom: 12px;
                 margin-bottom: 16px;
             }
 
+            header h1 {
+                font-size: 1.3rem;
+            }
+
             .header-actions {
-                width: 100%;
-                justify-content: space-between;
-                gap: 10px;
+                width: auto;
+                justify-content: flex-end;
+                gap: 6px;
             }
 
             .model-display-badge {
-                flex: 1;
+                display: none !important;
+            }
+
+            /* Dölj redigerings-knappar på själva horizontal-pillsen för att undvika felklick */
+            .nav-item .btn-edit-outline,
+            .nav-item .btn-danger-outline {
+                display: none !important;
+            }
+
+            /* Anpassa toast position så den inte hamnar under klistrad bottenmeny */
+            .toast {
+                left: 16px !important;
+                right: 16px !important;
+                bottom: 90px !important;
                 justify-content: center;
-                max-width: none;
+                text-align: center;
             }
 
             /* Horisontell scroll för elevlistan på mobila enheter */
@@ -978,6 +1079,7 @@
                 z-index: 1000;
                 background: var(--bg);
                 border: none;
+                border-bottom: 1px solid var(--border) !important;
                 box-shadow: none;
                 padding: 8px 0;
                 margin: 0 -12px;
@@ -997,6 +1099,11 @@
                 max-height: none !important;
                 padding: 4px 12px;
                 width: 100vw;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .student-list::-webkit-scrollbar {
+                display: none;
             }
 
             .nav-item {
@@ -1005,6 +1112,7 @@
                 padding: 8px 12px !important;
                 margin: 0;
                 min-width: 130px;
+                justify-content: center;
             }
 
             /* Fastklistrad bottenmeny för primära åtgärder */
@@ -1042,7 +1150,9 @@
             }
 
             .image-card img {
-                height: 110px;
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
             }
 
             .image-card .delete-btn {
@@ -1086,6 +1196,9 @@
             <button class="btn btn-secondary" onclick="openSettingsModal()" title="Inställningar">
                 <i class="fa-solid fa-gear"></i> Inställningar
             </button>
+            <button class="btn btn-secondary" id="theme-toggle-btn" onclick="toggleTheme()" title="Växla färgtema" style="padding: 10px 14px;">
+                <i class="fa-solid fa-moon"></i>
+            </button>
         </div>
     </header>
 
@@ -1095,7 +1208,7 @@
             <div style="display: flex; flex-direction: column; flex: 1; gap: 12px;">
                 <div class="section-title">
                     <span>Elever</span>
-                    <button class="btn btn-secondary" style="padding: 6px 12px;" onclick="addStudent()">
+                    <button class="btn btn-secondary" style="padding: 6px 12px;" onclick="openAddStudentModal()">
                         <i class="fa-solid fa-plus"></i> Lägg till
                     </button>
                 </div>
@@ -1145,6 +1258,15 @@
             <button class="camera-close-btn" onclick="stopCamera()">
                 <i class="fa-solid fa-circle-check"></i> Klar
             </button>
+            <!-- Byt kamera-knapp för mobila enheter -->
+            <button id="camera-switch-btn" class="camera-switch-btn" onclick="switchCamera()" title="Byt kamera" style="display: none;">
+                <i class="fa-solid fa-camera-rotate"></i> Byt kamera
+            </button>
+            <!-- SCANNER GUIDE OVERLAY -->
+            <div class="camera-guide-overlay">
+                <div class="guide-box"></div>
+                <div class="guide-text">Placera provsidan inom ramen</div>
+            </div>
             <div class="camera-ui">
                 <div class="camera-counter" id="camera-counter">Tagna bilder: 0</div>
                 <button class="camera-shutter" onclick="captureSnapshot()">
@@ -1235,6 +1357,26 @@
                         Spara och stäng
                     </button>
                 </div>
+            </div>
+        </div>
+    <!-- ELEV-MODAL (LÄGG TILL / BYT NAMN) -->
+    <div id="student-modal" class="settings-modal" onclick="closeStudentModal(event)">
+        <div class="settings-content" onclick="event.stopPropagation()" style="max-width: 400px;">
+            <div class="settings-header">
+                <h3 id="student-modal-title">Lägg till elev</h3>
+                <button class="settings-close" onclick="closeStudentModal(event)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="student-name-input" id="student-modal-label">Elevens namn</label>
+                    <input type="text" id="student-name-input" placeholder="T.ex. Johan Andersson">
+                </div>
+            </div>
+            <div class="confirm-actions" style="margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeStudentModal(event)">Avbryt</button>
+                <button class="btn btn-primary" id="student-modal-save-btn" onclick="saveStudentModal()">Spara</button>
             </div>
         </div>
     </div>
@@ -1329,12 +1471,15 @@ Rapporten ska innehålla:
 
         function openPromptModal() {
             const modal = document.getElementById('prompt-modal');
+            if (!modal) return;
 
             const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
             const select = document.getElementById('promptTemplateSelect');
             if (select) select.value = savedId;
             updatePromptTextarea(savedId);
 
+            modal.style.display = 'flex';
+            void modal.offsetHeight;
             modal.classList.add('active');
             document.addEventListener('keydown', handlePromptModalKeyboard);
         }
@@ -1342,7 +1487,13 @@ Rapporten ska innehålla:
         function closePromptModal(event) {
             if (event) event.stopPropagation();
             const modal = document.getElementById('prompt-modal');
+            if (!modal) return;
             modal.classList.remove('active');
+            setTimeout(() => {
+                if (!modal.classList.contains('active')) {
+                    modal.style.display = 'none';
+                }
+            }, 250);
             document.removeEventListener('keydown', handlePromptModalKeyboard);
         }
 
@@ -1381,6 +1532,20 @@ Rapporten ska innehålla:
         let activeTouchIndex = null;
         let currentTouchOverIndex = null;
         let touchOverSide = null;
+
+        // Modaltillstånd för elevinmatning
+        let studentModalMode = 'add'; // 'add' eller 'rename'
+        let studentModalTargetId = null;
+
+        // Kameravariabler för byte av kamera
+        let availableVideoDevices = [];
+        let currentVideoDeviceIndex = 0;
+
+        // Touch-gest-variabler för swipe i lightbox
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let touchStartY = 0;
+        let touchEndY = 0;
 
         // Konfigurera Marked.js så att vanliga radbrytningar bryts till <br> i Markdown
         marked.setOptions({
@@ -1534,8 +1699,15 @@ Rapporten ska innehålla:
         function customConfirm(title, message) {
             return new Promise((resolve) => {
                 const modal = document.getElementById('confirm-modal');
+                if (!modal) {
+                    resolve(false);
+                    return;
+                }
                 document.getElementById('confirm-title').innerText = title;
                 document.getElementById('confirm-message').innerText = message;
+                
+                modal.style.display = 'flex';
+                void modal.offsetHeight;
                 modal.classList.add('active');
                 confirmResolve = resolve;
             });
@@ -1543,30 +1715,121 @@ Rapporten ska innehålla:
 
         function handleConfirm(yes) {
             const modal = document.getElementById('confirm-modal');
+            if (!modal) return;
             modal.classList.remove('active');
+            setTimeout(() => {
+                if (!modal.classList.contains('active')) {
+                    modal.style.display = 'none';
+                }
+            }, 250);
             if (confirmResolve) {
                 confirmResolve(yes);
                 confirmResolve = null;
             }
         }
 
-        function addStudent() {
-            const name = prompt("Ange elevens namn (eller lämna tomt för anonymisering):") || `Elev ${session.students.length + 1}`;
-            const newStudent = {
-                id: Date.now(),
-                name: name,
-                images: [],
-                report: '',
-                status: 'pending'
-            };
-            session.students.push(newStudent);
+        // Hantering av elevinmatning via anpassad modal
+        function openAddStudentModal() {
+            studentModalMode = 'add';
+            studentModalTargetId = null;
+            
+            document.getElementById('student-modal-title').innerText = "Lägg till elev";
+            document.getElementById('student-modal-label').innerText = "Elevens namn (eller lämna tomt för anonymisering)";
+            document.getElementById('student-name-input').value = "";
+            
+            const modal = document.getElementById('student-modal');
+            modal.style.display = 'flex';
+            void modal.offsetHeight;
+            modal.classList.add('active');
+            
+            const input = document.getElementById('student-name-input');
+            input.focus();
+            input.select();
+            
+            document.addEventListener('keydown', handleStudentModalKeyboard);
+        }
 
-            currentView = newStudent.id;
-            activeTab = 'pages'; // Nollställ fliken
-            updateBadges();
-            updateBatchButtonState();
-            renderStudentList();
-            renderWorkspace();
+        function openRenameStudentModal(studentId, event) {
+            if (event) event.stopPropagation();
+            const student = session.students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            studentModalMode = 'rename';
+            studentModalTargetId = studentId;
+            
+            document.getElementById('student-modal-title').innerText = "Byt namn på elev";
+            document.getElementById('student-modal-label').innerText = "Ange nytt namn för eleven";
+            document.getElementById('student-name-input').value = student.name;
+            
+            const modal = document.getElementById('student-modal');
+            modal.style.display = 'flex';
+            void modal.offsetHeight;
+            modal.classList.add('active');
+            
+            const input = document.getElementById('student-name-input');
+            input.focus();
+            input.select();
+            
+            document.addEventListener('keydown', handleStudentModalKeyboard);
+        }
+
+        function closeStudentModal(event) {
+            if (event) event.stopPropagation();
+            const modal = document.getElementById('student-modal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            setTimeout(() => {
+                if (!modal.classList.contains('active')) {
+                    modal.style.display = 'none';
+                }
+            }, 250);
+            document.removeEventListener('keydown', handleStudentModalKeyboard);
+        }
+
+        function handleStudentModalKeyboard(e) {
+            if (e.key === 'Escape') {
+                closeStudentModal();
+            } else if (e.key === 'Enter') {
+                saveStudentModal();
+            }
+        }
+
+        function saveStudentModal() {
+            const input = document.getElementById('student-name-input');
+            const nameVal = input.value.trim();
+            
+            if (studentModalMode === 'add') {
+                const finalName = nameVal || `Elev ${session.students.length + 1}`;
+                const newStudent = {
+                    id: Date.now(),
+                    name: finalName,
+                    images: [],
+                    report: '',
+                    status: 'pending'
+                };
+                session.students.push(newStudent);
+                currentView = newStudent.id;
+                activeTab = 'pages'; // Nollställ fliken
+                updateBadges();
+                updateBatchButtonState();
+                renderStudentList();
+                renderWorkspace();
+                showToast(`Elev "${finalName}" har lagts till.`, "success");
+            } else if (studentModalMode === 'rename') {
+                if (nameVal === "") {
+                    showToast("Elevens namn kan inte vara tomt.", "error");
+                    return;
+                }
+                const student = session.students.find(s => s.id === studentModalTargetId);
+                if (student) {
+                    const oldName = student.name;
+                    student.name = nameVal;
+                    renderStudentList();
+                    renderWorkspace();
+                    showToast(`Elevens namn har ändrats från "${oldName}" till "${nameVal}".`, "success");
+                }
+            }
+            closeStudentModal();
         }
 
         function switchView(studentId) {
@@ -1577,18 +1840,6 @@ Rapporten ska innehålla:
             }
             renderStudentList();
             renderWorkspace();
-        }
-
-        function renameStudent(studentId, event) {
-            if (event) event.stopPropagation();
-            const student = session.students.find(s => s.id === studentId);
-            if (!student) return;
-            const newName = prompt("Ange nytt namn för eleven:", student.name);
-            if (newName !== null && newName.trim() !== "") {
-                student.name = newName.trim();
-                renderStudentList();
-                renderWorkspace();
-            }
         }
 
         async function deleteStudent(studentId, event) {
@@ -1688,8 +1939,11 @@ Rapporten ska innehålla:
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 4px;">
                     <h2 style="font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
                         Bearbetar: ${student.name}
-                        <button class="btn-edit-outline" style="padding: 4px 8px; font-size: 0.85rem; border: 1px solid var(--border);" onclick="renameStudent(${student.id}, event)" title="Ändra namn">
+                        <button class="btn-edit-outline" style="padding: 4px 8px; font-size: 0.85rem; border: 1px solid var(--border);" onclick="openRenameStudentModal(${student.id}, event)" title="Ändra namn">
                             <i class="fa-regular fa-pen-to-square"></i> Ändra namn
+                        </button>
+                        <button class="btn-danger-outline" style="padding: 4px 8px; font-size: 0.85rem; border: 1px solid var(--border); color: var(--danger);" onclick="deleteStudent(${student.id}, event)" title="Ta bort elev">
+                            <i class="fa-regular fa-trash-can"></i> Ta bort
                         </button>
                     </h2>
                     <span class="status-badge status-${student.status}">
@@ -1929,6 +2183,19 @@ Rapporten ska innehålla:
             });
         }
 
+        async function getAvailableCameras() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                availableVideoDevices = devices.filter(device => device.kind === 'videoinput');
+                const switchBtn = document.getElementById('camera-switch-btn');
+                if (switchBtn) {
+                    switchBtn.style.display = availableVideoDevices.length > 1 ? 'flex' : 'none';
+                }
+            } catch (err) {
+                console.error("Kunde inte lista kameror:", err);
+            }
+        }
+
         async function startCamera() {
             const student = session.students.find(s => s.id === currentView);
             if (!student) return;
@@ -1941,19 +2208,73 @@ Rapporten ska innehålla:
             modal.classList.add('active');
 
             try {
+                if (availableVideoDevices.length === 0) {
+                    await getAvailableCameras();
+                }
+
+                let constraints = {
+                    audio: false,
+                    video: {
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }
+                };
+
+                if (availableVideoDevices.length > 0) {
+                    const activeDevice = availableVideoDevices[currentVideoDeviceIndex];
+                    constraints.video.deviceId = { exact: activeDevice.deviceId };
+                } else {
+                    constraints.video.facingMode = { ideal: "environment" };
+                }
+
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = cameraStream;
+                
+                await getAvailableCameras();
+            } catch (err) {
+                console.error("Kameramisslyckande, försöker med fallback:", err);
+                
+                try {
+                    cameraStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: { ideal: "environment" } },
+                        audio: false
+                    });
+                    video.srcObject = cameraStream;
+                } catch (fallbackErr) {
+                    console.error("Även fallback misslyckades:", fallbackErr);
+                    modal.classList.remove('active');
+                    showToast("Kunde inte starta kameran. Se till att du tillåtit behörighet och kör via en säker anslutning (HTTPS/localhost).", "error");
+                }
+            }
+        }
+
+        async function switchCamera() {
+            if (availableVideoDevices.length <= 1) return;
+
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+
+            currentVideoDeviceIndex = (currentVideoDeviceIndex + 1) % availableVideoDevices.length;
+            
+            const video = document.getElementById('camera-video');
+            try {
+                const activeDevice = availableVideoDevices[currentVideoDeviceIndex];
                 cameraStream = await navigator.mediaDevices.getUserMedia({
                     video: {
-                        facingMode: { ideal: "environment" },
+                        deviceId: { exact: activeDevice.deviceId },
                         width: { ideal: 1920 },
                         height: { ideal: 1080 }
                     },
                     audio: false
                 });
                 video.srcObject = cameraStream;
+                showToast("Bytte kamera.", "info");
             } catch (err) {
-                console.error("Kameramisslyckande:", err);
-                modal.classList.remove('active');
-                showToast("Kunde inte starta kameran. Se till att du tillåtit behörighet och kör via en säker anslutning (HTTPS/localhost).", "error");
+                console.error("Misslyckades att byta kamera:", err);
+                showToast("Kunde inte växla till den valda kameran.", "error");
+                startCamera();
             }
         }
 
@@ -2009,6 +2330,13 @@ Rapporten ska innehålla:
             flash.classList.remove('flash-active');
             void flash.offsetWidth;
             flash.classList.add('flash-active');
+
+            const guideBox = document.querySelector('.guide-box');
+            if (guideBox) {
+                guideBox.classList.remove('flash-success');
+                void guideBox.offsetWidth;
+                guideBox.classList.add('flash-success');
+            }
 
             playShutterSound();
 
@@ -2147,6 +2475,40 @@ Rapporten ska innehålla:
             else if (e.key === 'Escape') closeLightbox();
         }
 
+        function initLightboxSwipe() {
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox) return;
+
+            lightbox.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+
+            lightbox.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                handleSwipeGesture();
+            }, { passive: true });
+        }
+
+        function handleSwipeGesture() {
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+            
+            // Kolla så det var ett horisontellt svep och inte vertikalt scroll/svep
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > 50) { // Sveptröskel på 50px
+                    if (diffX > 0) {
+                        // Svep höger -> Föregående bild
+                        navigateLightbox(-1);
+                    } else {
+                        // Svep vänster -> Nästa bild
+                        navigateLightbox(1);
+                    }
+                }
+            }
+        }
+
         function renderStudentList() {
             const container = document.getElementById('student-list-container');
             container.innerHTML = '';
@@ -2178,7 +2540,7 @@ Rapporten ska innehålla:
                     </div>
                     <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 8px;">
                         <span class="badge" id="badge-student-${student.id}">${student.images.length}</span>
-                        <button class="btn-edit-outline" onclick="renameStudent(${student.id}, event)" title="Byt namn">
+                        <button class="btn-edit-outline" onclick="openRenameStudentModal(${student.id}, event)" title="Byt namn">
                             <i class="fa-regular fa-pen-to-square"></i>
                         </button>
                         <button class="btn-danger-outline" onclick="deleteStudent(${student.id}, event)" title="Ta bort elev">
@@ -2492,8 +2854,37 @@ Rapporten ska innehålla:
             window.location.href = `mailto:?subject=${subject}&body=${body}`;
         }
 
+        // Tema Hantering (Mörkt/Ljust läge)
+        function initTheme() {
+            const savedTheme = localStorage.getItem('rattaren_theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            const isDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+            if (isDark) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+            updateThemeToggleIcon(isDark);
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('rattaren_theme', isDark ? 'dark' : 'light');
+            updateThemeToggleIcon(isDark);
+        }
+
+        function updateThemeToggleIcon(isDark) {
+            const themeBtn = document.getElementById('theme-toggle-btn');
+            if (themeBtn) {
+                themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+            }
+        }
+
         window.onload = function () {
+            initTheme();
             initPromptSettings();
+            initLightboxSwipe();
             if (session.students.length === 0) {
                 const firstStudent = {
                     id: Date.now(),
