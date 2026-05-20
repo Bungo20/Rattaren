@@ -1168,6 +1168,27 @@
             cursor: not-allowed;
         }
 
+        .prompt-textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 250px;
+            outline: none;
+            background-color: var(--card-bg);
+            color: var(--text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .prompt-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
         /* MEDIA QUERIES FOR ADAPTIVE LAYOUTS */
         @media (max-width: 1024px) {
             .main-layout {
@@ -1283,6 +1304,9 @@
                 <i class="fa-solid fa-robot"></i>
                 <span id="current-model-name">Ingen modell vald</span>
             </span>
+            <button class="btn btn-secondary" onclick="openPromptModal()" title="Välj prompt">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Prompt
+            </button>
             <button class="btn btn-secondary" onclick="openSettingsModal()" title="Inställningar">
                 <i class="fa-solid fa-gear"></i> Inställningar
             </button>
@@ -1400,7 +1424,163 @@
         </div>
     </div>
 
+    <!-- PROMPT VAL & REDIGERING MODAL -->
+    <div id="prompt-modal" class="settings-modal" onclick="closePromptModal(event)">
+        <div class="settings-content" onclick="event.stopPropagation()" style="max-width: 650px;">
+            <div class="settings-header">
+                <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Prompt-inställningar</h3>
+                <button class="settings-close" onclick="closePromptModal(event)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body" style="gap: 16px;">
+                <div class="form-group">
+                    <label for="promptTemplateSelect">Prompt-mall</label>
+                    <select id="promptTemplateSelect" onchange="onPromptTemplateChange()" title="Välj prompt-mall">
+                        <!-- Fylls i dynamiskt av Javascript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="promptText">Prompt-text (Använd <code>{studentName}</code> för elevens namn)</label>
+                    <textarea id="promptText" class="prompt-textarea" placeholder="Skriv din prompt här..."></textarea>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 12px;">
+                <button class="btn btn-secondary" onclick="resetActivePromptToDefault()" style="border-color: #fca5a5; color: #dc2626;" title="Återställ denna mall till originalet">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Återställ original
+                </button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary" onclick="closePromptModal(event)">
+                        Avbryt
+                    </button>
+                    <button class="btn btn-primary" onclick="saveAndClosePromptModal()" style="padding: 10px 24px;">
+                        Spara och stäng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        const PROMPT_TEMPLATES = [
+            {
+                id: "standard",
+                name: "Standardrättning (Utförlig)",
+                defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat skriftligt prov. 
+Här är bilderna på elevens lösning (namn: {studentName}) i kronologisk ordning.
+Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
+Observera att elevens svar kan sträcka sig över flera sidor och fortsätta naturligt på nästa bild. Analysera hela sammanhanget.
+
+Skriv en utförlig rättningsrapport på svenska. Svara ALLTID formaterat som ren och vacker Markdown (utan block-kodsomslag som \`\`\`markdown).
+Rapporten ska innehålla:
+1. Bedömning utifrån eventuellt angivna instruktioner (eller generella betygskriterier för ämnet).
+2. Elevens poäng eller indikerad betygsnivå.
+3. Konstruktiv feedback med elevens specifika styrkor.
+4. Utvecklingsområden och konkreta tips på hur eleven kan förbättra sina svar framöver.`
+            },
+            {
+                id: "brief",
+                name: "Kortfattad återkoppling",
+                defaultText: `Du är en svensk legitimerad lärare som gör en snabb, överskådlig bedömning av ett inlämnat skriftligt prov.
+Här är bilderna på elevens lösning (namn: {studentName}) i kronologisk ordning.
+Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
+
+Skriv en kortfattad och kärnfull återkoppling på svenska. Svara ALLTID formaterat som ren och vacker Markdown (utan block-kodsomslag som \`\`\`markdown).
+Inkludera:
+1. Föreslagen betygsnivå eller omdöme.
+2. Två tydliga styrkor i lösningen.
+3. Ett konkret utvecklingsområde för att förbättra resultatet.`
+            },
+            {
+                id: "national_test",
+                name: "Nationella prov (NP) bedömning",
+                defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat prov utifrån Skolverkets betygskriterier och kunskapskrav (motsvarande Nationella prov).
+Här är bilderna på elevens lösning (namn: {studentName}) i kronologisk ordning.
+Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
+
+Skriv en formell och strukturerad rättningsrapport på svenska. Svara ALLTID formaterat som ren och vacker Markdown (utan block-kodsomslag som \`\`\`markdown).
+Rapporten ska innehålla:
+1. Bedömning uppdelad efter kunskapskrav (E-nivå, C-nivå, A-nivå).
+2. Tydlig motivering för uppfyllda samt ej uppfyllda kriterier.
+3. Rekommendationer för vidare studier och utveckling.`
+            }
+        ];
+
+        function initPromptSettings() {
+            const select = document.getElementById('promptTemplateSelect');
+            if (!select) return;
+            select.innerHTML = '';
+            PROMPT_TEMPLATES.forEach(tpl => {
+                const opt = document.createElement('option');
+                opt.value = tpl.id;
+                opt.textContent = tpl.name;
+                select.appendChild(opt);
+            });
+
+            const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
+            select.value = savedId;
+            updatePromptTextarea(savedId);
+        }
+
+        function updatePromptTextarea(templateId) {
+            const template = PROMPT_TEMPLATES.find(t => t.id === templateId);
+            if (!template) return;
+            const customText = localStorage.getItem(`rattaren_custom_prompt_${templateId}`);
+            document.getElementById('promptText').value = customText !== null ? customText : template.defaultText;
+        }
+
+        function onPromptTemplateChange() {
+            const select = document.getElementById('promptTemplateSelect');
+            updatePromptTextarea(select.value);
+        }
+
+        function resetActivePromptToDefault() {
+            const select = document.getElementById('promptTemplateSelect');
+            const templateId = select.value;
+            const template = PROMPT_TEMPLATES.find(t => t.id === templateId);
+            if (!template) return;
+
+            document.getElementById('promptText').value = template.defaultText;
+            showToast("Prompten har återställts till originalet.", "info");
+        }
+
+        function openPromptModal() {
+            const modal = document.getElementById('prompt-modal');
+            
+            const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
+            const select = document.getElementById('promptTemplateSelect');
+            if (select) select.value = savedId;
+            updatePromptTextarea(savedId);
+
+            modal.classList.add('active');
+            document.addEventListener('keydown', handlePromptModalKeyboard);
+        }
+
+        function closePromptModal(event) {
+            if (event) event.stopPropagation();
+            const modal = document.getElementById('prompt-modal');
+            modal.classList.remove('active');
+            document.removeEventListener('keydown', handlePromptModalKeyboard);
+        }
+
+        function saveAndClosePromptModal() {
+            const select = document.getElementById('promptTemplateSelect');
+            const templateId = select.value;
+            const textValue = document.getElementById('promptText').value;
+
+            localStorage.setItem('rattaren_selected_prompt_id', templateId);
+            localStorage.setItem(`rattaren_custom_prompt_${templateId}`, textValue);
+
+            closePromptModal();
+            showToast("Prompt-inställningarna har sparats.", "success");
+        }
+
+        function handlePromptModalKeyboard(e) {
+            if (e.key === 'Escape') {
+                closePromptModal();
+            }
+        }
+
         let session = {
             students: []
         };
@@ -2319,19 +2499,18 @@
         async function callBergetAI(url, key, student, signal, onChunk) {
             const contentArray = [];
 
+            // Load selected prompt
+            const selectedPromptId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
+            const template = PROMPT_TEMPLATES.find(t => t.id === selectedPromptId) || PROMPT_TEMPLATES[0];
+            const customText = localStorage.getItem(`rattaren_custom_prompt_${selectedPromptId}`);
+            let rawPromptText = customText !== null ? customText : template.defaultText;
+
+            // Dynamically replace {studentName}
+            const promptText = rawPromptText.replace(/{studentName}/g, student.name);
+
             contentArray.push({
                 type: "text",
-                text: `Du är en svensk legitimerad lärare som rättar ett inlämnat skriftligt prov. 
-                       Här är bilderna på elevens lösning (namn: ${student.name}) i kronologisk ordning.
-                       Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
-                       Observera att elevens svar kan sträcka sig över flera sidor och fortsätta naturligt på nästa bild. Analysera hela sammanhanget.
-                       
-                       Skriv en utförlig rättningsrapport på svenska. Svara ALLTID formaterat som ren och vacker Markdown (utan block-kodsomslag som \`\`\`markdown).
-                       Rapporten ska innehålla:
-                       1. Bedömning utifrån eventuellt angivna instruktioner (eller generella betygskriterier för ämnet).
-                       2. Elevens poäng eller indikerad betygsnivå.
-                       3. Konstruktiv feedback med elevens specifika styrkor.
-                       4. Utvecklingsområden och konkreta tips på hur eleven kan förbättra sina svar framöver.`
+                text: promptText
             });
 
             student.images.forEach((base64, index) => {
@@ -2504,6 +2683,7 @@
         }
 
         window.onload = function () {
+            initPromptSettings();
             if (session.students.length === 0) {
                 const firstStudent = {
                     id: Date.now(),
