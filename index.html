@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Rättaren - Berget AI Edition</title>
+    <title>AI Rättaren</title>
     <!-- Lägg till FontAwesome för snygga och moderna ikoner -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Lägg till Marked.js för att rendera strömmande Markdown till HTML -->
@@ -44,6 +44,50 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+        }
+
+        /* Flik-design för att minska scrollande */
+        .workspace-tabs {
+            display: flex;
+            gap: 4px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover:not(:disabled) {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         header {
@@ -322,390 +366,108 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 80px 40px;
-            color: var(--text-muted);
-            gap: 20px;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: var(--border-hover);
-        }
-
-        .empty-state h3 {
-            color: var(--text);
-            font-size: 1.5rem;
-        }
-
-        .empty-state p {
-            max-width: 450px;
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-
-        /* Nytt: Rutmönster för kamera- och uppladdningsknappar */
-        .upload-grid-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            width: 100%;
-        }
-
-        .btn-camera-rapid {
-            padding: 24px !important;
-            font-size: 1.05rem !important;
-            flex-direction: column;
-            gap: 12px !important;
-            border-radius: var(--radius-md) !important;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-camera-rapid i {
-            font-size: 2rem;
-        }
-
-        .upload-zone {
-            border: 2px dashed var(--border);
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 16px 20px;
             border-radius: var(--radius-md);
-            padding: 24px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: var(--bg);
+            box-shadow: var(--shadow-lg);
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
             gap: 12px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .upload-zone:hover {
-            border-color: var(--primary);
-            background: #f0f7ff;
-        }
-
-        .upload-zone i {
-            font-size: 2rem;
-            color: var(--primary);
-        }
-
-        .upload-zone input {
-            display: none;
-        }
-
-        .filmstrip {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 20px;
-            background: var(--bg);
-            padding: 20px;
-            border-radius: var(--radius-md);
-            min-height: 180px;
-            border: 1px solid var(--border);
-            position: relative;
-        }
-
-        .image-card {
-            position: relative;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 6px;
-            cursor: grab;
-            user-select: none;
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .image-card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--border-hover);
-            transform: translateY(-2px);
-        }
-
-        .image-card.dragging {
-            opacity: 0.4;
-            cursor: grabbing;
-            border: 2px dashed var(--primary);
-            box-shadow: none;
-            transform: scale(0.95);
-        }
-
-        .image-card.drop-indicator-left::before {
-            content: '';
-            position: absolute;
-            left: -12px;
-            top: -2px;
-            bottom: -2px;
-            width: 4px;
-            background: var(--primary);
-            border-radius: 4px;
-            box-shadow: 0 0 8px var(--primary);
-            z-index: 100;
-        }
-
-        .image-card.drop-indicator-right::after {
-            content: '';
-            position: absolute;
-            right: -12px;
-            top: -2px;
-            bottom: -2px;
-            width: 4px;
-            background: var(--primary);
-            border-radius: 4px;
-            box-shadow: 0 0 8px var(--primary);
-            z-index: 100;
-        }
-
-        .image-card img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 4px;
-            display: block;
-            transition: opacity 0.2s;
-        }
-
-        .image-card:hover img {
-            opacity: 0.95;
-        }
-
-        .image-card .page-number {
-            position: absolute;
-            bottom: 12px;
-            left: 12px;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(4px);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .image-card .delete-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            font-size: 11px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-sm);
+            z-index: 10000;
+            transform: translateY(100px);
             opacity: 0;
-            transition: opacity 0.2s, transform 0.2s;
-            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .image-card:hover .delete-btn {
+        .toast.active {
+            transform: translateY(0);
             opacity: 1;
         }
 
-        .image-card .delete-btn:hover {
-            transform: scale(1.1);
-            background: #b91c1c;
-        }
-
-        .report-section {
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-        }
-
-        .report-header {
-            display: flex;
-            justify-content: space-between;
+        /* Lightbox (Helskärmsvisning) */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
             align-items: center;
-            margin-bottom: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .report-box {
-            background: #f1f5f9;
-            padding: 24px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-top: 12px;
-            max-height: 480px;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-
-        /* Specifik styling för renderad Markdown-typografi i rapporten */
-        .markdown-body {
-            font-size: 1rem;
-            line-height: 1.7;
-            color: var(--text);
-        }
-
-        .markdown-body h1,
-        .markdown-body h2,
-        .markdown-body h3,
-        .markdown-body h4 {
-            color: var(--text);
-            font-weight: 700;
-            margin-top: 1.4rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .markdown-body h1 {
-            font-size: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 6px;
-        }
-
-        .markdown-body h2 {
-            font-size: 1.3rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 4px;
-            margin-top: 1.6rem;
-        }
-
-        .markdown-body h3 {
-            font-size: 1.15rem;
-        }
-
-        .markdown-body p {
-            margin-bottom: 1.1rem;
-        }
-
-        .markdown-body ul,
-        .markdown-body ol {
-            margin-left: 20px;
-            margin-bottom: 1.1rem;
-        }
-
-        .markdown-body ul {
-            list-style-type: disc;
-        }
-
-        .markdown-body ol {
-            list-style-type: decimal;
-        }
-
-        .markdown-body li {
-            margin-bottom: 0.4rem;
-        }
-
-        .markdown-body strong {
-            font-weight: 700;
-            color: #000;
-        }
-
-        .markdown-body blockquote {
-            border-left: 4px solid var(--primary);
-            padding-left: 12px;
-            color: var(--text-muted);
-            font-style: italic;
-            margin: 1rem 0;
-        }
-
-        .markdown-body code {
-            background-color: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.9rem;
-        }
-
-        .markdown-body pre {
-            background-color: #e2e8f0;
-            padding: 12px;
-            border-radius: var(--radius-md);
-            overflow-x: auto;
-            margin-bottom: 1.1rem;
-        }
-
-        .markdown-body pre code {
-            background-color: transparent;
-            padding: 0;
-            font-size: 0.85rem;
-        }
-
-        .markdown-body table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1.1rem;
-        }
-
-        .markdown-body th,
-        .markdown-body td {
-            border: 1px solid var(--border);
-            padding: 8px 12px;
-            text-align: left;
-        }
-
-        .markdown-body th {
-            background-color: #f1f5f9;
-            font-weight: 600;
-        }
-
-        .export-group {
+        .lightbox.active {
             display: flex;
-            gap: 12px;
-            margin-top: 16px;
+            opacity: 1;
         }
 
-        .status-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        #lightbox-img {
+            max-width: 90%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        .status-pending {
-            background: #e2e8f0;
-            color: #475569;
+        .lightbox-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
         }
 
-        .status-processing {
-            background: #fef3c7;
-            color: #d97706;
-            animation: pulse 1.5s infinite;
+        .lightbox-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .status-done {
-            background: #dcfce7;
-            color: #16a34a;
+        .lightbox-prev {
+            left: 24px;
         }
 
-        .status-error {
-            background: #fee2e2;
-            color: #dc2626;
+        .lightbox-next {
+            right: 24px;
         }
 
-        @keyframes pulse {
-            0% {
-                opacity: 0.6;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0.6;
-            }
+        .lightbox-caption {
+            position: absolute;
+            bottom: 24px;
+            color: white;
+            font-size: 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 16px;
+            border-radius: var(--radius-md);
         }
 
-        /* NYTT: Snabbkamera Overlay */
+        /* Snabbkamera Modal */
         .camera-modal {
             display: none;
             position: fixed;
@@ -714,7 +476,7 @@
             width: 100vw;
             height: 100vh;
             background: #000;
-            z-index: 10000;
+            z-index: 9999;
             justify-content: center;
             align-items: center;
         }
@@ -728,95 +490,14 @@
             width: 100%;
             height: 100%;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
         }
 
         #camera-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
-        .camera-ui {
-            position: absolute;
-            bottom: 40px;
-            left: 0;
-            right: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            z-index: 10002;
-        }
-
-        .camera-shutter {
-            width: 84px;
-            height: 84px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            border: 4px solid #fff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.1s;
-        }
-
-        .camera-shutter:active {
-            transform: scale(0.9);
-        }
-
-        .shutter-inner {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: #fff;
-        }
-
-        /* Förbättrad & ergonomiskt flyttad Klar-knapp */
-        .camera-close-btn {
-            position: absolute;
-            bottom: 62px;
-            right: 24px;
-            background: rgba(22, 163, 74, 0.9) !important;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 10px 20px !important;
-            font-size: 0.95rem !important;
-            border-radius: 30px !important;
-            width: auto !important;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            z-index: 10003;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            font-weight: 600;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-
-        .camera-close-btn:hover {
-            background: #15803d !important;
-            transform: scale(1.05);
-        }
-
-        .camera-close-btn:active {
-            transform: scale(0.95);
-        }
-
-        .camera-counter {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(4px);
-            color: #fff;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .camera-flash {
@@ -828,16 +509,16 @@
             background: white;
             opacity: 0;
             pointer-events: none;
-            z-index: 10001;
+            z-index: 10;
         }
 
         .camera-flash.flash-active {
-            animation: flashAnimation 0.15s ease-out;
+            animation: cameraFlashAnim 0.15s ease-out;
         }
 
-        @keyframes flashAnimation {
+        @keyframes cameraFlashAnim {
             0% {
-                opacity: 0.85;
+                opacity: 0.8;
             }
 
             100% {
@@ -845,147 +526,64 @@
             }
         }
 
-        /* Lightbox för förstorade bilder */
-        .lightbox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(15, 23, 42, 0.96);
-            backdrop-filter: blur(8px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            user-select: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .lightbox.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .lightbox-close {
+        .camera-close-btn {
             position: absolute;
             top: 24px;
-            right: 32px;
+            right: 24px;
+            background: rgba(22, 163, 74, 0.9);
             color: white;
-            font-size: 36px;
-            font-weight: 300;
-            cursor: pointer;
-            transition: transform 0.2s, color 0.2s;
-            background: none;
             border: none;
-            outline: none;
-        }
-
-        .lightbox-close:hover {
-            color: var(--danger);
-            transform: scale(1.1);
-        }
-
-        .lightbox img {
-            max-width: 85%;
-            max-height: 80vh;
-            object-fit: contain;
-            border-radius: var(--radius-md);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            transform: scale(0.95);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .lightbox.active img {
-            transform: scale(1);
-        }
-
-        .lightbox-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(4px);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 16px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 20px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .camera-ui {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            z-index: 20;
+        }
+
+        .camera-counter {
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 14px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+        }
+
+        .camera-shutter {
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
-            transition: all 0.2s ease;
-            width: 56px;
-            height: 56px;
+            background: white;
+            border: 4px solid rgba(255, 255, 255, 0.4);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .lightbox-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-50%) scale(1.05);
+        .shutter-inner {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #000;
         }
 
-        .lightbox-prev {
-            left: 40px;
-        }
-
-        .lightbox-next {
-            right: 40px;
-        }
-
-        .lightbox-caption {
-            position: absolute;
-            bottom: 30px;
-            color: white;
-            font-size: 1rem;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(4px);
-            padding: 8px 20px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-weight: 500;
-        }
-
-        /* Toast-design */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #0f172a;
-            color: white;
-            padding: 14px 22px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 10000;
-            font-weight: 500;
-        }
-
-        .toast.active {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast-success {
-            border-left: 4px solid var(--success);
-        }
-
-        .toast-error {
-            border-left: 4px solid var(--danger);
-        }
-
-        .toast-info {
-            border-left: 4px solid var(--primary);
-        }
-
-        /* Anpassad confirm-modal (Helt utan inbyggda browser dialogs) */
+        /* Bekräftelse Modal */
         .confirm-modal {
             display: none;
             position: fixed;
@@ -993,9 +591,9 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.5);
             backdrop-filter: blur(4px);
-            z-index: 10100;
+            z-index: 10000;
             justify-content: center;
             align-items: center;
         }
@@ -1006,52 +604,26 @@
 
         .confirm-content {
             background: var(--card-bg);
+            border: 1px solid var(--border);
             padding: 24px;
             border-radius: var(--radius-lg);
-            max-width: 400px;
             width: 90%;
+            max-width: 400px;
             box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
         }
 
         .confirm-actions {
             display: flex;
             gap: 12px;
-            justify-content: center;
+            margin-top: 20px;
         }
 
-        /* Settings Modal Styling & Header Actions */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .confirm-actions .btn {
+            flex: 1;
         }
 
-        .model-display-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: var(--primary-light);
-            color: var(--primary);
-            padding: 8px 14px;
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: 1px solid rgba(37, 99, 235, 0.15);
-            max-width: 250px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .model-display-badge i {
-            font-size: 0.9rem;
-        }
-
+        /* Inställningar Modal */
         .settings-modal {
             display: none;
             position: fixed;
@@ -1059,134 +631,299 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.5);
             backdrop-filter: blur(4px);
-            z-index: 10200;
+            z-index: 10000;
             justify-content: center;
             align-items: center;
-            opacity: 0;
-            transition: opacity 0.25s ease;
         }
 
         .settings-modal.active {
             display: flex;
-            opacity: 1;
         }
 
         .settings-content {
             background: var(--card-bg);
-            padding: 28px;
-            border-radius: var(--radius-lg);
-            max-width: 500px;
-            width: 90%;
-            box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            transform: scale(0.95);
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .settings-modal.active .settings-content {
-            transform: scale(1);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
         }
 
         .settings-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 12px;
-        }
-
-        .settings-header h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .settings-header h3 i {
-            color: var(--primary);
+            margin-bottom: 20px;
         }
 
         .settings-close {
-            background: none;
+            background: transparent;
             border: none;
-            font-size: 1.25rem;
-            color: var(--text-muted);
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .settings-close:hover {
-            color: var(--danger);
-        }
-
-        .settings-body {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            color: var(--text-muted);
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 6px;
+            margin-bottom: 16px;
         }
 
         .form-group label {
-            font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text);
+            font-size: 0.9rem;
         }
 
         .form-group input,
-        .form-group select {
-            padding: 10px 12px;
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            background-color: var(--card-bg);
-            color: var(--text);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-
-        .form-group select:disabled {
-            background-color: var(--bg);
-            color: var(--text-muted);
-            cursor: not-allowed;
         }
 
         .prompt-textarea {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            font-family: inherit;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            height: 200px;
             resize: vertical;
-            min-height: 250px;
-            outline: none;
-            background-color: var(--card-bg);
-            color: var(--text);
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: monospace;
         }
 
-        .prompt-textarea:focus {
+        /* Filmremsa / Bilder */
+        .filmstrip {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 16px;
+            background: #f1f5f9;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .image-card {
+            position: relative;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            background: var(--card-bg);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            aspect-ratio: 3/4;
+            transition: transform 0.2s;
+        }
+
+        .image-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .image-card.dragging {
+            opacity: 0.5;
+        }
+
+        .image-card.drop-indicator-left::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+            z-index: 100;
+        }
+
+        .image-card.drop-indicator-right::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+            z-index: 100;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-card .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .image-card .page-number {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        /* Upload grids */
+        .upload-grid-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn-camera-rapid {
+            background: #1e293b;
+            color: white;
+        }
+
+        .btn-camera-rapid:hover {
+            background: #0f172a;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            background: var(--card-bg);
+        }
+
+        .upload-zone:hover {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            background: var(--primary-light);
+        }
+
+        /* Badges & Status */
+        .status-badge {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .status-pending {
+            background: #cbd5e1;
+            color: #475569;
+        }
+
+        .status-processing {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-done {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .model-display-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--border-hover);
+        }
+
+        /* Header actions */
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Report */
+        .report-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .export-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .report-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .report-box h1,
+        .report-box h2,
+        .report-box h3 {
+            margin-top: 16px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .report-box p {
+            margin-bottom: 12px;
+        }
+
+        .report-box ul,
+        .report-box ol {
+            margin-left: 20px;
+            margin-bottom: 12px;
         }
 
         /* MEDIA QUERIES FOR ADAPTIVE LAYOUTS */
@@ -1210,6 +947,8 @@
         @media (max-width: 768px) {
             body {
                 padding: 12px;
+                padding-bottom: 90px;
+                /* Skapa utrymme för klistrad bottenmeny */
             }
 
             header {
@@ -1233,30 +972,67 @@
             }
 
             /* Horisontell scroll för elevlistan på mobila enheter */
+            .sidebar {
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                background: var(--bg);
+                border: none;
+                box-shadow: none;
+                padding: 8px 0;
+                margin: 0 -12px;
+                gap: 8px;
+            }
+
+            .sidebar .section-title {
+                display: none;
+                /* Dölj titel på mobil för att spara utrymme */
+            }
+
             .student-list {
                 flex-direction: row !important;
                 overflow-x: auto !important;
                 white-space: nowrap;
                 gap: 8px !important;
                 max-height: none !important;
-                padding-bottom: 8px;
+                padding: 4px 12px;
+                width: 100vw;
             }
 
             .nav-item {
                 display: inline-flex !important;
                 flex-shrink: 0;
-                padding: 10px 14px !important;
+                padding: 8px 12px !important;
                 margin: 0;
-                min-width: 150px;
+                min-width: 130px;
             }
 
-            .sidebar {
-                gap: 16px;
-                padding: 16px;
-            }
-
+            /* Fastklistrad bottenmeny för primära åtgärder */
             .sidebar-actions {
-                flex-direction: column;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--card-bg);
+                padding: 12px 16px;
+                border-top: 1px solid var(--border);
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+                z-index: 9999;
+                flex-direction: row;
+                gap: 8px;
+            }
+
+            .sidebar-actions .btn {
+                flex: 1;
+                margin: 0;
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+
+            .workspace {
+                padding: 16px;
+                gap: 16px;
+                border-radius: var(--radius-md);
             }
 
             .filmstrip {
@@ -1445,8 +1221,10 @@
                     <textarea id="promptText" class="prompt-textarea" placeholder="Skriv din prompt här..."></textarea>
                 </div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 12px;">
-                <button class="btn btn-secondary" onclick="resetActivePromptToDefault()" style="border-color: #fca5a5; color: #dc2626;" title="Återställ denna mall till originalet">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 12px;">
+                <button class="btn btn-secondary" onclick="resetActivePromptToDefault()"
+                    style="border-color: #fca5a5; color: #dc2626;" title="Återställ denna mall till originalet">
                     <i class="fa-solid fa-arrow-rotate-left"></i> Återställ original
                 </button>
                 <div style="display: flex; gap: 8px;">
@@ -1551,7 +1329,7 @@ Rapporten ska innehålla:
 
         function openPromptModal() {
             const modal = document.getElementById('prompt-modal');
-            
+
             const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
             const select = document.getElementById('promptTemplateSelect');
             if (select) select.value = savedId;
@@ -1591,6 +1369,7 @@ Rapporten ska innehålla:
         };
 
         let currentView = null;
+        let activeTab = 'pages'; // Sparar fliktillståndet ('pages' eller 'report')
         let draggedIndex = null;
         let lightboxIndex = 0;
         let currentAbortController = null; // Styr avbrytande av API-anrop
@@ -1683,7 +1462,7 @@ Rapporten ska innehålla:
                     throw new Error(`HTTP ${response.status}`);
                 }
 
-                const data = await response.json();
+                const data = await response.ok ? await response.json() : [];
                 const models = Array.isArray(data) ? data : (data.data || []);
                 const visionModels = models.filter(m => m.capabilities && m.capabilities.vision === true);
 
@@ -1781,9 +1560,21 @@ Rapporten ska innehålla:
                 status: 'pending'
             };
             session.students.push(newStudent);
-            currentView = newStudent.id;
 
+            currentView = newStudent.id;
+            activeTab = 'pages'; // Nollställ fliken
+            updateBadges();
             updateBatchButtonState();
+            renderStudentList();
+            renderWorkspace();
+        }
+
+        function switchView(studentId) {
+            currentView = studentId;
+            const student = session.students.find(s => s.id === studentId);
+            if (student) {
+                activeTab = student.report ? 'report' : 'pages';
+            }
             renderStudentList();
             renderWorkspace();
         }
@@ -1816,12 +1607,6 @@ Rapporten ska innehålla:
             renderWorkspace();
         }
 
-        function switchView(studentId) {
-            currentView = studentId;
-            renderStudentList();
-            renderWorkspace();
-        }
-
         function updateBatchButtonState() {
             const hasImagesToProcess = session.students.some(s => s.images.length > 0);
             const startBtn = document.getElementById('start-btn');
@@ -1843,47 +1628,32 @@ Rapporten ska innehålla:
             }
         }
 
-        function renderStudentList() {
-            const container = document.getElementById('student-list-container');
-            container.innerHTML = '';
+        function setWorkspaceTab(tabName) {
+            activeTab = tabName;
 
-            if (session.students.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 0.9rem;">
-                        Inga elever tillagda i kön ännu.
-                    </div>`;
-                return;
+            const pagesContent = document.getElementById('tab-content-pages');
+            const reportContent = document.getElementById('tab-content-report');
+            const btnPages = document.getElementById('tab-btn-pages');
+            const btnReport = document.getElementById('tab-btn-report');
+
+            if (!pagesContent || !reportContent) return;
+
+            if (tabName === 'pages') {
+                pagesContent.style.display = 'block';
+                reportContent.style.display = 'none';
+                if (btnPages) btnPages.classList.add('active');
+                if (btnReport) btnReport.classList.remove('active');
+            } else if (tabName === 'report') {
+                pagesContent.style.display = 'none';
+                reportContent.style.display = 'block';
+                if (btnPages) btnPages.classList.remove('active');
+                if (btnReport) btnReport.classList.add('active');
+
+                const reportBox = document.getElementById('report-text-box');
+                if (reportBox) {
+                    reportBox.scrollTop = reportBox.scrollHeight;
+                }
             }
-
-            session.students.forEach(student => {
-                const div = document.createElement('div');
-                div.id = `nav-student-${student.id}`;
-                div.className = `nav-item ${currentView === student.id ? 'active' : ''}`;
-                div.onclick = () => switchView(student.id);
-
-                let statusClass = `status-${student.status}`;
-                let statusText = 'Köad';
-                if (student.status === 'processing') statusText = 'Rättar...';
-                else if (student.status === 'done') statusText = 'Klar';
-                else if (student.status === 'error') statusText = 'Fel';
-
-                div.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
-                        <span class="status-badge ${statusClass}" style="flex-shrink: 0;">${statusText}</span>
-                        <strong style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${student.name}</strong>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 8px;">
-                        <span class="badge" id="badge-student-${student.id}">${student.images.length}</span>
-                        <button class="btn-edit-outline" onclick="renameStudent(${student.id}, event)" title="Byt namn">
-                            <i class="fa-regular fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn-danger-outline" onclick="deleteStudent(${student.id}, event)" title="Ta bort elev">
-                            <i class="fa-regular fa-trash-can"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
         }
 
         function renderWorkspace() {
@@ -1910,60 +1680,70 @@ Rapporten ska innehålla:
             const hasReport = !!student.report;
             const parsedReport = hasReport ? marked.parse(student.report) : '';
 
+            if (!hasReport && activeTab === 'report') {
+                activeTab = 'pages';
+            }
+
             container.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                    <h2 style="font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-                        ${student.name}
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 4px;">
+                    <h2 style="font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                        Bearbetar: ${student.name}
                         <button class="btn-edit-outline" style="padding: 4px 8px; font-size: 0.85rem; border: 1px solid var(--border);" onclick="renameStudent(${student.id}, event)" title="Ändra namn">
                             <i class="fa-regular fa-pen-to-square"></i> Ändra namn
                         </button>
                     </h2>
                     <span class="status-badge status-${student.status}">
-                        ${student.status === 'pending' ? 'Väntar på körning' : student.status === 'processing' ? 'Rättningsrapport skapas...' : student.status === 'done' ? 'Rättad och klar' : 'Ett fel uppstod'}
+                        ${student.status === 'pending' ? 'Väntar på körning' : student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
                     </span>
                 </div>
-                
-                <p id="workspace-instructions" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; display: ${hasReport ? 'none' : 'block'};">
-                    Fotografera eller ladda upp elevens provsidor i rätt ordning (samt eventuella provinstruktioner/betygskriterier först). 
-                    Klicka på en bild för att förstora den i <strong>helskärm</strong> eller <strong>dra och släpp</strong> bilderna för att sortera dem.
-                </p>
 
-                <!-- Bildinmatning (Anpassad för Snabbkamera + Fallback filväljare) -->
-                <div id="upload-zone-wrapper" style="display: ${hasReport ? 'none' : 'block'}; width: 100%;">
-                    <div class="upload-grid-buttons">
-                        <button class="btn btn-primary btn-camera-rapid" onclick="startCamera()">
-                            <i class="fa-solid fa-camera"></i> Starta Snabbkamera
-                        </button>
-                        <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <div>
-                                <span style="font-weight: 600; display: block; margin-bottom: 4px;">Välj filer / Kamerarulle</span>
-                                <span style="color: var(--text-muted); font-size: 0.85rem;">För att välja sparade bilder</span>
+                <div class="workspace-tabs">
+                    <button class="tab-btn ${activeTab === 'pages' ? 'active' : ''}" id="tab-btn-pages" onclick="setWorkspaceTab('pages')">
+                        <i class="fa-regular fa-images"></i> Sidor <span class="badge" style="background: rgba(0,0,0,0.1); color: inherit; padding: 2px 6px; border-radius: 10px; font-size: 0.75rem; margin-left: 4px;">${student.images.length}</span>
+                    </button>
+                    <button class="tab-btn ${activeTab === 'report' ? 'active' : ''}" id="tab-btn-report" onclick="setWorkspaceTab('report')" ${hasReport ? '' : 'disabled'}>
+                        <i class="fa-solid fa-file-invoice"></i> Rapport
+                    </button>
+                </div>
+
+                <div id="tab-content-pages" style="display: ${activeTab === 'pages' ? 'block' : 'none'};">
+                    <p id="workspace-instructions" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
+                        Fotografera eller välj provsidor. Dra och släpp bilderna för att sortera dem. Klicka på en bild för helskärm.
+                    </p>
+
+                    <div id="upload-zone-wrapper" style="width: 100%; margin-bottom: 16px;">
+                        <div class="upload-grid-buttons">
+                            <button class="btn btn-primary btn-camera-rapid" onclick="startCamera()">
+                                <i class="fa-solid fa-camera"></i> Starta Snabbkamera
+                            </button>
+                            <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <div>
+                                    <span style="font-weight: 600; display: block; margin-bottom: 2px; font-size: 0.9rem;">Välj filer / Galleri</span>
+                                    <span style="color: var(--text-muted); font-size: 0.8rem;">Välj sparade bilder</span>
+                                </div>
+                                <input type="file" id="file-input" accept="image/*" multiple onchange="handleImageUpload(event)">
                             </div>
-                            <input type="file" id="file-input" accept="image/*" multiple onchange="handleImageUpload(event)">
                         </div>
                     </div>
+
+                    <div class="filmstrip" id="filmstrip-container">
+                        <!-- Bildkort matas in här via JS -->
+                    </div>
                 </div>
 
-                <!-- Filmremsa / Bildgalleri -->
-                <div class="filmstrip" id="filmstrip-container">
-                    <!-- Bildkort matas in här via JS -->
-                </div>
-
-                <!-- Rapport / Output -->
-                <div class="report-section" id="report-section-container" style="display: ${hasReport ? 'block' : 'none'};">
-                    <div class="report-header">
-                        <h3 style="font-size: 1.15rem; font-weight: 700;"><i class="fa-solid fa-file-invoice"></i> Genererad Rättningsrapport</h3>
+                <div id="tab-content-report" style="display: ${activeTab === 'report' ? 'block' : 'none'};">
+                    <div class="report-section" style="margin-top: 0; padding-top: 0; border: none;">
+                        <div class="export-group" style="margin-top: 0; margin-bottom: 16px;">
+                            <button class="btn btn-secondary" onclick="exportToWord()">
+                                <i class="fa-regular fa-file-word" style="color: #1e3a8a;"></i> Word (.doc)
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportToEmail()">
+                                <i class="fa-regular fa-envelope"></i> E-post
+                            </button>
+                        </div>
+                        <div class="report-box markdown-body" id="report-text-box" style="margin-top: 0;">${parsedReport}</div>
                     </div>
-                    <div class="export-group" style="margin-top: 8px; margin-bottom: 16px;">
-                        <button class="btn btn-secondary" onclick="exportToWord()">
-                            <i class="fa-regular fa-file-word" style="color: #1e3a8a;"></i> Ladda ner som Word (.doc)
-                        </button>
-                        <button class="btn btn-secondary" onclick="exportToEmail()">
-                            <i class="fa-regular fa-envelope"></i> Skicka som e-post
-                        </button>
-                    </div>
-                    <div class="report-box markdown-body" id="report-text-box" style="margin-top: 0;">${parsedReport}</div>
                 </div>
             `;
 
@@ -2056,7 +1836,6 @@ Rapporten ska innehålla:
 
                 /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor) */
                 card.addEventListener('touchstart', (e) => {
-                    // Starta inte sortering om läraren tryckte på ta bort-knappen
                     if (e.target.classList.contains('delete-btn')) return;
                     activeTouchIndex = index;
                     card.classList.add('dragging');
@@ -2064,15 +1843,12 @@ Rapporten ska innehålla:
 
                 card.addEventListener('touchmove', (e) => {
                     if (activeTouchIndex === null) return;
-
-                    // Lås scrollning på mobilen medan man drar bilden
                     e.preventDefault();
 
                     const touch = e.touches[0];
                     const x = touch.clientX;
                     const y = touch.clientY;
 
-                    // Identifiera vilket element fingret svävar över
                     const elementUnderFinger = document.elementFromPoint(x, y);
                     if (!elementUnderFinger) return;
 
@@ -2153,7 +1929,6 @@ Rapporten ska innehålla:
             });
         }
 
-        // STARTA INBYGGD SNABBKAMERA
         async function startCamera() {
             const student = session.students.find(s => s.id === currentView);
             if (!student) return;
@@ -2166,7 +1941,6 @@ Rapporten ska innehålla:
             modal.classList.add('active');
 
             try {
-                // Begär baksideskamera (environment) och hög upplösning
                 cameraStream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: { ideal: "environment" },
@@ -2179,11 +1953,10 @@ Rapporten ska innehålla:
             } catch (err) {
                 console.error("Kameramisslyckande:", err);
                 modal.classList.remove('active');
-                showToast("Kunde inte starta kameran. Se till att du tillåtit behörighet och kör via en säker anslutning (HTTPS/localhost). Använd standard filväljaren istället!", "error");
+                showToast("Kunde inte starta kameran. Se till att du tillåtit behörighet och kör via en säker anslutning (HTTPS/localhost).", "error");
             }
         }
 
-        // STÄNG SNABBKAMERAN
         function stopCamera() {
             const modal = document.getElementById('camera-modal');
             modal.classList.remove('active');
@@ -2201,7 +1974,6 @@ Rapporten ska innehålla:
             }
         }
 
-        // HANTERA INSTÄLLNINGAR-MODAL
         function openSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.style.display = 'flex';
@@ -2226,7 +1998,6 @@ Rapporten ska innehålla:
             if (e.key === 'Escape') closeSettingsModal();
         }
 
-        // FÅNGA EN BILD (SNAPSHOT)
         function captureSnapshot() {
             const video = document.getElementById('camera-video');
             const flash = document.getElementById('camera-flash');
@@ -2235,33 +2006,28 @@ Rapporten ska innehålla:
 
             if (!video || !student) return;
 
-            // Trigger visuell flash-effekt
             flash.classList.remove('flash-active');
-            void flash.offsetWidth; // Trigger reflow för CSS-animering
+            void flash.offsetWidth;
             flash.classList.add('flash-active');
 
-            // Spela upp syntetiserat slutarljud i realtid (Helt lokalt via Web Audio API)
             playShutterSound();
 
-            // Rita av bildrutan på en osynlig canvas
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth || 1280;
             canvas.height = video.videoHeight || 720;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Spara som Base64 i elevens bildpaket
             const base64Data = canvas.toDataURL('image/jpeg', 0.85);
             student.images.push(base64Data);
 
             counter.innerText = `Tagna bilder: ${student.images.length}`;
         }
 
-        // Syntetiserar ett "kamera klick-ljud" utan externa ljudresurser
         function playShutterSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const bufferSize = audioCtx.sampleRate * 0.1; // 100ms
+                const bufferSize = audioCtx.sampleRate * 0.1;
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
 
@@ -2381,6 +2147,49 @@ Rapporten ska innehålla:
             else if (e.key === 'Escape') closeLightbox();
         }
 
+        function renderStudentList() {
+            const container = document.getElementById('student-list-container');
+            container.innerHTML = '';
+
+            if (session.students.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 0.9rem;">
+                        Inga elever tillagda i kön ännu.
+                    </div>`;
+                return;
+            }
+
+            session.students.forEach(student => {
+                const div = document.createElement('div');
+                div.id = `nav-student-${student.id}`;
+                div.className = `nav-item ${currentView === student.id ? 'active' : ''}`;
+                div.onclick = () => switchView(student.id);
+
+                let statusClass = `status-${student.status}`;
+                let statusText = 'Köad';
+                if (student.status === 'processing') statusText = 'Rättar...';
+                else if (student.status === 'done') statusText = 'Klar';
+                else if (student.status === 'error') statusText = 'Fel';
+
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
+                        <span class="status-badge ${statusClass}" style="flex-shrink: 0;">${statusText}</span>
+                        <strong style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${student.name}</strong>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 8px;">
+                        <span class="badge" id="badge-student-${student.id}">${student.images.length}</span>
+                        <button class="btn-edit-outline" onclick="renameStudent(${student.id}, event)" title="Byt namn">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn-danger-outline" onclick="deleteStudent(${student.id}, event)" title="Ta bort elev">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
         async function processBatch() {
             const apiKey = document.getElementById('apiKey').value;
             const apiUrl = document.getElementById('apiUrl').value;
@@ -2412,27 +2221,27 @@ Rapporten ska innehålla:
                 student.status = 'processing';
                 student.report = '';
                 renderStudentList();
-                if (currentView === student.id) renderWorkspace();
+
+                if (currentView === student.id) {
+                    renderWorkspace();
+                    setWorkspaceTab('report');
+                }
 
                 try {
-                    // Skapa en ny AbortController för varje enskild elevs anrop
                     currentAbortController = new AbortController();
 
                     await callBergetAI(apiUrl, apiKey, student, currentAbortController.signal, (chunk) => {
                         student.report += chunk;
 
                         if (currentView === student.id) {
-                            const reportSection = document.getElementById('report-section-container');
                             const reportTextBox = document.getElementById('report-text-box');
-                            const workspaceInstructions = document.getElementById('workspace-instructions');
-                            const uploadZoneWrapper = document.getElementById('upload-zone-wrapper');
+                            const tabBtnReport = document.getElementById('tab-btn-report');
 
-                            if (workspaceInstructions) workspaceInstructions.style.display = 'none';
-                            if (uploadZoneWrapper) uploadZoneWrapper.style.display = 'none';
+                            if (tabBtnReport) {
+                                tabBtnReport.removeAttribute('disabled');
+                            }
 
-                            if (reportSection && reportTextBox) {
-                                reportSection.style.display = 'block';
-                                // Rendera live-strömmad Markdown till HTML via Marked
+                            if (reportTextBox) {
                                 reportTextBox.innerHTML = marked.parse(student.report);
                                 reportTextBox.scrollTop = reportTextBox.scrollHeight;
                             }
@@ -2459,7 +2268,6 @@ Rapporten ska innehålla:
             resetBatchState();
         }
 
-        // Avbryter hela pågående batch-körning
         function cancelBatch() {
             if (!isProcessing) return;
             isProcessing = false;
@@ -2470,7 +2278,6 @@ Rapporten ska innehålla:
 
             showToast("Körningen avbröts av användaren.", "error");
 
-            // Markera ofullständiga elever som avbrutna
             session.students.forEach(s => {
                 if (s.status === 'processing') {
                     s.status = 'error';
@@ -2504,13 +2311,11 @@ Rapporten ska innehålla:
         async function callBergetAI(url, key, student, signal, onChunk) {
             const contentArray = [];
 
-            // Load selected prompt
             const selectedPromptId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
             const template = PROMPT_TEMPLATES.find(t => t.id === selectedPromptId) || PROMPT_TEMPLATES[0];
             const customText = localStorage.getItem(`rattaren_custom_prompt_${selectedPromptId}`);
             let rawPromptText = customText !== null ? customText : template.defaultText;
 
-            // Dynamically replace {studentName}
             const promptText = rawPromptText.replace(/{studentName}/g, student.name);
 
             contentArray.push({
@@ -2546,7 +2351,7 @@ Rapporten ska innehålla:
                     "Authorization": `Bearer ${key}`
                 },
                 body: JSON.stringify(payload),
-                signal: signal // Skickar med abort-signalen till nätverksanropet
+                signal: signal
             });
 
             if (!response.ok) {
@@ -2704,7 +2509,6 @@ Rapporten ska innehålla:
             renderStudentList();
             renderWorkspace();
 
-            // Hämta tillgängliga modeller vid uppstart om nyckel finns sparad
             if (document.getElementById('apiKey').value) {
                 updateModelsDropdown();
             } else {
