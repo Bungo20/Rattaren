@@ -729,7 +729,6 @@
             transform: translateY(-2px);
         }
 
-        /* Active touch / mouse drag state */
         .image-card.dragging {
             opacity: 0.5;
             transform: scale(1.05) translate3d(0, 0, 0);
@@ -823,7 +822,6 @@
             background: #1e293b;
             color: white;
             padding: 16px 20px;
-            /* Gjort knappen högre */
             font-size: 1rem;
         }
 
@@ -1054,13 +1052,11 @@
             html,
             body {
                 overflow-x: hidden;
-                /* Förhindra helt horisontell scrollning på skärmen */
             }
 
             body {
                 padding: 12px;
                 padding-bottom: 90px;
-                /* Skapa utrymme för klistrad bottenmeny */
             }
 
             header {
@@ -1086,13 +1082,11 @@
                 display: none !important;
             }
 
-            /* Dölj redigerings-knappar på själva horizontal-pillsen för att undvika felklick */
             .nav-item .btn-edit-outline,
             .nav-item .btn-danger-outline {
                 display: none !important;
             }
 
-            /* Anpassa toast position så den inte hamnar under klistrad bottenmeny */
             .toast {
                 left: 16px !important;
                 right: 16px !important;
@@ -1101,7 +1095,6 @@
                 text-align: center;
             }
 
-            /* Radbrytande elevlista på mobila enheter */
             .sidebar {
                 position: sticky;
                 top: 0;
@@ -1117,7 +1110,6 @@
 
             .sidebar .section-title {
                 display: none;
-                /* Dölj titel på mobil för att spara utrymme */
             }
 
             .student-list {
@@ -1128,7 +1120,6 @@
                 max-height: none !important;
                 padding: 4px 12px;
                 width: 100%;
-                /* Förhindrar overflow-x genom att hålla sig inom behållaren */
                 max-width: 100%;
                 box-sizing: border-box;
                 -webkit-overflow-scrolling: touch;
@@ -1147,7 +1138,6 @@
                 justify-content: center;
             }
 
-            /* Fastklistrad bottenmeny för primära åtgärder */
             .sidebar-actions {
                 position: fixed;
                 bottom: 0;
@@ -1177,18 +1167,15 @@
                 max-width: 100%;
                 box-sizing: border-box;
                 overflow-x: hidden;
-                /* Förhindra intern horisontell scroll */
             }
 
             .upload-grid-buttons {
                 grid-template-columns: 1fr;
-                /* Stapla knapparna på höjden på telefon */
                 gap: 10px;
             }
 
             .export-group {
                 flex-direction: column;
-                /* Stapla Word/E-post knapparna på höjden */
                 gap: 8px;
                 width: 100%;
             }
@@ -1321,7 +1308,6 @@
             <!-- SCANNER GUIDE OVERLAY -->
             <div class="camera-guide-overlay">
                 <div class="guide-box"></div>
-                <div class="guide-text">Placera provsidan inom ramen</div>
             </div>
             <div class="camera-ui">
                 <div class="camera-counter" id="camera-counter">Tagna bilder: 0</div>
@@ -1336,7 +1322,7 @@
     <div id="confirm-modal" class="confirm-modal">
         <div class="confirm-content">
             <h3 id="confirm-title">Är du säker?</h3>
-            <p id="confirm-message">Detta går inte att ångra.</p>
+            <p id="confirm-message">Detta går inte ångra.</p>
             <div class="confirm-actions">
                 <button class="btn btn-secondary" onclick="handleConfirm(false)">Avbryt</button>
                 <button class="btn btn-danger" onclick="handleConfirm(true)">Ja, ta bort</button>
@@ -1391,7 +1377,7 @@
                 <div class="form-group">
                     <label for="promptTemplateSelect">Prompt-mall</label>
                     <select id="promptTemplateSelect" onchange="onPromptTemplateChange()" title="Välj prompt-mall">
-                        <!-- Fylls i dynamiskt av Javascript -->
+                        <!-- Fylls i av scriptet -->
                     </select>
                 </div>
                 <div class="form-group">
@@ -1415,7 +1401,7 @@
                 </div>
             </div>
         </div>
-    </div> <!-- TILLAGD: Denna avslutande div-tagg stänger prompt-modalen och löser att Elev-modalen kan öppnas -->
+    </div>
 
     <!-- ELEV-MODAL (LÄGG TILL / BYT NAMN) -->
     <div id="student-modal" class="settings-modal" onclick="closeStudentModal(event)">
@@ -1442,136 +1428,50 @@
     <script>
         const PROMPT_TEMPLATES = [
             {
-                id: "standard",
-                name: "Standardrättning (Utförlig)",
-                defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat skriftligt prov. 
-Här är bilderna på elevens lösning (namn: {studentName}) i kronologisk ordning.
-Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
+                id: 'standard',
+                name: 'Standard rättningsmall',
+                defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat skriftligt prov för studenten {studentName}. 
+Här är bilderna på elevens lösning i kronologisk ordning. Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
 Observera att elevens svar kan sträcka sig över flera sidor och fortsätta naturligt på nästa bild. Analysera hela sammanhanget.
 
-Skriv en utförlig rättningsrapport på svenska. Svara ALLTID formaterat som ren och vacker Markdown (utan block-kodsomslag som \`\`\`markdown).
-Rapporten ska innehålla:
+Skriv en utförlig rättningsrapport på svenska. Rapporten ska innehålla:
 1. Bedömning utifrån eventuellt angivna instruktioner (eller generella betygskriterier för ämnet).
 2. Elevens poäng eller indikerad betygsnivå.
 3. Konstruktiv feedback med elevens specifika styrkor.
-4. Utvecklingsområden och konkreta tips på hur heaven kan förbättra sina svar framöver.`
+4. Utvecklingsområden och konkreta tips på hur eleven kan förbättra sina svar framöver.`
             },
             {
-                id: "brief",
-                name: "Kortfattad återkoppling",
-                defaultText: `Du är en svensk legitimerad lärare som gör en snabb, överskådlig bedömning av ett inlämnat skriftligt prov.
-Här är bilderna på elevens lösning (namn: {studentName}) i kronologisk ordning.
-Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
+                id: 'matris',
+                name: 'Kriteriebaserad (Matris)',
+                defaultText: `Du är en svensk legitimerad lärare som rättar ett skriftligt prov för studenten {studentName}.
+Fokusera rättningen strikt på kunskapskrav och betygskriterier som framgår av provet eller är generella för ämnet.
+Skapa en tabell (matris) i Markdown med följande kolumner:
+- Kunskapskrav / Förmåga
+- Visad nivå (E/C/A)
+- Kommentar / Motivering
 
-Skriv en kortfattad och kärnfull återkoppling på svenska. Svara ALLTID formaterat som ren och vacker Markdown (utan block-kodsomslag som \`\`\`markdown).
-Inkludera:
-1. Föreslagen betygsnivå eller omdöme.
-2. Två tydliga styrkor i lösningen.
-3. Ett konkret utvecklingsområde för att förbättra resultatet.`
+Avsluta med en sammanfattande bedömning och nästa steg för eleven.`
             },
             {
-                id: "national_test",
-                name: "Nationella prov (NP) bedömning",
-                defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat prov utifrån Skolverkets betygskriterier och kunskapskrav (motsvarande Nationella prov).
-Här är bilderna på elevens lösning (namn: {studentName}) i kronologisk ordning.
-Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
-
-Skriv en formell och strukturerad rättningsrapport på svenska. Svara ALLTID formaterat som ren och vacker Markdown (utan block-kodsomslag som \`\`\`markdown).
-Rapporten ska innehålla:
-1. Bedömning uppdelad efter kunskapskrav (E-nivå, C-nivå, A-nivå).
-2. Tydlig motivering för uppfyllda samt ej uppfyllda kriterier.
-3. Rekommendationer för vidare studier och utveckling.`
+                id: 'snabb_feedback',
+                name: 'Kompakt snabb-feedback',
+                defaultText: `Du är en svensk lärare som rättar provet för {studentName}.
+Ge en kortfattad och direkt feedback på svenska:
+1. Preliminärt betyg/poäng.
+2. Tre konkreta saker som var bra med lösningarna.
+3. Två konkreta saker att arbeta vidare på.`
             },
             {
-                id: "custom",
-                name: "Egen",
-                defaultText: `Skriv din egen prompt här.`
+                id: 'felanalys',
+                name: 'Djupgående felanalys',
+                defaultText: `Du är en svensk lärare som gör en pedagogisk felanalys på provet för {studentName}.
+Gå igenom elevens lösningar noggrant. Identifiera eventuella missförstånd, räknefel eller missade instruktioner.
+Förklara på ett pedagogiskt och uppmuntrande sätt:
+- Vad eleven har missförstått (och hur det egentligen ligger till).
+- Vilka moment som eleven behärskar helt utan problem.
+- Ett par övningstips för att motverka liknande fel i framtiden.`
             }
         ];
-
-        function initPromptSettings() {
-            const select = document.getElementById('promptTemplateSelect');
-            if (!select) return;
-            select.innerHTML = '';
-            PROMPT_TEMPLATES.forEach(tpl => {
-                const opt = document.createElement('option');
-                opt.value = tpl.id;
-                opt.textContent = tpl.name;
-                select.appendChild(opt);
-            });
-
-            const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
-            select.value = savedId;
-            updatePromptTextarea(savedId);
-        }
-
-        function updatePromptTextarea(templateId) {
-            const template = PROMPT_TEMPLATES.find(t => t.id === templateId);
-            if (!template) return;
-            const customText = localStorage.getItem(`rattaren_custom_prompt_${templateId}`);
-            document.getElementById('promptText').value = customText !== null ? customText : template.defaultText;
-        }
-
-        function onPromptTemplateChange() {
-            const select = document.getElementById('promptTemplateSelect');
-            updatePromptTextarea(select.value);
-        }
-
-        function resetActivePromptToDefault() {
-            const select = document.getElementById('promptTemplateSelect');
-            const templateId = select.value;
-            const template = PROMPT_TEMPLATES.find(t => t.id === templateId);
-            if (!template) return;
-
-            document.getElementById('promptText').value = template.defaultText;
-            showToast("Prompten har återställts till originalet.", "info");
-        }
-
-        function openPromptModal() {
-            const modal = document.getElementById('prompt-modal');
-            if (!modal) return;
-
-            const savedId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
-            const select = document.getElementById('promptTemplateSelect');
-            if (select) select.value = savedId;
-            updatePromptTextarea(savedId);
-
-            modal.style.display = 'flex';
-            void modal.offsetHeight;
-            modal.classList.add('active');
-            document.addEventListener('keydown', handlePromptModalKeyboard);
-        }
-
-        function closePromptModal(event) {
-            if (event) event.stopPropagation();
-            const modal = document.getElementById('prompt-modal');
-            if (!modal) return;
-            modal.classList.remove('active');
-            setTimeout(() => {
-                if (!modal.classList.contains('active')) {
-                    modal.style.display = 'none';
-                }
-            }, 250);
-            document.removeEventListener('keydown', handlePromptModalKeyboard);
-        }
-
-        function saveAndClosePromptModal() {
-            const select = document.getElementById('promptTemplateSelect');
-            const templateId = select.value;
-            const textValue = document.getElementById('promptText').value;
-
-            localStorage.setItem('rattaren_selected_prompt_id', templateId);
-            localStorage.setItem(`rattaren_custom_prompt_${templateId}`, textValue);
-
-            closePromptModal();
-            showToast("Prompt-inställningarna har sparats.", "success");
-        }
-
-        function handlePromptModalKeyboard(e) {
-            if (e.key === 'Escape') {
-                closePromptModal();
-            }
-        }
 
         let session = {
             students: []
@@ -1585,6 +1485,10 @@ Rapporten ska innehålla:
         let isProcessing = false; // Flagga för att spåra batch-körningens status
         let cameraStream = null; // Förvarar videoströmmen för snabbkameran
         let confirmResolve = null; // Löser bekräftelsemodalen asynkront
+        let availableVideoDevices = [];
+        let currentFacingMode = 'environment';
+        let studentModalMode = 'add';
+        let studentModalTargetId = null;
 
         // Variabler för touch-drag-and-drop på mobiler
         let activeTouchIndex = null;
@@ -1596,14 +1500,7 @@ Rapporten ska innehålla:
         let touchDragOccurred = false;
         let touchStartX = 0;
         let touchStartY = 0;
-
-        // Modaltillstånd för elevinmatning
-        let studentModalMode = 'add'; // 'add' eller 'rename'
-        let studentModalTargetId = null;
-
-        // Kameravariabler för byte av kamera
-        let currentFacingMode = 'environment'; // Back camera by default
-        let availableVideoDevices = [];
+        let blockLightbox = false; // Säkerhetsspärr för att separera drag och klick
 
         // Touch-gest-variabler för swipe i lightbox
         let swipeStartX = 0;
@@ -1638,6 +1535,95 @@ Rapporten ska innehålla:
             localStorage.setItem('berget_selected_model', e.target.value);
             updateSelectedModelDisplay();
         });
+
+        function initPromptSettings() {
+            const select = document.getElementById('promptTemplateSelect');
+            if (!select) return;
+
+            select.innerHTML = '';
+            PROMPT_TEMPLATES.forEach(template => {
+                const option = document.createElement('option');
+                option.value = template.id;
+                option.textContent = template.name;
+                select.appendChild(option);
+            });
+
+            const activeId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
+            select.value = activeId;
+
+            loadSelectedPromptText(activeId);
+        }
+
+        function loadSelectedPromptText(templateId) {
+            const textarea = document.getElementById('promptText');
+            if (!textarea) return;
+
+            const customText = localStorage.getItem(`rattaren_custom_prompt_${templateId}`);
+            if (customText !== null) {
+                textarea.value = customText;
+            } else {
+                const template = PROMPT_TEMPLATES.find(t => t.id === templateId) || PROMPT_TEMPLATES[0];
+                textarea.value = template.defaultText;
+            }
+        }
+
+        function openPromptModal() {
+            initPromptSettings();
+            const modal = document.getElementById('prompt-modal');
+            if (!modal) return;
+            modal.style.display = 'flex';
+            void modal.offsetHeight;
+            modal.classList.add('active');
+            document.addEventListener('keydown', handlePromptModalKeyboard);
+        }
+
+        function closePromptModal(event) {
+            if (event) event.stopPropagation();
+            const modal = document.getElementById('prompt-modal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            setTimeout(() => {
+                if (!modal.classList.contains('active')) {
+                    modal.style.display = 'none';
+                }
+            }, 250);
+            document.removeEventListener('keydown', handlePromptModalKeyboard);
+        }
+
+        function handlePromptModalKeyboard(e) {
+            if (e.key === 'Escape') closePromptModal();
+        }
+
+        function onPromptTemplateChange() {
+            const select = document.getElementById('promptTemplateSelect');
+            if (!select) return;
+            loadSelectedPromptText(select.value);
+        }
+
+        function resetActivePromptToDefault() {
+            const select = document.getElementById('promptTemplateSelect');
+            if (!select) return;
+            const templateId = select.value;
+
+            localStorage.removeItem(`rattaren_custom_prompt_${templateId}`);
+            loadSelectedPromptText(templateId);
+            showToast("Mallen har återställts till originalet.", "success");
+        }
+
+        function saveAndClosePromptModal() {
+            const select = document.getElementById('promptTemplateSelect');
+            const textarea = document.getElementById('promptText');
+            if (!select || !textarea) return;
+
+            const templateId = select.value;
+            const textVal = textarea.value;
+
+            localStorage.setItem('rattaren_selected_prompt_id', templateId);
+            localStorage.setItem(`rattaren_custom_prompt_${templateId}`, textVal);
+
+            closePromptModal();
+            showToast("Prompt-inställningarna har sparats!", "success");
+        }
 
         function updateSelectedModelDisplay() {
             const modelSelect = document.getElementById('modelSelect');
@@ -1691,7 +1677,7 @@ Rapporten ska innehålla:
                     throw new Error(`HTTP ${response.status}`);
                 }
 
-                const data = await response.ok ? await response.json() : [];
+                const data = await response.json();
                 const models = Array.isArray(data) ? data : (data.data || []);
                 const visionModels = models.filter(m => m.capabilities && m.capabilities.vision === true);
 
@@ -1759,7 +1745,6 @@ Rapporten ska innehålla:
             }, 4000);
         }
 
-        // Anpassat bekräftelsesystem asynkront
         function customConfirm(title, message) {
             return new Promise((resolve) => {
                 const modal = document.getElementById('confirm-modal');
@@ -1792,7 +1777,6 @@ Rapporten ska innehålla:
             }
         }
 
-        // Hantering av elevinmatning via anpassad modal
         function openAddStudentModal() {
             studentModalMode = 'add';
             studentModalTargetId = null;
@@ -2087,9 +2071,9 @@ Rapporten ska innehålla:
                 card.setAttribute('draggable', true);
                 card.setAttribute('data-index', index);
 
-                // Mouse click handler - blocks lightbox if a desktop drag occurred
                 card.onclick = (e) => {
-                    if (dragOccurred) {
+                    if (e.target.closest('.delete-btn')) return;
+                    if (blockLightbox) {
                         e.preventDefault();
                         e.stopPropagation();
                         return;
@@ -2100,7 +2084,7 @@ Rapporten ska innehålla:
                 /* MOUSE DRAG & DROP EVENTS (Skrivbordsdatorer) */
                 card.ondragstart = (e) => {
                     draggedIndex = index;
-                    dragOccurred = true;
+                    blockLightbox = true;
                     card.classList.add('dragging');
                     e.dataTransfer.effectAllowed = 'move';
                 };
@@ -2111,8 +2095,8 @@ Rapporten ska innehålla:
                         el.classList.remove('drop-indicator-left', 'drop-indicator-right');
                     });
                     setTimeout(() => {
-                        dragOccurred = false;
-                    }, 50);
+                        blockLightbox = false;
+                    }, 150);
                 };
 
                 card.ondragover = (e) => {
@@ -2165,7 +2149,7 @@ Rapporten ska innehålla:
                     draggedIndex = null;
                 };
 
-                /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor med pass-through-lösning!) */
+                /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor) */
                 card.addEventListener('touchstart', (e) => {
                     if (e.target.closest('.delete-btn')) return;
                     activeTouchIndex = index;
@@ -2182,18 +2166,16 @@ Rapporten ska innehålla:
                     const x = touch.clientX;
                     const y = touch.clientY;
 
-                    // Only classify as a drag gesture if the finger moved more than 8 pixels
                     const dx = x - touchStartX;
                     const dy = y - touchStartY;
                     if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
                         touchDragOccurred = true;
+                        blockLightbox = true;
                     }
 
-                    // TILLFÄLLIG PASS-THROUGH: Stäng tillfälligt av elementets pointer-events
-                    // så att elementFromPoint kan "se igenom" och träffa korten under!
                     card.style.pointerEvents = 'none';
                     const elementUnderFinger = document.elementFromPoint(x, y);
-                    card.style.pointerEvents = ''; // Återställ direkt
+                    card.style.pointerEvents = '';
 
                     if (!elementUnderFinger) return;
 
@@ -2234,7 +2216,6 @@ Rapporten ska innehålla:
                         touchOverSide = null;
                     }
 
-                    // Stoppa sidscroll om vi faktiskt sorterar
                     if (touchDragOccurred) {
                         e.preventDefault();
                     }
@@ -2265,12 +2246,14 @@ Rapporten ska innehålla:
                         }
                     }
 
-                    // Förhindra falska klick efter touch-släpp
                     e.preventDefault();
 
-                    // Om det var ett rent klick utan rörelse, öppna helskärmsläget
                     if (!touchDragOccurred) {
                         openLightbox(activeTouchIndex);
+                    } else {
+                        setTimeout(() => {
+                            blockLightbox = false;
+                        }, 400);
                     }
 
                     activeTouchIndex = null;
@@ -2294,7 +2277,6 @@ Rapporten ska innehålla:
                 availableVideoDevices = devices.filter(device => device.kind === 'videoinput');
                 const switchBtn = document.getElementById('camera-switch-btn');
                 if (switchBtn) {
-                    // Visa switch-knappen om det faktiskt finns mer än en kamera
                     switchBtn.style.display = availableVideoDevices.length > 1 ? 'flex' : 'none';
                 }
             } catch (err) {
@@ -2319,7 +2301,6 @@ Rapporten ska innehålla:
                     cameraStream = null;
                 }
 
-                // BACK-KAMERA SOM STANDARD (environment)
                 let constraints = {
                     audio: false,
                     video: {
@@ -2356,10 +2337,7 @@ Rapporten ska innehålla:
                 cameraStream = null;
             }
 
-            // ENKELT OCH SÄKERT: Växla direkt mellan environment och user utan zoom-linser!
             currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
-
-            // Starta om kameran med den nya facingen (utan toast-meddelande!)
             await startCamera();
         }
 
@@ -2632,7 +2610,6 @@ Rapporten ska innehålla:
                 });
             }
 
-            // Lägg till "Lägg till"-pillen i slutet av listan för full mobilkompatibilitet
             const addPill = document.createElement('div');
             addPill.className = 'nav-item add-student-pill';
             addPill.onclick = (e) => {
@@ -2950,7 +2927,6 @@ Rapporten ska innehålla:
             window.location.href = `mailto:?subject=${subject}&body=${body}`;
         }
 
-        // Tema Hantering (Mörkt/Ljust läge)
         function initTheme() {
             const savedTheme = localStorage.getItem('rattaren_theme');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -2973,7 +2949,6 @@ Rapporten ska innehålla:
         function updateThemeToggleIcon(isDark) {
             const themeBtn = document.getElementById('theme-toggle-btn');
             if (themeBtn) {
-                // Visa en vacker måne i ljust läge (klicka för mörkt läge) och en sol i mörkt läge (klicka för ljust läge)
                 themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>' : '<i class="fa-solid fa-moon"></i>';
             }
         }
