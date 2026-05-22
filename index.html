@@ -749,11 +749,16 @@
             pointer-events: none;
             z-index: 10000;
             border-radius: var(--radius-md);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 2px var(--primary);
-            opacity: 0.92;
-            transform: scale(1.08);
-            transition: opacity 0.15s, transform 0.15s;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 0 2px var(--primary);
+            opacity: 0.88;
+            overflow: hidden;
             will-change: left, top;
+        }
+        .touch-drag-ghost img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         /* Insättningsmarkör – en tydlig vertikal linje som visar var bilden hamnar */
@@ -2214,23 +2219,26 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
             // Markera källkortet som "lyft"
             card.classList.add('touch-dragging-source');
 
-            // Skapa ghost-klon
-            const rect = card.getBoundingClientRect();
-            const ghost = card.cloneNode(true);
-            ghost.className = 'touch-drag-ghost';
-            ghost.style.width = rect.width + 'px';
-            ghost.style.height = rect.height + 'px';
-            ghost.style.left = (touch.clientX - rect.width / 2) + 'px';
-            ghost.style.top = (touch.clientY - rect.height / 2) + 'px';
+            // Skapa en enkel ghost med bara bilden (inte hela kortet)
+            const imgWrapper = card.querySelector('.card-image-wrapper');
+            const imgEl = card.querySelector('img');
+            const wrapperRect = imgWrapper.getBoundingClientRect();
 
-            // Ta bort delete-knappen från ghosten
-            const delBtn = ghost.querySelector('.delete-btn');
-            if (delBtn) delBtn.remove();
+            const ghost = document.createElement('div');
+            ghost.className = 'touch-drag-ghost';
+            ghost.style.width = wrapperRect.width + 'px';
+            ghost.style.height = wrapperRect.height + 'px';
+            ghost.style.left = (touch.clientX - wrapperRect.width / 2) + 'px';
+            ghost.style.top = (touch.clientY - wrapperRect.height / 2) + 'px';
+
+            const ghostImg = document.createElement('img');
+            ghostImg.src = imgEl.src;
+            ghost.appendChild(ghostImg);
 
             document.body.appendChild(ghost);
             touchDragState.ghostEl = ghost;
-            touchDragState.offsetX = rect.width / 2;
-            touchDragState.offsetY = rect.height / 2;
+            touchDragState.offsetX = wrapperRect.width / 2;
+            touchDragState.offsetY = wrapperRect.height / 2;
 
             // Skapa insättningsmarkör
             const marker = document.createElement('div');
@@ -2260,12 +2268,13 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
             let bestInsertIndex = null;
             let bestMarkerX = 0;
             let bestMarkerTop = 0;
-            let bestMarkerBottom = 0;
+            let bestMarkerHeight = 0;
             let closestDist = Infinity;
 
             cards.forEach((c, i) => {
                 const r = c.getBoundingClientRect();
                 const containerRect = container.getBoundingClientRect();
+                const cardRelTop = r.top - containerRect.top;
 
                 // Beräkna avstånd till vänster- och högerkant av varje kort
                 // Vänsterkant = infoga FÖRE detta kort (index i)
@@ -2274,9 +2283,9 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                 if (leftDist < closestDist && i !== sourceIdx) {
                     closestDist = leftDist;
                     bestInsertIndex = i;
-                    bestMarkerX = r.left - containerRect.left - 3; // Centrera markören i gapet
-                    bestMarkerTop = r.top - containerRect.top - 4;
-                    bestMarkerBottom = containerRect.bottom - r.bottom - 4;
+                    bestMarkerX = r.left - containerRect.left - 3;
+                    bestMarkerTop = cardRelTop;
+                    bestMarkerHeight = r.height;
                 }
 
                 // Högerkant = infoga EFTER detta kort (index i+1)
@@ -2286,8 +2295,8 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                     closestDist = rightDist;
                     bestInsertIndex = i + 1;
                     bestMarkerX = r.right - containerRect.left - 1;
-                    bestMarkerTop = r.top - containerRect.top - 4;
-                    bestMarkerBottom = containerRect.bottom - r.bottom - 4;
+                    bestMarkerTop = cardRelTop;
+                    bestMarkerHeight = r.height;
                 }
             });
 
@@ -2299,8 +2308,8 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                 marker.style.display = 'block';
                 marker.style.left = bestMarkerX + 'px';
                 marker.style.top = bestMarkerTop + 'px';
-                marker.style.bottom = bestMarkerBottom + 'px';
-                marker.style.height = 'auto';
+                marker.style.bottom = 'auto';
+                marker.style.height = bestMarkerHeight + 'px';
                 touchDragState.insertBeforeIndex = bestInsertIndex;
             }
         }
