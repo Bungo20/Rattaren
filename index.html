@@ -716,11 +716,10 @@
             position: relative;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
-            /* overflow: hidden; -> Borttaget för att tillåta pseudo-elements (linjer) utanför korten! */
             background: var(--card-bg);
-            cursor: pointer;
             box-shadow: var(--shadow-sm);
-            aspect-ratio: 3/4;
+            display: flex;
+            flex-direction: column;
             transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s, opacity 0.2s;
             will-change: transform, box-shadow;
         }
@@ -824,12 +823,20 @@
             z-index: 100;
         }
 
+        /* Bildyta – klickbar för lightbox */
+        .image-card .card-image-wrapper {
+            position: relative;
+            aspect-ratio: 3/4;
+            cursor: pointer;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            overflow: hidden;
+        }
+
         .image-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: var(--radius-md);
-            /* Applicera rundning direkt på bilden eftersom overflow:hidden tagits bort */
+            display: block;
         }
 
         .image-card .delete-btn {
@@ -850,15 +857,39 @@
             z-index: 5;
         }
 
-        .image-card .page-number {
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.75rem;
+        /* Drag-handtags-bar under bilden */
+        .drag-handle-bar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 6px;
+            background: var(--tab-bg);
+            border-top: 1px solid var(--border);
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .drag-handle-bar:active {
+            cursor: grabbing;
+            background: var(--primary-light);
+        }
+
+        .drag-handle-bar .grip-icon {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .drag-handle-bar .page-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Upload grids */
@@ -1397,18 +1428,20 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
         let studentModalMode = 'add';
         let studentModalTargetId = null;
 
-        // Variabler för touch-drag-and-drop på mobiler (nytt ghost-system)
+        // Variabler för touch-drag-and-drop på mobiler (ghost-system via drag-handtag)
         let touchDragState = {
             active: false,          // Är ett ghost-drag aktivt just nu?
             sourceIndex: null,      // Index för kortet som dras
             ghostEl: null,          // Det flytande ghost-elementet
             markerEl: null,         // Insättningsmarkören
-            longPressTimer: null,   // Timer för lång-tryck-aktivering
             startX: 0,
             startY: 0,
             offsetX: 0,             // Förskjutning från fingret till ghostens övre vänstra hörn
             offsetY: 0,
-            insertBeforeIndex: null // Index där bilden ska infogas
+            insertBeforeIndex: null, // Index där bilden ska infogas
+            pendingCard: null,      // Kortet som väntar på att ghost ska starta
+            pendingIndex: null,     // Index för pendingCard
+            dragStarted: false      // Om ghost-draget har startats efter tröskel
         };
 
         // Felfria drag n drop-variabler för att sära på klick och drag
@@ -2023,16 +2056,6 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                 card.setAttribute('draggable', true);
                 card.setAttribute('data-index', index);
 
-                card.onclick = (e) => {
-                    if (e.target.closest('.delete-btn')) return;
-                    if (blockLightbox) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return;
-                    }
-                    openLightbox(index);
-                };
-
                 /* MOUSE DRAG & DROP EVENTS (Skrivbordsdatorer) */
                 card.ondragstart = (e) => {
                     draggedIndex = index;
@@ -2101,74 +2124,80 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                     draggedIndex = null;
                 };
 
-                /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor) */
-                /* Nytt system: lång-tryck (300ms) lyfter en ghost-klon som följer fingret. */
-                card.addEventListener('touchstart', (e) => {
+                /* TOUCH DRAG & DROP – hanteras via drag-handle-bar, se nedan */
+
+                card.innerHTML = `
+                    <div class="card-image-wrapper">
+                        <button class="delete-btn" onclick="deleteImage(${index}, event)" title="Ta bort bild">✕</button>
+                        <img src="${base64Data}" alt="Sida ${index + 1}">
+                    </div>
+                    <div class="drag-handle-bar">
+                        <span class="grip-icon"><i class="fa-solid fa-grip-vertical"></i></span>
+                        <span class="page-label">Sida ${index + 1}</span>
+                    </div>
+                `;
+
+                // Klick på bildytan öppnar lightbox
+                const imageWrapper = card.querySelector('.card-image-wrapper');
+                imageWrapper.addEventListener('click', (e) => {
                     if (e.target.closest('.delete-btn')) return;
+                    if (blockLightbox) return;
+                    openLightbox(index);
+                });
+
+                // Touch-drag startar DIREKT från handtaget (ingen lång-tryck behövs)
+                const handleBar = card.querySelector('.drag-handle-bar');
+
+                handleBar.addEventListener('touchstart', (e) => {
                     if (touchDragState.active) return;
+                    e.preventDefault(); // Förhindra scroll omedelbart
 
                     const touch = e.touches[0];
                     touchDragState.startX = touch.clientX;
                     touchDragState.startY = touch.clientY;
-
-                    // Starta lång-tryck-timer
-                    touchDragState.longPressTimer = setTimeout(() => {
-                        touchDragStartGhost(card, index, touch);
-                    }, 300);
-                }, { passive: true });
-
-                card.addEventListener('touchmove', (e) => {
-                    const touch = e.touches[0];
-                    const dx = touch.clientX - touchDragState.startX;
-                    const dy = touch.clientY - touchDragState.startY;
-
-                    // Om vi inte har aktiverat ghost-draget ännu
-                    if (!touchDragState.active) {
-                        // Avbryt lång-tryck om fingret rört sig för mycket
-                        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
-                            clearTimeout(touchDragState.longPressTimer);
-                            touchDragState.longPressTimer = null;
-                        }
-                        return;
-                    }
-
-                    // Ghost-drag är aktivt – flytta ghosten och beräkna insättningspunkt
-                    e.preventDefault();
-                    touchDragMoveGhost(touch, student);
+                    touchDragState.pendingCard = card;
+                    touchDragState.pendingIndex = index;
+                    touchDragState.dragStarted = false;
                 }, { passive: false });
 
-                card.addEventListener('touchend', (e) => {
-                    // Rensa lång-tryck-timer om den fortfarande körs
-                    if (touchDragState.longPressTimer) {
-                        clearTimeout(touchDragState.longPressTimer);
-                        touchDragState.longPressTimer = null;
-                    }
-
-                    if (!touchDragState.active) {
-                        // Ingen drag hände – behandla som vanlig klick (öppna lightbox)
-                        return;
-                    }
-
-                    // Avsluta ghost-drag och utför flytten
+                handleBar.addEventListener('touchmove', (e) => {
                     e.preventDefault();
-                    touchDragEndGhost(student);
+                    const touch = e.touches[0];
+
+                    // Starta ghost-draget efter liten rörelse (5px tröskel)
+                    if (!touchDragState.dragStarted) {
+                        const dx = touch.clientX - touchDragState.startX;
+                        const dy = touch.clientY - touchDragState.startY;
+                        if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+
+                        touchDragState.dragStarted = true;
+                        touchDragStartGhost(touchDragState.pendingCard, touchDragState.pendingIndex, touch);
+                    }
+
+                    if (touchDragState.active) {
+                        touchDragMoveGhost(touch, student);
+                    }
+                }, { passive: false });
+
+                handleBar.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    if (touchDragState.active) {
+                        touchDragEndGhost(student);
+                    }
+                    touchDragState.pendingCard = null;
+                    touchDragState.pendingIndex = null;
+                    touchDragState.dragStarted = false;
                 });
 
-                card.addEventListener('touchcancel', () => {
-                    if (touchDragState.longPressTimer) {
-                        clearTimeout(touchDragState.longPressTimer);
-                        touchDragState.longPressTimer = null;
-                    }
+                handleBar.addEventListener('touchcancel', () => {
                     if (touchDragState.active) {
                         touchDragCancelGhost();
                     }
+                    touchDragState.pendingCard = null;
+                    touchDragState.pendingIndex = null;
+                    touchDragState.dragStarted = false;
                 });
 
-                card.innerHTML = `
-                    <button class="delete-btn" onclick="deleteImage(${index}, event)" title="Ta bort bild">✕</button>
-                    <img src="${base64Data}" alt="Sida ${index + 1}">
-                    <div class="page-number">Sida ${index + 1}</div>
-                `;
                 container.appendChild(card);
             });
         }
@@ -2322,6 +2351,9 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
             touchDragState.ghostEl = null;
             touchDragState.markerEl = null;
             touchDragState.insertBeforeIndex = null;
+            touchDragState.pendingCard = null;
+            touchDragState.pendingIndex = null;
+            touchDragState.dragStarted = false;
         }
 
         async function getAvailableCameras() {
