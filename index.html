@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Rättaren</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath fill='%232563eb' d='M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9v28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5V291.9c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath fill='%232563eb' d='M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9v28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5V291.9c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z'/%3E%3C/svg%3E">
     <!-- Lägg till FontAwesome för snygga och moderna ikoner -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Lägg till Marked.js för att rendera strömmande Markdown till HTML -->
@@ -1268,7 +1269,8 @@
 
     <div id="offline-banner" class="offline-banner" style="display: none;">
         <i class="fa-solid fa-wifi-slash"></i>
-        <span>Du är för närvarande offline. Vissa funktioner, som rättning, fungerar inte utan internetanslutning.</span>
+        <span>Du är för närvarande offline. Vissa funktioner, som rättning, fungerar inte utan
+            internetanslutning.</span>
     </div>
 
     <header>
@@ -2075,7 +2077,6 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 <div id="active-student-header" style="display: ${activeTab === 'students' ? 'none' : 'flex'}; flex-direction: column; gap: 10px; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 8px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1;">
-                            <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600;">Aktiv:</span>
                             <select id="active-student-select" onchange="switchView(this.value === 'shared' ? 'shared' : Number(this.value))" style="font-size: 1.1rem; padding: 6px 28px 6px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-weight: 700; cursor: pointer; outline: none; transition: border-color 0.2s; max-width: 250px; text-overflow: ellipsis; white-space: nowrap; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 fill=%22%2364748b%22 viewBox=%220 0 16 16%22><path d=%22M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z%22/></svg>'); background-repeat: no-repeat; background-position: calc(100% - 10px) center;">
                                 <option value="shared" ${student.id === 'shared' ? 'selected' : ''}>Gemensamt underlag</option>
                                 ${session.students.map(s => `<option value="${s.id}" ${s.id === student.id ? 'selected' : ''}>${s.name}</option>`).join('')}
@@ -2089,11 +2090,6 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                             </button>
                             ` : ''}
                         </div>
-                        ${student.id !== 'shared' ? `
-                        <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
-                            ${student.status === 'pending' ? 'Väntar på körning' : student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
-                        </span>
-                        ` : ''}
                     </div>
                 </div>
 
@@ -2164,6 +2160,23 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                             ${student.id === 'shared' ? 'Dessa instruktioner/frågor läggs till i början för alla elever.' : 'Detta meddelande skickas med till AI-modellen och anpassar rättningen för denna elev.'}
                         </p>
                     </div>
+
+                    ${student.id !== 'shared' ? `
+                    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        ${isProcessing && student.status === 'processing' ? `
+                            <button class="btn btn-danger" id="correct-single-cancel-btn" onclick="cancelBatch()" style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
+                                <i class="fa-solid fa-circle-stop"></i> Avbryt rättning
+                            </button>
+                        ` : `
+                            <button class="btn btn-success" id="correct-single-btn" onclick="correctSingleStudent(${student.id})" ${student.images.length === 0 || isProcessing ? 'disabled' : ''} style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
+                                <i class="fa-solid fa-play"></i> Rätta
+                            </button>
+                        `}
+                        <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
+                            ${student.status === 'pending' ? 'Väntar på körning' : student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
+                        </span>
+                    </div>
+                    ` : ''}
                 </div>
 
                 <!-- FLIK 3: RAPPORT -->
@@ -2821,7 +2834,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             sharedDiv.id = `nav-student-shared`;
             sharedDiv.className = `nav-item ${currentView === 'shared' ? 'active' : ''}`;
             sharedDiv.onclick = () => switchView('shared');
-            
+
             sharedDiv.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
                     <span class="status-badge status-shared" style="flex-shrink: 0;"><i class="fa-solid fa-share-nodes"></i> Gemensam</span>
@@ -2883,6 +2896,96 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 </div>
             `;
             container.appendChild(addPill);
+        }
+
+        async function correctSingleStudent(studentId) {
+            const apiKey = document.getElementById('apiKey').value;
+            const apiUrl = document.getElementById('apiUrl').value;
+
+            if (!apiKey) {
+                showToast("Du måste ange din Berget AI API-nyckel i sidhuvudet först.", "error");
+                return;
+            }
+
+            if (!navigator.onLine) {
+                showToast("Du kan inte starta rättningen eftersom du är offline.", "error");
+                return;
+            }
+
+            const student = session.students.find(s => s.id === studentId);
+            if (!student) return;
+
+            if (student.images.length === 0) {
+                showToast("Det finns inga bilder att rätta för denna elev.", "error");
+                return;
+            }
+
+            isProcessing = true;
+            updateBatchButtonState();
+
+            const singleBtn = document.getElementById('correct-single-btn');
+            if (singleBtn) {
+                singleBtn.disabled = true;
+                singleBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Rättar...`;
+            }
+
+            let wasCancelled = false;
+
+            student.status = 'processing';
+            student.report = '';
+            renderStudentList();
+
+            if (currentView === student.id) {
+                renderWorkspace();
+                setWorkspaceTab('report');
+            }
+
+            try {
+                currentAbortController = new AbortController();
+
+                await callBergetAI(apiUrl, apiKey, student, currentAbortController.signal, (chunk) => {
+                    student.report += chunk;
+
+                    if (currentView === student.id) {
+                        const reportTextBox = document.getElementById('report-text-box');
+                        const tabBtnReport = document.getElementById('tab-btn-report');
+
+                        if (tabBtnReport) {
+                            tabBtnReport.removeAttribute('disabled');
+                        }
+
+                        if (reportTextBox) {
+                            reportTextBox.innerHTML = marked.parse(student.report);
+                            reportTextBox.scrollTop = reportTextBox.scrollHeight;
+                        }
+                    }
+                });
+
+                if (isProcessing) {
+                    student.status = 'done';
+                    showToast(`Rättningen klar för ${student.name}!`, "success");
+                } else {
+                    wasCancelled = true;
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    wasCancelled = true;
+                    console.log("Anropet avbröts av användaren.");
+                } else {
+                    console.error("API Fel:", error);
+                    if (!navigator.onLine) {
+                        student.report = `Rättningen misslyckades för att du är offline. Kontrollera din internetanslutning.`;
+                    } else {
+                        student.report = `Ett fel uppstod vid kommunikation med Berget AI: ${error.message}`;
+                    }
+                    student.status = 'error';
+                    showToast(`Rättningen misslyckades för ${student.name}.`, "error");
+                }
+            }
+
+            resetBatchState();
+            renderStudentList();
+            if (currentView === student.id) renderWorkspace();
         }
 
         async function processBatch() {
@@ -3259,7 +3362,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             }
 
             const subject = encodeURIComponent(`Samlade Rättningsrapporter - ${new Date().toISOString().slice(0, 10)}`);
-            
+
             let combinedBody = '';
             completedStudents.forEach((student, index) => {
                 if (index > 0) {
