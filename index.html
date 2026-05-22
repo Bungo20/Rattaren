@@ -31,6 +31,8 @@
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --tab-bg: #f1f5f9;
+            --tab-hover-bg: rgba(255, 255, 255, 0.6);
+            --tab-active-color: var(--primary);
         }
 
         /* Mörkt läge färgvariabler */
@@ -43,6 +45,8 @@
             --border-hover: #334155;
             --primary-light: rgba(37, 99, 235, 0.15);
             --tab-bg: #0f172a;
+            --tab-hover-bg: rgba(255, 255, 255, 0.06);
+            --tab-active-color: #60a5fa;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
@@ -92,14 +96,14 @@
             transition: all 0.2s ease;
         }
 
-        .tab-btn:hover:not(:disabled) {
+        .tab-btn:hover:not(.active):not(:disabled) {
             color: var(--text);
-            background: rgba(255, 255, 255, 0.5);
+            background: var(--tab-hover-bg);
         }
 
         .tab-btn.active {
             background: var(--card-bg);
-            color: var(--primary);
+            color: var(--tab-active-color);
             box-shadow: var(--shadow-sm);
         }
 
@@ -2130,7 +2134,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                         </label>
                         <div style="position: relative; display: flex; align-items: center;">
                             <input type="text" id="student-instruction-input" class="student-instruction-input"
-                                   placeholder="${student.id === 'shared' ? 'T.ex. &quot;Fråga 1: Vad är fotosyntes? Fråga 2: Förklara växthuseffekten.&quot;' : 'T.ex. &quot;Elev med dyslexi, bortse från stavfel&quot; eller &quot;Fokusera på grammatik&quot;, etc.'}" 
+                                   placeholder="${student.id === 'shared' ? '' : 'T.ex. &quot;Elev med dyslexi, bortse från stavfel&quot; eller &quot;Fokusera på grammatik&quot;, etc.'}" 
                                    value="${(student.customInstructions || '').replace(/"/g, '&quot;')}"
                                    oninput="updateStudentInstructions('${student.id}', this.value)" />
                         </div>
