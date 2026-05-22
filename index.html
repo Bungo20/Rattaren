@@ -2068,11 +2068,11 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                                 ${session.students.map(s => `<option value="${s.id}" ${s.id === student.id ? 'selected' : ''}>${s.name}</option>`).join('')}
                             </select>
                             ${student.id !== 'shared' ? `
-                            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; height: 28px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border);" onclick="openRenameStudentModal(${student.id}, event)">
-                                <i class="fa-regular fa-pen-to-square"></i> Ändra namn
+                            <button class="btn btn-secondary" style="width: 32px; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border);" onclick="openRenameStudentModal(${student.id}, event)" title="Ändra namn">
+                                <i class="fa-regular fa-pen-to-square" style="font-size: 1.1rem;"></i>
                             </button>
-                            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; height: 28px; border-radius: 6px; color: var(--danger); border-color: rgba(239, 68, 68, 0.15); display: inline-flex; align-items: center; gap: 4px; background: transparent;" onclick="deleteStudent(${student.id}, event)">
-                                <i class="fa-regular fa-trash-can"></i> Ta bort
+                            <button class="btn btn-secondary" style="width: 32px; height: 32px; border-radius: 6px; color: var(--danger); border-color: rgba(239, 68, 68, 0.15); display: inline-flex; align-items: center; justify-content: center; background: transparent;" onclick="deleteStudent(${student.id}, event)" title="Ta bort">
+                                <i class="fa-regular fa-trash-can" style="font-size: 1.1rem;"></i>
                             </button>
                             ` : ''}
                         </div>
