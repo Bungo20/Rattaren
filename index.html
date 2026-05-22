@@ -2158,9 +2158,11 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                                 <i class="fa-solid fa-play"></i> Rätta
                             </button>
                         `}
+                        ${student.status !== 'pending' ? `
                         <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
-                            ${student.status === 'pending' ? 'Väntar på körning' : student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
+                            ${student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
                         </span>
+                        ` : ''}
                     </div>
                     ` : ''}
                 </div>
