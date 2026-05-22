@@ -395,6 +395,29 @@
             opacity: 1;
         }
 
+        /* Offline Banner */
+        .offline-banner {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fee2e2;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark-theme .offline-banner {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
         /* Lightbox (Helskärmsvisning) */
         .lightbox {
             display: none;
@@ -1242,6 +1265,11 @@
 
 <body>
 
+    <div id="offline-banner" class="offline-banner" style="display: none;">
+        <i class="fa-solid fa-wifi-slash"></i>
+        <span>Du är för närvarande offline. Vissa funktioner, som rättning, fungerar inte utan internetanslutning.</span>
+    </div>
+
     <header>
         <h1><i class="fa-solid fa-graduation-cap"></i> AI Rättaren</h1>
         <div class="header-actions">
@@ -1742,6 +1770,25 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 updateSelectedModelDisplay();
             }
         }
+
+        function updateOnlineStatus() {
+            const banner = document.getElementById('offline-banner');
+            if (banner) {
+                if (navigator.onLine) {
+                    banner.style.display = 'none';
+                    // Auto-retry models list fetch if it previously failed or is empty
+                    const modelSelect = document.getElementById('modelSelect');
+                    if (modelSelect && (modelSelect.value === '' || modelSelect.innerHTML.includes('Fel vid hämtning') || modelSelect.innerHTML.includes('Ange API-nyckel först'))) {
+                        updateModelsDropdown();
+                    }
+                } else {
+                    banner.style.display = 'flex';
+                }
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
 
         function showToast(message, type = 'info') {
             const existing = document.querySelector('.toast');
@@ -2846,6 +2893,11 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 return;
             }
 
+            if (!navigator.onLine) {
+                showToast("Du kan inte starta rättningen eftersom du är offline.", "error");
+                return;
+            }
+
             const activeStudents = session.students.filter(s => s.images.length > 0);
             if (activeStudents.length === 0) {
                 showToast("Det finns inga elever med uppladdade bilder i kön.", "error");
@@ -2861,9 +2913,25 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             stopBtn.style.display = 'inline-flex';
             updateExportAllButtonState();
 
+            let successCount = 0;
+            let errorCount = 0;
+            let wasCancelled = false;
+
             for (let student of session.students) {
-                if (!isProcessing) break;
+                if (!isProcessing) {
+                    wasCancelled = true;
+                    break;
+                }
                 if (student.images.length === 0) continue;
+
+                if (!navigator.onLine) {
+                    student.status = 'error';
+                    student.report = 'Rättningen avbröts eftersom du är offline. Anslut till internet och försök igen.';
+                    errorCount++;
+                    renderStudentList();
+                    if (currentView === student.id) renderWorkspace();
+                    continue;
+                }
 
                 student.status = 'processing';
                 student.report = '';
@@ -2897,13 +2965,22 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
                     if (isProcessing) {
                         student.status = 'done';
+                        successCount++;
+                    } else {
+                        wasCancelled = true;
                     }
                 } catch (error) {
                     if (error.name === 'AbortError') {
+                        wasCancelled = true;
                         console.log("Anropet avbröts av användaren.");
                     } else {
                         console.error("API Fel:", error);
-                        student.report = `Ett fel uppstod vid kommunikation med Berget AI: ${error.message}`;
+                        errorCount++;
+                        if (!navigator.onLine) {
+                            student.report = `Rättningen misslyckades för att du är offline. Kontrollera din internetanslutning.`;
+                        } else {
+                            student.report = `Ett fel uppstod vid kommunikation med Berget AI: ${error.message}`;
+                        }
                         student.status = 'error';
                     }
                 }
@@ -2913,7 +2990,18 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             }
 
             resetBatchState();
-            showToast("Rättningen är klar för alla elever i kön!", "success");
+
+            if (!wasCancelled) {
+                if (errorCount > 0) {
+                    if (successCount === 0) {
+                        showToast("Rättningen misslyckades. Kontrollera din internetanslutning eller API-nyckel.", "error");
+                    } else {
+                        showToast(`Rättningen klar. ${successCount} lyckades, ${errorCount} misslyckades.`, "warning");
+                    }
+                } else {
+                    showToast("Rättningen är klar för alla elever i kön!", "success");
+                }
+            }
         }
 
         function cancelBatch() {
@@ -3213,6 +3301,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             initTheme();
             initPromptSettings();
             initLightboxSwipe();
+            updateOnlineStatus();
             if (session.students.length === 0) {
                 const firstStudent = {
                     id: Date.now(),
