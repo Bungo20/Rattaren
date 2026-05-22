@@ -2077,7 +2077,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                         </label>
                         <div style="position: relative; display: flex; align-items: center;">
                             <input type="text" id="student-instruction-input" class="student-instruction-input"
-                                   placeholder="T.ex. &quot;Elev med dyslexi, bortse från stavfel&quot;, &quot;Fokusera på grammatik&quot;, etc." 
+                                   placeholder="T.ex. &quot;Elev med dyslexi, bortse från stavfel&quot; eller &quot;Fokusera på grammatik&quot;, etc." 
                                    value="${(student.customInstructions || '').replace(/"/g, '&quot;')}"
                                    oninput="updateStudentInstructions(${student.id}, this.value)" />
                         </div>
