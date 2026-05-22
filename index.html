@@ -1989,6 +1989,14 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 startBtn.disabled = !hasImagesToProcess || isProcessing;
             }
             updateExportAllButtonState();
+
+            const singleBtn = document.getElementById('correct-single-btn');
+            if (singleBtn) {
+                const student = getActiveStudent();
+                if (student) {
+                    singleBtn.disabled = student.images.length === 0 || isProcessing;
+                }
+            }
         }
 
         function updateExportAllButtonState() {
