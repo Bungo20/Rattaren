@@ -736,6 +736,54 @@
             border: 1px solid var(--primary);
         }
 
+        /* Klass som markerar det kort som "lyfts" av touch-ghost-draget */
+        .image-card.touch-dragging-source {
+            opacity: 0.3;
+            transform: scale(0.92);
+            border: 2px dashed var(--primary);
+            box-shadow: none;
+        }
+
+        /* Flytande ghost-klon som följer fingret */
+        .touch-drag-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            border-radius: var(--radius-md);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 2px var(--primary);
+            opacity: 0.92;
+            transform: scale(1.08);
+            transition: opacity 0.15s, transform 0.15s;
+            will-change: left, top;
+        }
+
+        /* Insättningsmarkör – en tydlig vertikal linje som visar var bilden hamnar */
+        .touch-drop-marker {
+            position: absolute;
+            top: -4px;
+            bottom: -4px;
+            width: 4px;
+            background: var(--primary);
+            border-radius: 4px;
+            box-shadow: 0 0 12px var(--primary), 0 0 4px var(--primary);
+            z-index: 200;
+            pointer-events: none;
+            transition: left 0.1s ease, right 0.1s ease;
+        }
+        .touch-drop-marker::before,
+        .touch-drop-marker::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+        .touch-drop-marker::before { top: -4px; }
+        .touch-drop-marker::after { bottom: -4px; }
+
         .add-student-pill {
             border: 1.5px dashed var(--primary) !important;
             background: transparent !important;
@@ -749,7 +797,7 @@
             background: var(--primary-light) !important;
         }
 
-        /* Lodräta linje-indikatorer som ritas i gapen mellan bilderna vid drag och drop */
+        /* Lodräta linje-indikatorer som ritas i gapen mellan bilderna vid drag och drop (desktop) */
         .image-card.drop-indicator-left::before {
             content: '';
             position: absolute;
@@ -1349,16 +1397,22 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
         let studentModalMode = 'add';
         let studentModalTargetId = null;
 
-        // Variabler för touch-drag-and-drop på mobiler
-        let activeTouchIndex = null;
-        let currentTouchOverIndex = null;
-        let touchOverSide = null;
+        // Variabler för touch-drag-and-drop på mobiler (nytt ghost-system)
+        let touchDragState = {
+            active: false,          // Är ett ghost-drag aktivt just nu?
+            sourceIndex: null,      // Index för kortet som dras
+            ghostEl: null,          // Det flytande ghost-elementet
+            markerEl: null,         // Insättningsmarkören
+            longPressTimer: null,   // Timer för lång-tryck-aktivering
+            startX: 0,
+            startY: 0,
+            offsetX: 0,             // Förskjutning från fingret till ghostens övre vänstra hörn
+            offsetY: 0,
+            insertBeforeIndex: null // Index där bilden ska infogas
+        };
 
         // Felfria drag n drop-variabler för att sära på klick och drag
         let dragOccurred = false;
-        let touchDragOccurred = false;
-        let touchStartX = 0;
-        let touchStartY = 0;
         let blockLightbox = false; // Säkerhetsspärr för att separera drag och klick
 
         // Touch-gest-variabler för swipe i lightbox
@@ -2048,116 +2102,66 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                 };
 
                 /* TOUCH DRAG & DROP EVENTS (Mobiltelefoner & Surfplattor) */
+                /* Nytt system: lång-tryck (300ms) lyfter en ghost-klon som följer fingret. */
                 card.addEventListener('touchstart', (e) => {
                     if (e.target.closest('.delete-btn')) return;
-                    activeTouchIndex = index;
-                    touchDragOccurred = false;
-                    touchStartX = e.touches[0].clientX;
-                    touchStartY = e.touches[0].clientY;
-                    card.classList.add('dragging');
+                    if (touchDragState.active) return;
+
+                    const touch = e.touches[0];
+                    touchDragState.startX = touch.clientX;
+                    touchDragState.startY = touch.clientY;
+
+                    // Starta lång-tryck-timer
+                    touchDragState.longPressTimer = setTimeout(() => {
+                        touchDragStartGhost(card, index, touch);
+                    }, 300);
                 }, { passive: true });
 
                 card.addEventListener('touchmove', (e) => {
-                    if (activeTouchIndex === null) return;
-
                     const touch = e.touches[0];
-                    const x = touch.clientX;
-                    const y = touch.clientY;
+                    const dx = touch.clientX - touchDragState.startX;
+                    const dy = touch.clientY - touchDragState.startY;
 
-                    const dx = x - touchStartX;
-                    const dy = y - touchStartY;
-                    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
-                        touchDragOccurred = true;
-                        blockLightbox = true;
-                    }
-
-                    card.style.pointerEvents = 'none';
-                    const elementUnderFinger = document.elementFromPoint(x, y);
-                    card.style.pointerEvents = '';
-
-                    if (!elementUnderFinger) return;
-
-                    const targetCard = elementUnderFinger.closest('.image-card');
-                    if (targetCard && targetCard !== card) {
-                        const targetIdx = parseInt(targetCard.getAttribute('data-index'));
-                        currentTouchOverIndex = targetIdx;
-
-                        const rect = targetCard.getBoundingClientRect();
-                        const next = (x - rect.left) > (rect.width / 2);
-
-                        document.querySelectorAll('.image-card').forEach(el => {
-                            el.classList.remove('drop-indicator-left', 'drop-indicator-right');
-                        });
-
-                        if (next) {
-                            if (targetIdx + 1 !== activeTouchIndex) {
-                                targetCard.classList.add('drop-indicator-right');
-                                touchOverSide = 'right';
-                            } else {
-                                touchOverSide = null;
-                            }
-                        } else {
-                            if (targetIdx - 1 !== activeTouchIndex) {
-                                targetCard.classList.add('drop-indicator-left');
-                                touchOverSide = 'left';
-                            } else {
-                                touchOverSide = null;
-                            }
+                    // Om vi inte har aktiverat ghost-draget ännu
+                    if (!touchDragState.active) {
+                        // Avbryt lång-tryck om fingret rört sig för mycket
+                        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+                            clearTimeout(touchDragState.longPressTimer);
+                            touchDragState.longPressTimer = null;
                         }
-                    } else {
-                        document.querySelectorAll('.image-card').forEach(el => {
-                            if (el !== card) {
-                                el.classList.remove('drop-indicator-left', 'drop-indicator-right');
-                            }
-                        });
-                        currentTouchOverIndex = null;
-                        touchOverSide = null;
+                        return;
                     }
 
-                    if (touchDragOccurred) {
-                        e.preventDefault();
-                    }
+                    // Ghost-drag är aktivt – flytta ghosten och beräkna insättningspunkt
+                    e.preventDefault();
+                    touchDragMoveGhost(touch, student);
                 }, { passive: false });
 
                 card.addEventListener('touchend', (e) => {
-                    if (activeTouchIndex === null) return;
-
-                    card.classList.remove('dragging');
-                    document.querySelectorAll('.image-card').forEach(el => {
-                        el.classList.remove('drop-indicator-left', 'drop-indicator-right');
-                    });
-
-                    if (currentTouchOverIndex !== null && touchOverSide !== null) {
-                        let targetIndex = currentTouchOverIndex;
-                        if (touchOverSide === 'right') {
-                            targetIndex++;
-                        }
-
-                        if (targetIndex !== activeTouchIndex) {
-                            const movedImage = student.images.splice(activeTouchIndex, 1)[0];
-                            let insertIndex = targetIndex;
-                            if (activeTouchIndex < targetIndex) {
-                                insertIndex--;
-                            }
-                            student.images.splice(insertIndex, 0, movedImage);
-                            renderFilmstrip(student);
-                        }
+                    // Rensa lång-tryck-timer om den fortfarande körs
+                    if (touchDragState.longPressTimer) {
+                        clearTimeout(touchDragState.longPressTimer);
+                        touchDragState.longPressTimer = null;
                     }
 
+                    if (!touchDragState.active) {
+                        // Ingen drag hände – behandla som vanlig klick (öppna lightbox)
+                        return;
+                    }
+
+                    // Avsluta ghost-drag och utför flytten
                     e.preventDefault();
+                    touchDragEndGhost(student);
+                });
 
-                    if (!touchDragOccurred) {
-                        openLightbox(activeTouchIndex);
-                    } else {
-                        setTimeout(() => {
-                            blockLightbox = false;
-                        }, 400);
+                card.addEventListener('touchcancel', () => {
+                    if (touchDragState.longPressTimer) {
+                        clearTimeout(touchDragState.longPressTimer);
+                        touchDragState.longPressTimer = null;
                     }
-
-                    activeTouchIndex = null;
-                    currentTouchOverIndex = null;
-                    touchOverSide = null;
-                    touchDragOccurred = false;
+                    if (touchDragState.active) {
+                        touchDragCancelGhost();
+                    }
                 });
 
                 card.innerHTML = `
@@ -2167,6 +2171,157 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                 `;
                 container.appendChild(card);
             });
+        }
+
+        /* ====================================================================
+         * TOUCH GHOST DRAG — Hjälpfunktioner för det nya mobil-dra-systemet
+         * ==================================================================== */
+
+        function touchDragStartGhost(card, index, touch) {
+            touchDragState.active = true;
+            touchDragState.sourceIndex = index;
+            blockLightbox = true;
+
+            // Markera källkortet som "lyft"
+            card.classList.add('touch-dragging-source');
+
+            // Skapa ghost-klon
+            const rect = card.getBoundingClientRect();
+            const ghost = card.cloneNode(true);
+            ghost.className = 'touch-drag-ghost';
+            ghost.style.width = rect.width + 'px';
+            ghost.style.height = rect.height + 'px';
+            ghost.style.left = (touch.clientX - rect.width / 2) + 'px';
+            ghost.style.top = (touch.clientY - rect.height / 2) + 'px';
+
+            // Ta bort delete-knappen från ghosten
+            const delBtn = ghost.querySelector('.delete-btn');
+            if (delBtn) delBtn.remove();
+
+            document.body.appendChild(ghost);
+            touchDragState.ghostEl = ghost;
+            touchDragState.offsetX = rect.width / 2;
+            touchDragState.offsetY = rect.height / 2;
+
+            // Skapa insättningsmarkör
+            const marker = document.createElement('div');
+            marker.className = 'touch-drop-marker';
+            marker.style.display = 'none';
+            document.getElementById('filmstrip-container').appendChild(marker);
+            touchDragState.markerEl = marker;
+
+            // Haptic feedback om tillgänglig
+            if (navigator.vibrate) navigator.vibrate(30);
+        }
+
+        function touchDragMoveGhost(touch, student) {
+            const ghost = touchDragState.ghostEl;
+            const marker = touchDragState.markerEl;
+            if (!ghost) return;
+
+            // Flytta ghosten till fingrets position
+            ghost.style.left = (touch.clientX - touchDragState.offsetX) + 'px';
+            ghost.style.top = (touch.clientY - touchDragState.offsetY) + 'px';
+
+            // Hitta närmaste insättningspunkt bland alla kort
+            const container = document.getElementById('filmstrip-container');
+            const cards = container.querySelectorAll('.image-card');
+            const sourceIdx = touchDragState.sourceIndex;
+
+            let bestInsertIndex = null;
+            let bestMarkerX = 0;
+            let bestMarkerTop = 0;
+            let bestMarkerBottom = 0;
+            let closestDist = Infinity;
+
+            cards.forEach((c, i) => {
+                const r = c.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+
+                // Beräkna avstånd till vänster- och högerkant av varje kort
+                // Vänsterkant = infoga FÖRE detta kort (index i)
+                const leftEdgeX = r.left;
+                const leftDist = Math.abs(touch.clientX - leftEdgeX) + Math.abs(touch.clientY - (r.top + r.height / 2)) * 0.5;
+                if (leftDist < closestDist && i !== sourceIdx) {
+                    closestDist = leftDist;
+                    bestInsertIndex = i;
+                    bestMarkerX = r.left - containerRect.left - 3; // Centrera markören i gapet
+                    bestMarkerTop = r.top - containerRect.top - 4;
+                    bestMarkerBottom = containerRect.bottom - r.bottom - 4;
+                }
+
+                // Högerkant = infoga EFTER detta kort (index i+1)
+                const rightEdgeX = r.right;
+                const rightDist = Math.abs(touch.clientX - rightEdgeX) + Math.abs(touch.clientY - (r.top + r.height / 2)) * 0.5;
+                if (rightDist < closestDist) {
+                    closestDist = rightDist;
+                    bestInsertIndex = i + 1;
+                    bestMarkerX = r.right - containerRect.left - 1;
+                    bestMarkerTop = r.top - containerRect.top - 4;
+                    bestMarkerBottom = containerRect.bottom - r.bottom - 4;
+                }
+            });
+
+            // Dölj markören om den pekar på samma position (ingen flytt behövs)
+            if (bestInsertIndex === sourceIdx || bestInsertIndex === sourceIdx + 1) {
+                marker.style.display = 'none';
+                touchDragState.insertBeforeIndex = null;
+            } else if (bestInsertIndex !== null) {
+                marker.style.display = 'block';
+                marker.style.left = bestMarkerX + 'px';
+                marker.style.top = bestMarkerTop + 'px';
+                marker.style.bottom = bestMarkerBottom + 'px';
+                marker.style.height = 'auto';
+                touchDragState.insertBeforeIndex = bestInsertIndex;
+            }
+        }
+
+        function touchDragEndGhost(student) {
+            const sourceIdx = touchDragState.sourceIndex;
+            let insertIdx = touchDragState.insertBeforeIndex;
+
+            // Rensa visuella element
+            touchDragCleanup();
+
+            // Utför flytten om vi har en giltig insättningspunkt
+            if (insertIdx !== null && insertIdx !== sourceIdx && insertIdx !== sourceIdx + 1) {
+                const movedImage = student.images.splice(sourceIdx, 1)[0];
+                let finalIdx = insertIdx;
+                if (sourceIdx < insertIdx) {
+                    finalIdx--;
+                }
+                student.images.splice(finalIdx, 0, movedImage);
+                renderFilmstrip(student);
+            }
+
+            setTimeout(() => { blockLightbox = false; }, 300);
+        }
+
+        function touchDragCancelGhost() {
+            touchDragCleanup();
+            setTimeout(() => { blockLightbox = false; }, 300);
+        }
+
+        function touchDragCleanup() {
+            // Ta bort ghosten
+            if (touchDragState.ghostEl) {
+                touchDragState.ghostEl.remove();
+            }
+            // Ta bort markören
+            if (touchDragState.markerEl) {
+                touchDragState.markerEl.remove();
+            }
+            // Ta bort source-markering från alla kort
+            document.querySelectorAll('.touch-dragging-source').forEach(el => {
+                el.classList.remove('touch-dragging-source');
+            });
+
+            // Återställ state
+            touchDragState.active = false;
+            touchDragState.sourceIndex = null;
+            touchDragState.ghostEl = null;
+            touchDragState.markerEl = null;
+            touchDragState.insertBeforeIndex = null;
         }
 
         async function getAvailableCameras() {
