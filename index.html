@@ -1826,23 +1826,35 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
         }
 
         function openAddStudentModal() {
-            studentModalMode = 'add';
-            studentModalTargetId = null;
+            let maxNum = 0;
+            const regex = /^Elev\s+(\d+)$/i;
+            session.students.forEach(s => {
+                const match = s.name.match(regex);
+                if (match) {
+                    const num = parseInt(match[1], 10);
+                    if (num > maxNum) {
+                        maxNum = num;
+                    }
+                }
+            });
+            const finalName = `Elev ${maxNum + 1}`;
 
-            document.getElementById('student-modal-title').innerText = "Lägg till elev";
-            document.getElementById('student-modal-label').innerText = "Elevens namn (eller lämna tomt för anonymisering)";
-            document.getElementById('student-name-input').value = "";
-
-            const modal = document.getElementById('student-modal');
-            modal.style.display = 'flex';
-            void modal.offsetHeight;
-            modal.classList.add('active');
-
-            const input = document.getElementById('student-name-input');
-            input.focus();
-            input.select();
-
-            document.addEventListener('keydown', handleStudentModalKeyboard);
+            const newStudent = {
+                id: Date.now(),
+                name: finalName,
+                images: [],
+                report: '',
+                status: 'pending',
+                customInstructions: ''
+            };
+            session.students.push(newStudent);
+            currentView = newStudent.id;
+            activeTab = 'pages'; // Nollställ fliken
+            updateBadges();
+            updateBatchButtonState();
+            renderStudentList();
+            renderWorkspace();
+            showToast(`Elev "${finalName}" har lagts till.`, "success");
         }
 
         function openRenameStudentModal(studentId, event) {
@@ -1894,37 +1906,17 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             const input = document.getElementById('student-name-input');
             const nameVal = input.value.trim();
 
-            if (studentModalMode === 'add') {
-                const finalName = nameVal || `Elev ${session.students.length + 1}`;
-                const newStudent = {
-                    id: Date.now(),
-                    name: finalName,
-                    images: [],
-                    report: '',
-                    status: 'pending',
-                    customInstructions: ''
-                };
-                session.students.push(newStudent);
-                currentView = newStudent.id;
-                activeTab = 'pages'; // Nollställ fliken
-                updateBadges();
-                updateBatchButtonState();
+            if (nameVal === "") {
+                showToast("Elevens namn kan inte vara tomt.", "error");
+                return;
+            }
+            const student = session.students.find(s => s.id === studentModalTargetId);
+            if (student) {
+                const oldName = student.name;
+                student.name = nameVal;
                 renderStudentList();
                 renderWorkspace();
-                showToast(`Elev "${finalName}" har lagts till.`, "success");
-            } else if (studentModalMode === 'rename') {
-                if (nameVal === "") {
-                    showToast("Elevens namn kan inte vara tomt.", "error");
-                    return;
-                }
-                const student = session.students.find(s => s.id === studentModalTargetId);
-                if (student) {
-                    const oldName = student.name;
-                    student.name = nameVal;
-                    renderStudentList();
-                    renderWorkspace();
-                    showToast(`Elevens namn har ändrats från "${oldName}" till "${nameVal}".`, "success");
-                }
+                showToast(`Elevens namn har ändrats från "${oldName}" till "${nameVal}".`, "success");
             }
             closeStudentModal();
         }
