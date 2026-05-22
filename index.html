@@ -973,21 +973,25 @@
         /* Camera overlay & Switch styles */
         .camera-switch-btn {
             position: absolute;
-            top: 24px;
-            left: 24px;
+            bottom: 52px;
+            left: 40px;
+            width: 48px;
+            height: 48px;
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-weight: 600;
+            border-radius: 50%;
             cursor: pointer;
             z-index: 20;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
             transition: all 0.2s;
+        }
+
+        .camera-switch-btn i {
+            font-size: 1.4rem;
         }
 
         .camera-switch-btn:hover {
@@ -1191,6 +1195,10 @@
                 padding: 0 16px;
                 font-size: 0.9rem;
             }
+
+            .camera-switch-btn {
+                left: 16px;
+            }
         }
     </style>
 </head>
@@ -1276,7 +1284,7 @@
             <!-- Byt kamera-knapp för mobila enheter -->
             <button id="camera-switch-btn" class="camera-switch-btn" onclick="switchCamera()" title="Byt kamera"
                 style="display: none;">
-                <i class="fa-solid fa-camera-rotate"></i> Byt kamera
+                <i class="fa-solid fa-camera-rotate"></i>
             </button>
             <div class="camera-ui">
                 <div class="camera-counter" id="camera-counter">Tagna bilder: 0</div>
