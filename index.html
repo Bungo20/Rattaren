@@ -2115,7 +2115,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                             <i class="fa-solid fa-circle-stop"></i> Avbryt
                         </button>
                         <button class="btn btn-secondary" id="export-all-btn" style="display: none; width: 100%;" onclick="exportAllReportsToWord()">
-                            <i class="fa-regular fa-copy" style="color: #1e3a8a;"></i> Ladda ner alla rapporter (.doc)
+                            <i class="fa-regular fa-copy" style="color: #1e3a8a;"></i> Ladda ner alla rapporter (.docx)
                         </button>
                         <button class="btn btn-secondary" id="mail-all-btn" style="display: none; width: 100%;" onclick="exportAllReportsToEmail()">
                             <i class="fa-regular fa-envelope"></i> Maila alla rapporter
@@ -2170,7 +2170,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                     <div class="report-section" style="margin-top: 0; padding-top: 0; border: none;">
                         <div class="export-group" style="margin-top: 0; margin-bottom: 16px;">
                             <button class="btn btn-secondary" onclick="exportToWord()">
-                                <i class="fa-regular fa-file-word" style="color: #1e3a8a;"></i> Word (.doc)
+                                <i class="fa-regular fa-file-word" style="color: #1e3a8a;"></i> Word (.docx)
                             </button>
                             <button class="btn btn-secondary" onclick="exportToEmail()">
                                 <i class="fa-regular fa-envelope"></i> E-post
@@ -3175,11 +3175,11 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 </html>
             `;
 
-            const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+            const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Rattning_${student.name.replace(/\s+/g, '_')}.doc`;
+            a.download = `Rattning_${student.name.replace(/\s+/g, '_')}.docx`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -3228,11 +3228,11 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 </html>
             `;
 
-            const blob = new Blob(['\ufeff' + combinedHtml], { type: 'application/msword' });
+            const blob = new Blob(['\ufeff' + combinedHtml], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Alla_Rattningsrapporter_${new Date().toISOString().slice(0, 10)}.doc`;
+            a.download = `Alla_Rattningsrapporter_${new Date().toISOString().slice(0, 10)}.docx`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
