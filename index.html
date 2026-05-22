@@ -2044,7 +2044,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             if (!student) return;
 
             const hasReport = !!student.report;
-            const parsedReport = hasReport ? marked.parse(student.report) : `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 16px; color: var(--text-muted); text-align: center;"><i class="fa-regular fa-file-lines" style="font-size: 2.5rem; color: var(--border-hover);"></i><h4 style="font-weight: 600; font-size: 1.1rem; margin-top: 8px;">Ingen rapport skapad än</h4><p style="font-size: 0.9rem; max-width: 320px; line-height: 1.5; margin: 0;">Ladda upp eller fotografera bilder under fliken "Bilder" och klicka på "Starta rättning" under fliken "Elever" för att skapa rapporten.</p></div>`;
+            const parsedReport = hasReport ? marked.parse(student.report) : `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 16px; color: var(--text-muted); text-align: center;"><i class="fa-regular fa-file-lines" style="font-size: 2.5rem; color: var(--border-hover);"></i><h4 style="font-weight: 600; font-size: 1.1rem; margin-top: 8px;">Ingen rapport skapad än</h4><p style="font-size: 0.9rem; max-width: 320px; line-height: 1.5; margin: 0;">Ladda upp eller fotografera bilder under fliken "Bilder" och klicka på "Rätta alla" under fliken "Elever" för att skapa rapporten.</p></div>`;
 
             container.innerHTML = `
                 <div class="workspace-tabs">
@@ -2092,7 +2092,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                     </div>
                     <div class="student-actions" style="margin-top: 24px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 400px;">
                         <button class="btn btn-success" id="start-btn" onclick="processBatch()" disabled>
-                            <i class="fa-solid fa-play"></i> Starta rättning
+                            <i class="fa-solid fa-play"></i> Rätta alla
                         </button>
                         <button class="btn btn-danger" id="stop-btn" style="display: none;" onclick="cancelBatch()">
                             <i class="fa-solid fa-circle-stop"></i> Avbryt
@@ -3125,7 +3125,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
             if (startBtn) {
                 startBtn.disabled = false;
-                startBtn.innerHTML = `<i class="fa-solid fa-play"></i> Starta rättning`;
+                startBtn.innerHTML = `<i class="fa-solid fa-play"></i> Rätta alla`;
             }
             if (stopBtn) {
                 stopBtn.style.display = 'none';
