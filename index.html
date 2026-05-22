@@ -973,6 +973,16 @@
             color: #b91c1c;
         }
 
+        .status-shared {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        body.dark-theme .status-shared {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+        }
+
         .model-display-badge {
             background: var(--primary-light);
             color: var(--primary);
@@ -1465,8 +1475,19 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
         ];
 
         let session = {
+            shared: {
+                id: 'shared',
+                name: 'Gemensamt underlag',
+                images: [],
+                customInstructions: ''
+            },
             students: []
         };
+
+        function getActiveStudent() {
+            if (currentView === 'shared') return session.shared;
+            return session.students.find(s => s.id === currentView);
+        }
 
         let currentView = null;
         let activeTab = 'pages'; // Sparar fliktillståndet ('pages' eller 'report')
@@ -1882,11 +1903,11 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
         function switchView(studentId) {
             currentView = studentId;
-            const student = session.students.find(s => s.id === studentId);
+            const student = getActiveStudent();
             if (student) {
                 if (activeTab === 'students') {
                     // Stay on student list
-                } else if (activeTab === 'report' && !student.report) {
+                } else if (activeTab === 'report' && (student.id === 'shared' || !student.report)) {
                     activeTab = 'pages';
                 }
             }
@@ -1902,12 +1923,13 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             session.students = session.students.filter(s => s.id !== studentId);
 
             if (currentView === studentId) {
-                currentView = session.students.length > 0 ? session.students[0].id : null;
+                switchView(session.students.length > 0 ? session.students[0].id : 'shared');
+            } else {
+                renderStudentList();
+                renderWorkspace();
             }
 
             updateBatchButtonState();
-            renderStudentList();
-            renderWorkspace();
         }
 
         function updateBatchButtonState() {
@@ -1922,12 +1944,13 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
         function updateExportAllButtonState() {
             const completedReports = session.students.filter(s => s.report && s.status === 'done');
             const exportAllBtn = document.getElementById('export-all-btn');
+            const mailAllBtn = document.getElementById('mail-all-btn');
+            const showButtons = completedReports.length > 0 && !isProcessing;
             if (exportAllBtn) {
-                if (completedReports.length > 0 && !isProcessing) {
-                    exportAllBtn.style.display = 'inline-flex';
-                } else {
-                    exportAllBtn.style.display = 'none';
-                }
+                exportAllBtn.style.display = showButtons ? 'inline-flex' : 'none';
+            }
+            if (mailAllBtn) {
+                mailAllBtn.style.display = showButtons ? 'inline-flex' : 'none';
             }
         }
 
@@ -1967,7 +1990,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             const container = document.getElementById('workspace-container');
             container.innerHTML = '';
 
-            if (!currentView || session.students.length === 0) {
+            if (!currentView) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fa-solid fa-folder-open"></i>
@@ -1981,7 +2004,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 return;
             }
 
-            const student = session.students.find(s => s.id === currentView);
+            const student = (currentView === 'shared') ? session.shared : session.students.find(s => s.id === currentView);
             if (!student) return;
 
             const hasReport = !!student.report;
@@ -1995,7 +2018,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                     <button class="tab-btn ${activeTab === 'pages' ? 'active' : ''}" id="tab-btn-pages" onclick="setWorkspaceTab('pages')">
                         <i class="fa-regular fa-images"></i> Bilder <span class="badge" style="background: rgba(0,0,0,0.1); color: inherit; padding: 2px 6px; border-radius: 10px; font-size: 0.75rem; margin-left: 4px;">${student.images.length}</span>
                     </button>
-                    <button class="tab-btn ${activeTab === 'report' ? 'active' : ''}" id="tab-btn-report" onclick="setWorkspaceTab('report')">
+                    <button class="tab-btn ${activeTab === 'report' ? 'active' : ''}" id="tab-btn-report" onclick="setWorkspaceTab('report')" ${student.id === 'shared' ? 'disabled' : ''}>
                         <i class="fa-solid fa-file-invoice"></i> Rapport
                     </button>
                 </div>
@@ -2004,20 +2027,25 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 <div id="active-student-header" style="display: ${activeTab === 'students' ? 'none' : 'flex'}; flex-direction: column; gap: 10px; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 8px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1;">
-                            <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600;">Aktiv elev:</span>
-                            <select id="active-student-select" onchange="switchView(Number(this.value))" style="font-size: 1.1rem; padding: 6px 28px 6px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-weight: 700; cursor: pointer; outline: none; transition: border-color 0.2s; max-width: 250px; text-overflow: ellipsis; white-space: nowrap; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 fill=%22%2364748b%22 viewBox=%220 0 16 16%22><path d=%22M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z%22/></svg>'); background-repeat: no-repeat; background-position: calc(100% - 10px) center;">
+                            <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600;">Aktiv:</span>
+                            <select id="active-student-select" onchange="switchView(this.value === 'shared' ? 'shared' : Number(this.value))" style="font-size: 1.1rem; padding: 6px 28px 6px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-weight: 700; cursor: pointer; outline: none; transition: border-color 0.2s; max-width: 250px; text-overflow: ellipsis; white-space: nowrap; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 fill=%22%2364748b%22 viewBox=%220 0 16 16%22><path d=%22M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z%22/></svg>'); background-repeat: no-repeat; background-position: calc(100% - 10px) center;">
+                                <option value="shared" ${student.id === 'shared' ? 'selected' : ''}>Gemensamt underlag</option>
                                 ${session.students.map(s => `<option value="${s.id}" ${s.id === student.id ? 'selected' : ''}>${s.name}</option>`).join('')}
                             </select>
+                            ${student.id !== 'shared' ? `
                             <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; height: 28px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border);" onclick="openRenameStudentModal(${student.id}, event)">
                                 <i class="fa-regular fa-pen-to-square"></i> Ändra namn
                             </button>
                             <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; height: 28px; border-radius: 6px; color: var(--danger); border-color: rgba(239, 68, 68, 0.15); display: inline-flex; align-items: center; gap: 4px; background: transparent;" onclick="deleteStudent(${student.id}, event)">
                                 <i class="fa-regular fa-trash-can"></i> Ta bort
                             </button>
+                            ` : ''}
                         </div>
+                        ${student.id !== 'shared' ? `
                         <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
                             ${student.status === 'pending' ? 'Väntar på körning' : student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
                         </span>
+                        ` : ''}
                     </div>
                 </div>
 
@@ -2042,13 +2070,16 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                         <button class="btn btn-secondary" id="export-all-btn" style="display: none; width: 100%;" onclick="exportAllReportsToWord()">
                             <i class="fa-regular fa-copy" style="color: #1e3a8a;"></i> Ladda ner alla rapporter (.doc)
                         </button>
+                        <button class="btn btn-secondary" id="mail-all-btn" style="display: none; width: 100%;" onclick="exportAllReportsToEmail()">
+                            <i class="fa-regular fa-envelope"></i> Maila alla rapporter
+                        </button>
                     </div>
                 </div>
 
                 <!-- FLIK 2: BILDER -->
                 <div id="tab-content-pages" style="display: ${activeTab === 'pages' ? 'block' : 'none'};">
                     <p id="workspace-instructions" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
-                        Fotografera eller välj provsidor. Dra och släpp bilderna för att sortera dem. Klicka på en bild för helskärm.
+                        ${student.id === 'shared' ? 'Fotografera eller välj gemensamma provsidor/instruktioner. Dra och släpp bilderna för att sortera dem. Klicka på en bild för helskärm.' : 'Fotografera eller välj provsidor. Dra och släpp bilderna för att sortera dem. Klicka på en bild för helskärm.'}
                     </p>
 
                     <div id="upload-zone-wrapper" style="width: 100%; margin-bottom: 16px;">
@@ -2073,16 +2104,16 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                     <!-- Elev-specifikt meddelande / instruktion till prompten -->
                     <div class="student-instruction-wrapper">
                         <label for="student-instruction-input" style="display: block; font-weight: 600; font-size: 0.9rem; color: var(--text); margin-bottom: 8px;">
-                            <i class="fa-regular fa-comment-dots" style="margin-right: 6px; color: var(--primary);"></i>Valfri extra instruktion:
+                            <i class="fa-regular fa-comment-dots" style="margin-right: 6px; color: var(--primary);"></i>${student.id === 'shared' ? 'Gemensamma instruktioner eller frågor:' : 'Valfri extra instruktion:'}
                         </label>
                         <div style="position: relative; display: flex; align-items: center;">
                             <input type="text" id="student-instruction-input" class="student-instruction-input"
-                                   placeholder="T.ex. &quot;Elev med dyslexi, bortse från stavfel&quot; eller &quot;Fokusera på grammatik&quot;, etc." 
+                                   placeholder="${student.id === 'shared' ? 'T.ex. &quot;Fråga 1: Vad är fotosyntes? Fråga 2: Förklara växthuseffekten.&quot;' : 'T.ex. &quot;Elev med dyslexi, bortse från stavfel&quot; eller &quot;Fokusera på grammatik&quot;, etc.'}" 
                                    value="${(student.customInstructions || '').replace(/"/g, '&quot;')}"
-                                   oninput="updateStudentInstructions(${student.id}, this.value)" />
+                                   oninput="updateStudentInstructions('${student.id}', this.value)" />
                         </div>
                         <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">
-                            Detta meddelande skickas med till AI-modellen och anpassar rättningen för denna elev.
+                            ${student.id === 'shared' ? 'Dessa instruktioner/frågor läggs till i början för alla elever.' : 'Detta meddelande skickas med till AI-modellen och anpassar rättningen för denna elev.'}
                         </p>
                     </div>
                 </div>
@@ -2444,7 +2475,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
         }
 
         async function startCamera() {
-            const student = session.students.find(s => s.id === currentView);
+            const student = getActiveStudent();
             if (!student) return;
 
             const modal = document.getElementById('camera-modal');
@@ -2509,7 +2540,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 cameraStream = null;
             }
 
-            const student = session.students.find(s => s.id === currentView);
+            const student = getActiveStudent();
             if (student) {
                 updateBadges();
                 updateBatchButtonState();
@@ -2545,7 +2576,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             const video = document.getElementById('camera-video');
             const flash = document.getElementById('camera-flash');
             const counter = document.getElementById('camera-counter');
-            const student = session.students.find(s => s.id === currentView);
+            const student = getActiveStudent();
 
             if (!video || !student) return;
 
@@ -2604,7 +2635,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             const files = event.target.files;
             if (!files.length) return;
 
-            const student = session.students.find(s => s.id === currentView);
+            const student = getActiveStudent();
             if (!student) return;
 
             let loadedCount = 0;
@@ -2628,7 +2659,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
         function deleteImage(index, event) {
             event.stopPropagation();
-            const student = session.students.find(s => s.id === currentView);
+            const student = getActiveStudent();
             if (!student) return;
 
             student.images.splice(index, 1);
@@ -2642,17 +2673,20 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 const badge = document.getElementById(`badge-student-${s.id}`);
                 if (badge) badge.innerText = s.images.length;
             });
+            const sharedBadge = document.getElementById('badge-student-shared');
+            if (sharedBadge) sharedBadge.innerText = session.shared.images.length;
         }
 
         function updateStudentInstructions(studentId, value) {
-            const student = session.students.find(s => s.id === studentId);
+            const id = (studentId === 'shared') ? 'shared' : Number(studentId);
+            const student = (id === 'shared') ? session.shared : session.students.find(s => s.id === id);
             if (student) {
                 student.customInstructions = value;
             }
         }
 
         function openLightbox(index) {
-            const student = session.students.find(s => s.id === currentView);
+            const student = getActiveStudent();
             if (!student || !student.images[index]) return;
 
             lightboxIndex = index;
@@ -2678,7 +2712,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
         function navigateLightbox(direction, event) {
             if (event) event.stopPropagation();
-            const student = session.students.find(s => s.id === currentView);
+            const student = getActiveStudent();
             if (!student) return;
 
             lightboxIndex += direction;
@@ -2734,11 +2768,28 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             if (!container) return;
             container.innerHTML = '';
 
+            // Skapa fältet "Gemensamt underlag" och lägg till först
+            const sharedDiv = document.createElement('div');
+            sharedDiv.id = `nav-student-shared`;
+            sharedDiv.className = `nav-item ${currentView === 'shared' ? 'active' : ''}`;
+            sharedDiv.onclick = () => switchView('shared');
+            
+            sharedDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
+                    <span class="status-badge status-shared" style="flex-shrink: 0;"><i class="fa-solid fa-share-nodes"></i> Gemensam</span>
+                    <strong style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Gemensamt underlag</strong>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 8px;">
+                    <span class="badge" id="badge-student-shared">${session.shared.images.length}</span>
+                </div>
+            `;
+            container.appendChild(sharedDiv);
+
             if (session.students.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 0.9rem;">
-                        Inga elever tillagda i kön ännu.
-                    </div>`;
+                const emptyDiv = document.createElement('div');
+                emptyDiv.style.cssText = "text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 0.9rem;";
+                emptyDiv.textContent = "Inga elever tillagda i kön ännu.";
+                container.appendChild(emptyDiv);
             } else {
                 session.students.forEach(student => {
                     const div = document.createElement('div');
@@ -2915,7 +2966,11 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
             const promptText = rawPromptText.replace(/{studentName}/g, student.name);
 
-            let finalPromptText = promptText;
+            let finalPromptText = "";
+            if (session.shared.customInstructions && session.shared.customInstructions.trim()) {
+                finalPromptText += `Gemensamma instruktioner eller frågor:\n${session.shared.customInstructions.trim()}\n\n`;
+            }
+            finalPromptText += promptText;
             if (student.customInstructions && student.customInstructions.trim()) {
                 finalPromptText += `\n\nSärskilda instruktioner för denna rättning: ${student.customInstructions.trim()}`;
             }
@@ -2925,8 +2980,21 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 text: finalPromptText
             });
 
+            // Prepend shared images if any
+            const hasSharedImages = session.shared.images && session.shared.images.length > 0;
+            if (hasSharedImages) {
+                session.shared.images.forEach((base64, index) => {
+                    contentArray.push({ type: "text", text: `[Gemensamt underlag - Sida ${index + 1}]` });
+                    contentArray.push({
+                        type: "image_url",
+                        image_url: { url: base64 }
+                    });
+                });
+            }
+
             student.images.forEach((base64, index) => {
-                contentArray.push({ type: "text", text: `[Provsida ${index + 1}]` });
+                const label = hasSharedImages ? `[Elevens provsida ${index + 1}]` : `[Provsida ${index + 1}]`;
+                contentArray.push({ type: "text", text: label });
                 contentArray.push({
                     type: "image_url",
                     image_url: { url: base64 }
@@ -2996,7 +3064,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
         }
 
         function exportToWord() {
-            const student = session.students.find(s => s.id === currentView);
+            const student = getActiveStudent();
             if (!student || !student.report) return;
 
             const htmlContent = `
@@ -3085,12 +3153,33 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
         }
 
         function exportToEmail() {
-            const student = session.students.find(s => s.id === currentView);
+            const student = getActiveStudent();
             if (!student || !student.report) return;
 
             const subject = encodeURIComponent(`Rättningsrapport: ${student.name}`);
             const body = encodeURIComponent(student.report);
 
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        function exportAllReportsToEmail() {
+            const completedStudents = session.students.filter(s => s.report && s.status === 'done');
+            if (completedStudents.length === 0) {
+                showToast("Det finns inga klara rapporter att maila.", "error");
+                return;
+            }
+
+            const subject = encodeURIComponent(`Samlade Rättningsrapporter - ${new Date().toISOString().slice(0, 10)}`);
+            
+            let combinedBody = '';
+            completedStudents.forEach((student, index) => {
+                if (index > 0) {
+                    combinedBody += '\n\n==================================================\n\n';
+                }
+                combinedBody += `Rättningsrapport: ${student.name}\n\n${student.report}`;
+            });
+
+            const body = encodeURIComponent(combinedBody);
             window.location.href = `mailto:?subject=${subject}&body=${body}`;
         }
 
