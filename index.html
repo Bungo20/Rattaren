@@ -179,24 +179,13 @@
         }
 
         .main-layout {
-            display: grid;
-            grid-template-columns: 360px 1fr;
-            gap: 24px;
-            flex: 1;
-        }
-
-        .sidebar {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
             display: flex;
             flex-direction: column;
             gap: 24px;
-            box-shadow: var(--shadow-sm);
-            max-height: calc(100vh - 120px);
-            position: sticky;
-            top: 24px;
+            flex: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .section-title {
@@ -1002,17 +991,6 @@
 
         /* MEDIA QUERIES FOR ADAPTIVE LAYOUTS */
         @media (max-width: 1024px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .sidebar {
-                max-height: none;
-                position: static;
-                padding: 16px;
-            }
-
             .workspace {
                 padding: 20px;
             }
@@ -1027,7 +1005,6 @@
 
             body {
                 padding: 12px;
-                padding-bottom: 90px;
             }
 
             header {
@@ -1053,81 +1030,11 @@
                 display: none !important;
             }
 
-            .nav-item .btn-edit-outline,
-            .nav-item .btn-danger-outline {
-                display: none !important;
-            }
-
             .toast {
                 left: 16px !important;
                 right: 16px !important;
-                bottom: 90px !important;
                 justify-content: center;
                 text-align: center;
-            }
-
-            .sidebar {
-                position: sticky;
-                top: 0;
-                z-index: 1000;
-                background: var(--bg);
-                border: none;
-                border-bottom: 1px solid var(--border) !important;
-                box-shadow: none;
-                padding: 8px 0;
-                margin: 0 -12px;
-                gap: 8px;
-            }
-
-            .sidebar .section-title {
-                display: none;
-            }
-
-            .student-list {
-                flex-direction: row !important;
-                flex-wrap: wrap !important;
-                overflow-x: visible !important;
-                gap: 8px !important;
-                max-height: none !important;
-                padding: 4px 12px;
-                width: 100%;
-                max-width: 100%;
-                box-sizing: border-box;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .student-list::-webkit-scrollbar {
-                display: none;
-            }
-
-            .nav-item {
-                display: inline-flex !important;
-                flex-shrink: 0;
-                padding: 8px 12px !important;
-                margin: 0;
-                min-width: 130px;
-                justify-content: center;
-            }
-
-            .sidebar-actions {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: var(--card-bg);
-                padding: 12px 16px;
-                border-top: 1px solid var(--border);
-                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
-                z-index: 9999;
-                flex-direction: row;
-                gap: 8px;
-            }
-
-            .sidebar-actions .btn {
-                flex: 1;
-                margin: 0;
-                padding: 12px;
-                font-size: 0.95rem;
             }
 
             .workspace {
@@ -1226,35 +1133,6 @@
     </header>
 
     <div class="main-layout">
-        <!-- VÄNSTERPANEL: NAVIGERING & KÖ -->
-        <div class="sidebar">
-            <div style="display: flex; flex-direction: column; flex: 1; gap: 12px;">
-                <div class="section-title">
-                    <span>Elever</span>
-                    <button class="btn btn-secondary" style="padding: 6px 12px;" onclick="openAddStudentModal()">
-                        <i class="fa-solid fa-plus"></i> Lägg till
-                    </button>
-                </div>
-                <div class="student-list" id="student-list-container">
-                    <!-- Elever renderas dynamiskt här -->
-                </div>
-            </div>
-
-            <div class="sidebar-actions">
-                <button class="btn btn-success" id="start-btn" onclick="processBatch()" disabled>
-                    <i class="fa-solid fa-play"></i> Starta rättning
-                </button>
-                <button class="btn btn-danger" id="stop-btn" style="display: none;" onclick="cancelBatch()">
-                    <i class="fa-solid fa-circle-stop"></i> Avbryt
-                </button>
-                <!-- Samlingsknapp för alla klara rapporter -->
-                <button class="btn btn-secondary" id="export-all-btn" style="display: none; width: 100%;"
-                    onclick="exportAllReportsToWord()">
-                    <i class="fa-regular fa-copy" style="color: #1e3a8a;"></i> Ladda ner alla rapporter (.doc)
-                </button>
-            </div>
-        </div>
-
         <!-- HÖGERPANEL: ARBETSYTA FÖR BILDER OCH RESULTAT -->
         <div class="workspace" id="workspace-container">
             <!-- Renderas dynamiskt baserat på om det finns elever eller ej -->
@@ -1865,7 +1743,11 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
             currentView = studentId;
             const student = session.students.find(s => s.id === studentId);
             if (student) {
-                activeTab = student.report ? 'report' : 'pages';
+                if (activeTab === 'students') {
+                    // Stay on student list
+                } else if (activeTab === 'report' && !student.report) {
+                    activeTab = 'pages';
+                }
             }
             renderStudentList();
             renderWorkspace();
@@ -1911,25 +1793,28 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
         function setWorkspaceTab(tabName) {
             activeTab = tabName;
 
+            const studentsContent = document.getElementById('tab-content-students');
             const pagesContent = document.getElementById('tab-content-pages');
             const reportContent = document.getElementById('tab-content-report');
+            
+            const btnStudents = document.getElementById('tab-btn-students');
             const btnPages = document.getElementById('tab-btn-pages');
             const btnReport = document.getElementById('tab-btn-report');
 
-            if (!pagesContent || !reportContent) return;
+            if (studentsContent) studentsContent.style.display = (tabName === 'students') ? 'block' : 'none';
+            if (pagesContent) pagesContent.style.display = (tabName === 'pages') ? 'block' : 'none';
+            if (reportContent) reportContent.style.display = (tabName === 'report') ? 'block' : 'none';
 
-            if (tabName === 'pages') {
-                pagesContent.style.display = 'block';
-                reportContent.style.display = 'none';
-                if (btnPages) btnPages.classList.add('active');
-                if (btnReport) btnReport.classList.remove('active');
-            } else if (tabName === 'report') {
-                pagesContent.style.display = 'block';
-                reportContent.style.display = 'block';
-                pagesContent.style.display = 'none';
-                if (btnPages) btnPages.classList.remove('active');
-                if (btnReport) btnReport.classList.add('active');
+            if (btnStudents) btnStudents.classList.toggle('active', tabName === 'students');
+            if (btnPages) btnPages.classList.toggle('active', tabName === 'pages');
+            if (btnReport) btnReport.classList.toggle('active', tabName === 'report');
 
+            const activeStudentHeader = document.getElementById('active-student-header');
+            if (activeStudentHeader) {
+                activeStudentHeader.style.display = (tabName === 'students') ? 'none' : 'flex';
+            }
+
+            if (tabName === 'report') {
                 const reportBox = document.getElementById('report-text-box');
                 if (reportBox) {
                     reportBox.scrollTop = reportBox.scrollHeight;
@@ -1946,7 +1831,7 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                     <div class="empty-state">
                         <i class="fa-solid fa-folder-open"></i>
                         <h3>Välkommen till Rättaren!</h3>
-                        <p>Kom igång genom att lägga till din första elev i listan till vänster. Sedan kan du enkelt ladda upp och sortera elevens inlämnade provsidor.</p>
+                        <p>Kom igång genom att lägga till din första elev. Sedan kan du enkelt ladda upp och sortera elevens inlämnade provsidor.</p>
                         <button class="btn btn-primary" onclick="openAddStudentModal()">
                             <i class="fa-solid fa-plus"></i> Lägg till första eleven
                         </button>
@@ -1959,29 +1844,34 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
             if (!student) return;
 
             const hasReport = !!student.report;
-            const parsedReport = hasReport ? marked.parse(student.report) : `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 16px; color: var(--text-muted); text-align: center;"><i class="fa-regular fa-file-lines" style="font-size: 2.5rem; color: var(--border-hover);"></i><h4 style="font-weight: 600; font-size: 1.1rem; margin-top: 8px;">Ingen rapport skapad än</h4><p style="font-size: 0.9rem; max-width: 320px; line-height: 1.5; margin: 0;">Ladda upp eller fotografera bilder under fliken "Bilder" och klicka på "Starta rättning" i sidomenyn för att skapa rapporten.</p></div>`;
+            const parsedReport = hasReport ? marked.parse(student.report) : `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 16px; color: var(--text-muted); text-align: center;"><i class="fa-regular fa-file-lines" style="font-size: 2.5rem; color: var(--border-hover);"></i><h4 style="font-weight: 600; font-size: 1.1rem; margin-top: 8px;">Ingen rapport skapad än</h4><p style="font-size: 0.9rem; max-width: 320px; line-height: 1.5; margin: 0;">Ladda upp eller fotografera bilder under fliken "Bilder" och klicka på "Starta rättning" under fliken "Elever" för att skapa rapporten.</p></div>`;
 
             container.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%;">
-                        <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--text); word-break: break-all; overflow-wrap: break-word; margin: 0; flex: 1;">
-                            Bearbetar: <span style="color: var(--primary);">${student.name}</span>
-                        </h2>
-                        <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content;">
+                <!-- Aktiv elev header -->
+                <div id="active-student-header" style="display: ${activeTab === 'students' ? 'none' : 'flex'}; flex-direction: column; gap: 10px; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1;">
+                            <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600;">Aktiv elev:</span>
+                            <select id="active-student-select" onchange="switchView(Number(this.value))" style="font-size: 1.1rem; padding: 6px 28px 6px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-weight: 700; cursor: pointer; outline: none; transition: border-color 0.2s; max-width: 250px; text-overflow: ellipsis; white-space: nowrap; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 fill=%22%2364748b%22 viewBox=%220 0 16 16%22><path d=%22M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z%22/></svg>'); background-repeat: no-repeat; background-position: calc(100% - 10px) center;">
+                                ${session.students.map(s => `<option value="${s.id}" ${s.id === student.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+                            </select>
+                            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; height: 28px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border);" onclick="openRenameStudentModal(${student.id}, event)">
+                                <i class="fa-regular fa-pen-to-square"></i> Ändra namn
+                            </button>
+                            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; height: 28px; border-radius: 6px; color: var(--danger); border-color: rgba(239, 68, 68, 0.15); display: inline-flex; align-items: center; gap: 4px; background: transparent;" onclick="deleteStudent(${student.id}, event)">
+                                <i class="fa-regular fa-trash-can"></i> Ta bort
+                            </button>
+                        </div>
+                        <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
                             ${student.status === 'pending' ? 'Väntar på körning' : student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
                         </span>
-                    </div>
-                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; width: 100%;">
-                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;" onclick="openRenameStudentModal(${student.id}, event)">
-                            <i class="fa-regular fa-pen-to-square"></i> Ändra namn
-                        </button>
-                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem; height: 32px; border-radius: 6px; color: var(--danger); border-color: rgba(239, 68, 68, 0.2); display: inline-flex; align-items: center; gap: 6px;" onclick="deleteStudent(${student.id}, event)">
-                            <i class="fa-regular fa-trash-can"></i> Ta bort
-                        </button>
                     </div>
                 </div>
 
                 <div class="workspace-tabs">
+                    <button class="tab-btn ${activeTab === 'students' ? 'active' : ''}" id="tab-btn-students" onclick="setWorkspaceTab('students')">
+                        <i class="fa-solid fa-graduation-cap"></i> Elever <span class="badge" style="background: rgba(0,0,0,0.1); color: inherit; padding: 2px 6px; border-radius: 10px; font-size: 0.75rem; margin-left: 4px;">${session.students.length}</span>
+                    </button>
                     <button class="tab-btn ${activeTab === 'pages' ? 'active' : ''}" id="tab-btn-pages" onclick="setWorkspaceTab('pages')">
                         <i class="fa-regular fa-images"></i> Bilder <span class="badge" style="background: rgba(0,0,0,0.1); color: inherit; padding: 2px 6px; border-radius: 10px; font-size: 0.75rem; margin-left: 4px;">${student.images.length}</span>
                     </button>
@@ -1990,6 +1880,31 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                     </button>
                 </div>
 
+                <!-- FLIK 1: ELEVHANTERING -->
+                <div id="tab-content-students" style="display: ${activeTab === 'students' ? 'block' : 'none'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="font-size: 1.2rem; font-weight: 600;">Elevhantering</h3>
+                        <button class="btn btn-primary" onclick="openAddStudentModal()">
+                            <i class="fa-solid fa-plus"></i> Lägg till elev
+                        </button>
+                    </div>
+                    <div class="student-list" id="student-list-container">
+                        <!-- Elever renderas här -->
+                    </div>
+                    <div class="student-actions" style="margin-top: 24px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 400px;">
+                        <button class="btn btn-success" id="start-btn" onclick="processBatch()" disabled>
+                            <i class="fa-solid fa-play"></i> Starta rättning
+                        </button>
+                        <button class="btn btn-danger" id="stop-btn" style="display: none;" onclick="cancelBatch()">
+                            <i class="fa-solid fa-circle-stop"></i> Avbryt
+                        </button>
+                        <button class="btn btn-secondary" id="export-all-btn" style="display: none; width: 100%;" onclick="exportAllReportsToWord()">
+                            <i class="fa-regular fa-copy" style="color: #1e3a8a;"></i> Ladda ner alla rapporter (.doc)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FLIK 2: BILDER -->
                 <div id="tab-content-pages" style="display: ${activeTab === 'pages' ? 'block' : 'none'};">
                     <p id="workspace-instructions" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
                         Fotografera eller välj provsidor. Dra och släpp bilderna för att sortera dem. Klicka på en bild för helskärm.
@@ -2015,6 +1930,7 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
                     </div>
                 </div>
 
+                <!-- FLIK 3: RAPPORT -->
                 <div id="tab-content-report" style="display: ${activeTab === 'report' ? 'block' : 'none'};">
                     <div class="report-section" style="margin-top: 0; padding-top: 0; border: none;">
                         <div class="export-group" style="margin-top: 0; margin-bottom: 16px;">
@@ -2031,6 +1947,8 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
             `;
 
             renderFilmstrip(student);
+            renderStudentList();
+            updateBatchButtonState();
         }
 
         function renderFilmstrip(student) {
@@ -2545,6 +2463,7 @@ Förklara på ett pedagogiskt och uppmuntrande sätt:
 
         function renderStudentList() {
             const container = document.getElementById('student-list-container');
+            if (!container) return;
             container.innerHTML = '';
 
             if (session.students.length === 0) {
