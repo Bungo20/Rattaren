@@ -1347,6 +1347,38 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-light);
         }
+
+        /* Sticky Rätta button bar */
+        .sticky-correct-container {
+            position: sticky;
+            bottom: -30px;
+            margin: 20px -30px -30px -30px;
+            padding: 16px 30px 30px 30px;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            box-shadow: 0 -8px 24px -12px rgba(0, 0, 0, 0.12);
+            border-bottom-left-radius: var(--radius-lg);
+            border-bottom-right-radius: var(--radius-lg);
+        }
+
+        @media (max-width: 1024px) {
+            .sticky-correct-container {
+                bottom: -20px;
+                margin: 20px -20px -20px -20px;
+                padding: 16px 20px 20px 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sticky-correct-container {
+                bottom: -16px;
+                margin: 20px -16px -16px -16px;
+                padding: 16px 16px 16px 16px;
+                border-bottom-left-radius: var(--radius-md);
+                border-bottom-right-radius: var(--radius-md);
+            }
+        }
     </style>
 </head>
 
@@ -2197,25 +2229,6 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
                 <!-- FLIK 2: BILDER -->
                 <div id="tab-content-pages" style="display: ${activeTab === 'pages' ? 'block' : 'none'};">
-                    ${student.id !== 'shared' ? `
-                    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        ${isProcessing && student.status === 'processing' ? `
-                            <button class="btn btn-danger" id="correct-single-cancel-btn" onclick="cancelBatch()" style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
-                                <i class="fa-solid fa-circle-stop"></i> Avbryt rättning
-                            </button>
-                        ` : `
-                            <button class="btn btn-success" id="correct-single-btn" onclick="correctSingleStudent(${student.id})" ${student.images.length === 0 || isProcessing ? 'disabled' : ''} style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
-                                <i class="fa-solid fa-play"></i> Rätta
-                            </button>
-                        `}
-                        ${student.status !== 'pending' ? `
-                        <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
-                            ${student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
-                        </span>
-                        ` : ''}
-                    </div>
-                    ` : ''}
-
                     <p id="workspace-instructions" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
                         ${student.id === 'shared' ? 'Fotografera eller välj gemensamma provsidor/instruktioner.' : 'Fotografera eller välj bilder.'}
                     </p>
@@ -2254,6 +2267,27 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                             ${student.id === 'shared' ? 'Dessa instruktioner/frågor läggs till i början för alla elever.' : 'Detta meddelande skickas med till AI-modellen och anpassar rättningen för denna elev.'}
                         </p>
                     </div>
+
+                    ${student.id !== 'shared' ? `
+                    <div class="sticky-correct-container">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            ${isProcessing && student.status === 'processing' ? `
+                                <button class="btn btn-danger" id="correct-single-cancel-btn" onclick="cancelBatch()" style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
+                                    <i class="fa-solid fa-circle-stop"></i> Avbryt rättning
+                                </button>
+                            ` : `
+                                <button class="btn btn-success" id="correct-single-btn" onclick="correctSingleStudent(${student.id})" ${student.images.length === 0 || isProcessing ? 'disabled' : ''} style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
+                                    <i class="fa-solid fa-play"></i> Rätta
+                                </button>
+                            `}
+                            ${student.status !== 'pending' ? `
+                            <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
+                                ${student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
+                            </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
 
                 <!-- FLIK 3: RAPPORT -->
