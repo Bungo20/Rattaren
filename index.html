@@ -1043,6 +1043,11 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            flex-grow: 1;
+        }
+
+        #theme-toggle-btn {
+            margin-left: auto;
         }
 
         /* Report */
@@ -1231,7 +1236,7 @@
             }
 
             .header-actions {
-                width: auto;
+                flex-grow: 1;
                 justify-content: flex-end;
                 gap: 6px;
             }
@@ -1360,8 +1365,8 @@
                 <i class="fa-solid fa-robot"></i>
                 <span id="current-model-name">Ingen modell vald</span>
             </span>
-            <button class="btn btn-secondary" onclick="openPromptModal()" title="Välj prompt">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Prompt
+            <button class="btn btn-secondary" onclick="openPromptModal()" title="Välj rättningsmall">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Rättningsmall
             </button>
             <button class="btn btn-secondary" onclick="openSettingsModal()" title="Inställningar">
                 <i class="fa-solid fa-gear"></i> Inställningar
@@ -2122,10 +2127,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             } else if (student.status === 'processing') {
                 parsedReport = `
                     <div class="thinking-container">
-                        <div class="thinking-icon">
-                            <i class="fa-solid fa-brain"></i>
-                        </div>
-                        <h4 class="thinking-text">Thinking<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span></h4>
+                        <h4 class="thinking-text">Tänker<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span></h4>
                         <p style="font-size: 0.9rem; max-width: 320px; line-height: 1.5; margin: 0; color: var(--text-muted);">Analyserar bilder och sammanställer rapporten...</p>
                     </div>
                 `;
@@ -2195,6 +2197,25 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
                 <!-- FLIK 2: BILDER -->
                 <div id="tab-content-pages" style="display: ${activeTab === 'pages' ? 'block' : 'none'};">
+                    ${student.id !== 'shared' ? `
+                    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        ${isProcessing && student.status === 'processing' ? `
+                            <button class="btn btn-danger" id="correct-single-cancel-btn" onclick="cancelBatch()" style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
+                                <i class="fa-solid fa-circle-stop"></i> Avbryt rättning
+                            </button>
+                        ` : `
+                            <button class="btn btn-success" id="correct-single-btn" onclick="correctSingleStudent(${student.id})" ${student.images.length === 0 || isProcessing ? 'disabled' : ''} style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
+                                <i class="fa-solid fa-play"></i> Rätta
+                            </button>
+                        `}
+                        ${student.status !== 'pending' ? `
+                        <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
+                            ${student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
+                        </span>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+
                     <p id="workspace-instructions" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
                         ${student.id === 'shared' ? 'Fotografera eller välj gemensamma provsidor/instruktioner.' : 'Fotografera eller välj bilder.'}
                     </p>
@@ -2233,25 +2254,6 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                             ${student.id === 'shared' ? 'Dessa instruktioner/frågor läggs till i början för alla elever.' : 'Detta meddelande skickas med till AI-modellen och anpassar rättningen för denna elev.'}
                         </p>
                     </div>
-
-                    ${student.id !== 'shared' ? `
-                    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        ${isProcessing && student.status === 'processing' ? `
-                            <button class="btn btn-danger" id="correct-single-cancel-btn" onclick="cancelBatch()" style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
-                                <i class="fa-solid fa-circle-stop"></i> Avbryt rättning
-                            </button>
-                        ` : `
-                            <button class="btn btn-success" id="correct-single-btn" onclick="correctSingleStudent(${student.id})" ${student.images.length === 0 || isProcessing ? 'disabled' : ''} style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
-                                <i class="fa-solid fa-play"></i> Rätta
-                            </button>
-                        `}
-                        ${student.status !== 'pending' ? `
-                        <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
-                            ${student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
-                        </span>
-                        ` : ''}
-                    </div>
-                    ` : ''}
                 </div>
 
                 <!-- FLIK 3: RAPPORT -->
