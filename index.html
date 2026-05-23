@@ -2617,6 +2617,39 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             if (e.key === 'Escape') closeSettingsModal();
         }
 
+        function resizeImage(dataUrl, maxDimension = 1600, quality = 0.85) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = function () {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxDimension || height > maxDimension) {
+                        if (width > height) {
+                            height = Math.round((height * maxDimension) / width);
+                            width = maxDimension;
+                        } else {
+                            width = Math.round((width * maxDimension) / height);
+                            height = maxDimension;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.onerror = function (err) {
+                    reject(err);
+                };
+                img.src = dataUrl;
+            });
+        }
+
         function captureSnapshot() {
             const video = document.getElementById('camera-video');
             const flash = document.getElementById('camera-flash');
@@ -2629,12 +2662,25 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             void flash.offsetWidth;
             flash.classList.add('flash-active');
 
-
             playShutterSound();
 
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 1280;
-            canvas.height = video.videoHeight || 720;
+            const maxDimension = 1600;
+            let width = video.videoWidth || 1280;
+            let height = video.videoHeight || 720;
+
+            if (width > maxDimension || height > maxDimension) {
+                if (width > height) {
+                    height = Math.round((height * maxDimension) / width);
+                    width = maxDimension;
+                } else {
+                    width = Math.round((width * maxDimension) / height);
+                    height = maxDimension;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -2676,30 +2722,34 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             }
         }
 
-        function handleImageUpload(event) {
+        async function handleImageUpload(event) {
             const files = event.target.files;
             if (!files.length) return;
 
             const student = getActiveStudent();
             if (!student) return;
 
-            let loadedCount = 0;
-
             for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    student.images.push(e.target.result);
-                    loadedCount++;
+                try {
+                    const base64Data = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = (err) => reject(err);
+                        reader.readAsDataURL(files[i]);
+                    });
 
-                    if (loadedCount === files.length) {
-                        updateBadges();
-                        updateBatchButtonState();
-                        renderFilmstrip(student);
-                        event.target.value = '';
-                    }
-                };
-                reader.readAsDataURL(files[i]);
+                    const resizedData = await resizeImage(base64Data, 1600, 0.85);
+                    student.images.push(resizedData);
+                } catch (err) {
+                    console.error("Fel vid inläsning eller storleksändring av bild:", err);
+                    showToast(`Kunde inte läsa in filen: ${files[i].name}`, "error");
+                }
             }
+
+            updateBadges();
+            updateBatchButtonState();
+            renderFilmstrip(student);
+            event.target.value = '';
         }
 
         function deleteImage(index, event) {
