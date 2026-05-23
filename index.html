@@ -1428,7 +1428,7 @@
                 <span id="current-model-name">Ingen modell vald</span>
             </span>
             <button class="btn btn-secondary" onclick="openPromptModal()" title="Välj rättningsmall">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Rättningsmall
+                <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="current-prompt-name">Rättningsmall</span>
             </button>
             <button class="btn btn-secondary" id="theme-toggle-btn" onclick="toggleTheme()" title="Växla färgtema"
                 style="padding: 10px 14px;">
@@ -1732,6 +1732,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             select.value = activeId;
 
             loadSelectedPromptText(activeId);
+            updateSelectedPromptDisplay();
         }
 
         function loadSelectedPromptText(templateId) {
@@ -1802,6 +1803,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             localStorage.setItem(`rattaren_custom_prompt_${templateId}`, textVal);
 
             closePromptModal();
+            updateSelectedPromptDisplay();
             showToast("Prompt-inställningarna har sparats!", "success");
         }
 
@@ -1815,6 +1817,20 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 } else {
                     displayEl.textContent = "Ingen modell vald";
                 }
+            }
+        }
+
+        function updateSelectedPromptDisplay() {
+            const activeId = localStorage.getItem('rattaren_selected_prompt_id') || 'standard';
+            const template = PROMPT_TEMPLATES.find(t => t.id === activeId) || PROMPT_TEMPLATES[0];
+            const displayEl = document.getElementById('current-prompt-name');
+            if (displayEl) {
+                let name = template ? template.name : 'Rättningsmall';
+                const maxLen = 22;
+                if (name.length > maxLen) {
+                    name = name.substring(0, maxLen) + '...';
+                }
+                displayEl.textContent = name;
             }
         }
 
