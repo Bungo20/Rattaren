@@ -828,19 +828,6 @@
             bottom: -4px;
         }
 
-        .add-student-pill {
-            border: 1.5px dashed var(--primary) !important;
-            background: transparent !important;
-            justify-content: center !important;
-            min-width: 130px !important;
-            display: inline-flex !important;
-            align-items: center;
-        }
-
-        .add-student-pill:hover {
-            background: var(--primary-light) !important;
-        }
-
         /* Lodräta linje-indikatorer som ritas i gapen mellan bilderna vid drag och drop (desktop) */
         .image-card.drop-indicator-left::before {
             content: '';
@@ -947,14 +934,14 @@
         }
 
         .btn-camera-rapid {
-            background: #1e293b;
+            background: var(--primary);
             color: white;
-            padding: 16px 20px;
+            padding: 20px 20px;
             font-size: 1rem;
         }
 
         .btn-camera-rapid:hover {
-            background: #0f172a;
+            background: var(--primary-hover);
         }
 
         .upload-zone {
@@ -2111,7 +2098,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                     <div id="upload-zone-wrapper" style="width: 100%; margin-bottom: 16px;">
                         <div class="upload-grid-buttons">
                             <button class="btn btn-primary btn-camera-rapid" onclick="startCamera()">
-                                <i class="fa-solid fa-camera"></i> Starta Snabbkamera
+                                <i class="fa-solid fa-camera"></i> Snabbkamera
                             </button>
                             <div class="upload-zone" onclick="document.getElementById('file-input').click()">
                                 <i class="fa-solid fa-cloud-arrow-up"></i>
@@ -2871,7 +2858,6 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
             sharedDiv.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
-                    <span class="status-badge status-shared" style="flex-shrink: 0;"><i class="fa-solid fa-share-nodes"></i> Gemensam</span>
                     <strong style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Gemensamt underlag</strong>
                 </div>
                 <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 8px;">
@@ -2916,20 +2902,6 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                     container.appendChild(div);
                 });
             }
-
-            const addPill = document.createElement('div');
-            addPill.className = 'nav-item add-student-pill';
-            addPill.onclick = (e) => {
-                e.stopPropagation();
-                openAddStudentModal();
-            };
-            addPill.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 6px; justify-content: center; width: 100%; color: var(--primary); font-weight: 600;">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>Lägg till</span>
-                </div>
-            `;
-            container.appendChild(addPill);
         }
 
         async function correctSingleStudent(studentId) {
