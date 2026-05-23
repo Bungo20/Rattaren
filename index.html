@@ -69,13 +69,24 @@
         }
 
         /* Flik-design för att minska scrollande */
+        .workspace-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        #workspace-tabs-container:empty {
+            display: none;
+        }
+
         .workspace-tabs {
             display: flex;
             gap: 4px;
             background: var(--tab-bg);
             padding: 4px;
             border-radius: var(--radius-md);
-            margin-bottom: 12px;
+            margin-bottom: 0;
             border: 1px solid var(--border);
         }
 
@@ -1431,8 +1442,11 @@
 
     <div class="main-layout">
         <!-- HÖGERPANEL: ARBETSYTA FÖR BILDER OCH RESULTAT -->
-        <div class="workspace" id="workspace-container">
-            <!-- Renderas dynamiskt baserat på om det finns elever eller ej -->
+        <div class="workspace-wrapper">
+            <div id="workspace-tabs-container"></div>
+            <div class="workspace" id="workspace-container">
+                <!-- Renderas dynamiskt baserat på om det finns elever eller ej -->
+            </div>
         </div>
     </div>
 
@@ -2159,6 +2173,11 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             const container = document.getElementById('workspace-container');
             container.innerHTML = '';
 
+            const tabsContainer = document.getElementById('workspace-tabs-container');
+            if (tabsContainer) {
+                tabsContainer.innerHTML = '';
+            }
+
             if (!currentView) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -2191,19 +2210,23 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 parsedReport = `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 16px; color: var(--text-muted); text-align: center;"><i class="fa-regular fa-file-lines" style="font-size: 2.5rem; color: var(--border-hover);"></i><h4 style="font-weight: 600; font-size: 1.1rem; margin-top: 8px;">Ingen rapport skapad än</h4><p style="font-size: 0.9rem; max-width: 320px; line-height: 1.5; margin: 0;">Ladda upp eller fotografera bilder under fliken "Bilder" och klicka på "Rätta alla" under fliken "Elever" för att skapa rapporten.</p></div>`;
             }
 
-            container.innerHTML = `
-                <div class="workspace-tabs">
-                    <button class="tab-btn ${activeTab === 'students' ? 'active' : ''}" id="tab-btn-students" onclick="setWorkspaceTab('students')">
-                        <i class="fa-solid fa-graduation-cap"></i> Elever <span class="badge" style="background: rgba(0,0,0,0.1); color: inherit; padding: 2px 6px; border-radius: 10px; font-size: 0.75rem; margin-left: 4px;">${session.students.length}</span>
-                    </button>
-                    <button class="tab-btn ${activeTab === 'pages' ? 'active' : ''}" id="tab-btn-pages" onclick="setWorkspaceTab('pages')">
-                        <i class="fa-regular fa-images"></i> Bilder <span class="badge" style="background: rgba(0,0,0,0.1); color: inherit; padding: 2px 6px; border-radius: 10px; font-size: 0.75rem; margin-left: 4px;">${student.images.length}</span>
-                    </button>
-                    <button class="tab-btn ${activeTab === 'report' ? 'active' : ''}" id="tab-btn-report" onclick="setWorkspaceTab('report')" ${student.id === 'shared' ? 'disabled' : ''}>
-                        <i class="fa-solid fa-file-invoice"></i> Rapport
-                    </button>
-                </div>
+            if (tabsContainer) {
+                tabsContainer.innerHTML = `
+                    <div class="workspace-tabs">
+                        <button class="tab-btn ${activeTab === 'students' ? 'active' : ''}" id="tab-btn-students" onclick="setWorkspaceTab('students')">
+                            <i class="fa-solid fa-graduation-cap"></i> Elever <span class="badge" style="background: rgba(0,0,0,0.1); color: inherit; padding: 2px 6px; border-radius: 10px; font-size: 0.75rem; margin-left: 4px;">${session.students.length}</span>
+                        </button>
+                        <button class="tab-btn ${activeTab === 'pages' ? 'active' : ''}" id="tab-btn-pages" onclick="setWorkspaceTab('pages')">
+                            <i class="fa-regular fa-images"></i> Bilder <span class="badge" style="background: rgba(0,0,0,0.1); color: inherit; padding: 2px 6px; border-radius: 10px; font-size: 0.75rem; margin-left: 4px;">${student.images.length}</span>
+                        </button>
+                        <button class="tab-btn ${activeTab === 'report' ? 'active' : ''}" id="tab-btn-report" onclick="setWorkspaceTab('report')" ${student.id === 'shared' ? 'disabled' : ''}>
+                            <i class="fa-solid fa-file-invoice"></i> Rapport
+                        </button>
+                    </div>
+                `;
+            }
 
+            container.innerHTML = `
                 <!-- Aktiv elev header -->
                 <div id="active-student-header" style="display: ${activeTab === 'students' ? 'none' : 'flex'}; flex-direction: column; gap: 10px; width: 100%; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 8px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; flex-wrap: wrap;">
