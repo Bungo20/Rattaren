@@ -654,6 +654,11 @@
             backdrop-filter: blur(4px);
         }
 
+        #student-modal {
+            align-items: flex-start;
+            padding-top: 10vh;
+        }
+
         .confirm-content,
         .settings-content {
             background: var(--card-bg);
@@ -1078,6 +1083,90 @@
         .report-box ol {
             margin-left: 20px;
             margin-bottom: 12px;
+        }
+
+        /* Thinking animation styles */
+        .thinking-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .thinking-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+
+        .thinking-icon i {
+            animation: float-pulse 2s ease-in-out infinite;
+        }
+
+        .thinking-text {
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin: 0;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .thinking-dots span {
+            animation: dot-blink 1.4s infinite both;
+            font-size: 1.5rem;
+            line-height: 1;
+            display: inline-block;
+        }
+
+        .thinking-dots span:nth-child(2) {
+            animation-delay: .2s;
+        }
+
+        .thinking-dots span:nth-child(3) {
+            animation-delay: .4s;
+        }
+
+        @keyframes float-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: scale(1.08);
+                opacity: 1;
+                filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.3));
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes dot-blink {
+            0% {
+                opacity: .2;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                opacity: .2;
+            }
         }
 
         /* Camera overlay & Switch styles */
@@ -2027,7 +2116,22 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             if (!student) return;
 
             const hasReport = !!student.report;
-            const parsedReport = hasReport ? marked.parse(student.report) : `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 16px; color: var(--text-muted); text-align: center;"><i class="fa-regular fa-file-lines" style="font-size: 2.5rem; color: var(--border-hover);"></i><h4 style="font-weight: 600; font-size: 1.1rem; margin-top: 8px;">Ingen rapport skapad än</h4><p style="font-size: 0.9rem; max-width: 320px; line-height: 1.5; margin: 0;">Ladda upp eller fotografera bilder under fliken "Bilder" och klicka på "Rätta alla" under fliken "Elever" för att skapa rapporten.</p></div>`;
+            let parsedReport = '';
+            if (hasReport) {
+                parsedReport = marked.parse(student.report);
+            } else if (student.status === 'processing') {
+                parsedReport = `
+                    <div class="thinking-container">
+                        <div class="thinking-icon">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h4 class="thinking-text">Thinking<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span></h4>
+                        <p style="font-size: 0.9rem; max-width: 320px; line-height: 1.5; margin: 0; color: var(--text-muted);">Analyserar bilder och sammanställer rapporten...</p>
+                    </div>
+                `;
+            } else {
+                parsedReport = `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 16px; color: var(--text-muted); text-align: center;"><i class="fa-regular fa-file-lines" style="font-size: 2.5rem; color: var(--border-hover);"></i><h4 style="font-weight: 600; font-size: 1.1rem; margin-top: 8px;">Ingen rapport skapad än</h4><p style="font-size: 0.9rem; max-width: 320px; line-height: 1.5; margin: 0;">Ladda upp eller fotografera bilder under fliken "Bilder" och klicka på "Rätta alla" under fliken "Elever" för att skapa rapporten.</p></div>`;
+            }
 
             container.innerHTML = `
                 <div class="workspace-tabs">
