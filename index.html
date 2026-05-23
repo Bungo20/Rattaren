@@ -1162,11 +1162,13 @@
                 transform: scale(1);
                 opacity: 0.9;
             }
+
             50% {
                 transform: scale(1.08);
                 opacity: 1;
                 filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.3));
             }
+
             100% {
                 transform: scale(1);
                 opacity: 0.9;
@@ -1177,9 +1179,11 @@
             0% {
                 opacity: .2;
             }
+
             20% {
                 opacity: 1;
             }
+
             100% {
                 opacity: .2;
             }
@@ -1919,7 +1923,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
 
             setTimeout(() => {
                 toast.classList.remove('active');
-                setTimeout(() => toast.remove(), 300);
+                setTimeout(() => toast.remove(), 100);
             }, 4000);
         }
 
@@ -2431,7 +2435,7 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                     openLightbox(index);
                 });
 
-                // Touch-drag kräver lång-tryck (300ms) på handtaget innan drag aktiveras
+                // Touch-drag kräver lång-tryck (100ms) på handtaget innan drag aktiveras
                 const handleBar = card.querySelector('.drag-handle-bar');
 
                 handleBar.addEventListener('touchstart', (e) => {
@@ -2446,13 +2450,13 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                     touchDragState.dragStarted = false;
                     touchDragState.holdConfirmed = false;
 
-                    // Starta en timer — om fingret hålls still i 300ms aktiveras drag-läge
+                    // Starta en timer — om fingret hålls still i 100ms aktiveras drag-läge
                     touchDragState.holdTimer = setTimeout(() => {
                         touchDragState.holdConfirmed = true;
                         // Ge haptisk feedback att drag-läget är aktiverat
                         if (navigator.vibrate) navigator.vibrate(40);
                         handleBar.classList.add('drag-hold-active');
-                    }, 300);
+                    }, 100);
                 }, { passive: true });
 
                 handleBar.addEventListener('touchmove', (e) => {
@@ -2643,12 +2647,12 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                 renderFilmstrip(student);
             }
 
-            setTimeout(() => { blockLightbox = false; }, 300);
+            setTimeout(() => { blockLightbox = false; }, 100);
         }
 
         function touchDragCancelGhost() {
             touchDragCleanup();
-            setTimeout(() => { blockLightbox = false; }, 300);
+            setTimeout(() => { blockLightbox = false; }, 100);
         }
 
         function touchDragCleanup() {
