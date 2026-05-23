@@ -1377,6 +1377,8 @@
             border-bottom-right-radius: var(--radius-lg);
             transform: translate3d(0, 0, 0);
             -webkit-transform: translate3d(0, 0, 0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
 
         @media (max-width: 1024px) {
@@ -2131,6 +2133,11 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
             if (pagesContent) pagesContent.style.display = (tabName === 'pages') ? 'block' : 'none';
             if (reportContent) reportContent.style.display = (tabName === 'report') ? 'block' : 'none';
 
+            const stickyCorrectContainer = document.getElementById('sticky-correct-container');
+            if (stickyCorrectContainer) {
+                stickyCorrectContainer.style.display = (tabName === 'pages') ? 'block' : 'none';
+            }
+
             if (btnStudents) btnStudents.classList.toggle('active', tabName === 'students');
             if (btnPages) btnPages.classList.toggle('active', tabName === 'pages');
             if (btnReport) btnReport.classList.toggle('active', tabName === 'report');
@@ -2264,7 +2271,6 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                             </div>
                         </div>
                     </div>
-
                     <div class="filmstrip" id="filmstrip-container">
                         <!-- Bildkort matas in här via JS -->
                     </div>
@@ -2284,27 +2290,6 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                             ${student.id === 'shared' ? 'Dessa instruktioner/frågor läggs till i början för alla elever.' : 'Detta meddelande skickas med till AI-modellen och anpassar rättningen för denna elev.'}
                         </p>
                     </div>
-
-                    ${student.id !== 'shared' ? `
-                    <div class="sticky-correct-container">
-                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                            ${isProcessing && student.status === 'processing' ? `
-                                <button class="btn btn-danger" id="correct-single-cancel-btn" onclick="cancelBatch()" style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
-                                    <i class="fa-solid fa-circle-stop"></i> Avbryt rättning
-                                </button>
-                            ` : `
-                                <button class="btn btn-success" id="correct-single-btn" onclick="correctSingleStudent(${student.id})" ${student.images.length === 0 || isProcessing ? 'disabled' : ''} style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
-                                    <i class="fa-solid fa-play"></i> Rätta
-                                </button>
-                            `}
-                            ${student.status !== 'pending' ? `
-                            <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
-                                ${student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
-                            </span>
-                            ` : ''}
-                        </div>
-                    </div>
-                    ` : ''}
                 </div>
 
                 <!-- FLIK 3: RAPPORT -->
@@ -2321,6 +2306,27 @@ Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summer
                         <div class="report-box markdown-body" id="report-text-box" style="margin-top: 0;">${parsedReport}</div>
                     </div>
                 </div>
+
+                ${student.id !== 'shared' ? `
+                <div id="sticky-correct-container" class="sticky-correct-container" style="display: ${activeTab === 'pages' ? 'block' : 'none'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        ${isProcessing && student.status === 'processing' ? `
+                            <button class="btn btn-danger" id="correct-single-cancel-btn" onclick="cancelBatch()" style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
+                                <i class="fa-solid fa-circle-stop"></i> Avbryt rättning
+                            </button>
+                        ` : `
+                            <button class="btn btn-success" id="correct-single-btn" onclick="correctSingleStudent(${student.id})" ${student.images.length === 0 || isProcessing ? 'disabled' : ''} style="width: 100%; max-width: 250px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem;">
+                                <i class="fa-solid fa-play"></i> Rätta
+                            </button>
+                        `}
+                        ${student.status !== 'pending' ? `
+                        <span class="status-badge status-${student.status}" style="flex-shrink: 0; height: max-content; font-size: 0.85rem; padding: 4px 10px;">
+                            ${student.status === 'processing' ? 'Rättar...' : student.status === 'done' ? 'Rättad' : 'Fel'}
+                        </span>
+                        ` : ''}
+                    </div>
+                </div>
+                ` : ''}
             `;
 
             renderFilmstrip(student);
