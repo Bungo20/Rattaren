@@ -1600,7 +1600,7 @@
         const PROMPT_TEMPLATES = [
             {
                 id: 'standard',
-                name: 'Standard rättningsmall',
+                name: 'Standardmall',
                 defaultText: `Du är en svensk legitimerad lärare som rättar ett inlämnat skriftligt prov för studenten {studentName}. 
 Här är bilderna på elevens lösning i kronologisk ordning. Sidorna kan innehålla provinstruktioner i början, följt av elevens egna handskrivna eller skrivna lösningar.
 Observera att elevens svar kan sträcka sig över several sidor och fortsätta naturligt på nästa bild. Analysera hela sammanhanget.
@@ -1613,7 +1613,7 @@ Skriv en utförlig rättningsrapport på svenska. Rapporten ska innehålla:
             },
             {
                 id: 'snabb_feedback',
-                name: 'Kompakt snabb-feedback',
+                name: 'Snabb-feedback',
                 defaultText: `Du är en svensk lärare som rättar provet för {studentName}.
 Ge en kortfattad och direkt feedback på svenska:
 1. Preliminärt betyg/poäng.
@@ -1622,13 +1622,13 @@ Ge en kortfattad och direkt feedback på svenska:
             },
             {
                 id: 'kortfattad_feedback_uppgift',
-                name: 'Kortfattad feedback per uppgift',
+                name: 'Feedback per uppgift',
                 defaultText: `Du är en svensk lärare som rättar provet för {studentName}.
 Skriv en kortfattad feedback på svenska för varje enskild uppgift.`
             },
             {
                 id: 'poangsatt_uppgifter',
-                name: 'Poängsätt per uppgift och summera',
+                name: 'Poäng per uppgift',
                 defaultText: `Du är en svensk lärare som rättar provet för {studentName}.
 Sätt poäng på varje enskild uppgift och motivera kort. Avsluta med att summera poängen för hela provet på slutet.`
             }
